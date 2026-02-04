@@ -1,5 +1,5 @@
 ---
-name: "PP: Perplexity Search"
+name: "pplx"
 description: "Real-time web search and research using Perplexity AI. Use this skill when you need real-time information like API documentation, web content, latest news, current events, or any data that may be outdated in training data."
 category: Search
 tags: [perplexity, search, web, realtime, research, api-docs]
