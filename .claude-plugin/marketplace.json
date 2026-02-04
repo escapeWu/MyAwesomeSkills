@@ -1,41 +1,38 @@
 {
-  "name": "anthropic-agent-skills",
+  "name": "escapeWu-agent-skills",
   "owner": {
-    "name": "Keith Lazuka",
-    "email": "klazuka@anthropic.com"
+    "name": "escapeWu",
+    "email": "shancw@gmail.com"
   },
   "metadata": {
-    "description": "Anthropic example skills",
+    "description": "Personalized AI agent skills library",
     "version": "1.0.0"
   },
   "plugins": [
     {
-      "name": "document-skills",
-      "description": "Collection of document processing suite including Excel, Word, PowerPoint, and PDF capabilities",
+      "name": "core-skills",
+      "description": "Essential processing tools including Excel and PDF capabilities",
       "source": "./",
       "strict": false,
       "skills": [
         "./skills/xlsx",
-        "./skills/docx",
-        "./skills/pptx",
         "./skills/pdf"
       ]
     },
     {
-      "name": "example-skills",
-      "description": "Collection of example skills demonstrating various capabilities including skill creation, MCP building, visual design, algorithmic art, internal communications, web testing, artifact building, Slack GIFs, and theme styling",
+      "name": "pro-toolkit",
+      "description": "Advanced tools for search, tunneling, design, and automation",
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/algorithmic-art",
-        "./skills/brand-guidelines",
+        "./skills/CPA-antigravity-RT-exract",
+        "./skills/perplexity-search",
+        "./skills/cloudflare-tunnel",
         "./skills/canvas-design",
-        "./skills/doc-coauthoring",
         "./skills/frontend-design",
         "./skills/internal-comms",
         "./skills/mcp-builder",
         "./skills/skill-creator",
-        "./skills/slack-gif-creator",
         "./skills/theme-factory",
         "./skills/web-artifacts-builder",
         "./skills/webapp-testing"
