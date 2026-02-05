@@ -1,0 +1,3 @@
+[submodule "skills/style-extractor"]
+	path = skills/style-extractor
+	url = https://github.com/Lucent-Snow/style-extractor
