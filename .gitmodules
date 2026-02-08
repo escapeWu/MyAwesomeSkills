@@ -1,3 +1,6 @@
 [submodule "skills/style-extractor"]
 	path = skills/style-extractor
 	url = https://github.com/Lucent-Snow/style-extractor
+[submodule "skills/ui-ux-pro-max-skill"]
+	path = skills/ui-ux-pro-max-skill
+	url = https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
