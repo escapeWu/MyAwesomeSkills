@@ -1,94 +1,67 @@
-> **Note:** This repository contains Anthropic's implementation of skills for Claude. For information about the Agent Skills standard, see [agentskills.io](http://agentskills.io).
-
 # Skills
-Skills are folders of instructions, scripts, and resources that Claude loads dynamically to improve performance on specialized tasks. Skills teach Claude how to complete specific tasks in a repeatable way, whether that's creating documents with your company's brand guidelines, analyzing data using your organization's specific workflows, or automating personal tasks.
 
-For more information, check out:
-- [What are skills?](https://support.claude.com/en/articles/12512176-what-are-skills)
-- [Using skills in Claude](https://support.claude.com/en/articles/12512180-using-skills-in-claude)
-- [How to create custom skills](https://support.claude.com/en/articles/12512198-creating-custom-skills)
-- [Equipping agents for the real world with Agent Skills](https://anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)
+Skills are folders of instructions, scripts, and resources that Claude loads dynamically to improve performance on specialized tasks.
 
-# About This Repository
+## All Skills
 
-This repository contains skills that demonstrate what's possible with Claude's skills system. These skills range from creative applications (art, music, design) to technical tasks (testing web apps, MCP server generation) to enterprise workflows (communications, branding, etc.).
+### Creative & Design
 
-Each skill is self-contained in its own folder with a `SKILL.md` file containing the instructions and metadata that Claude uses. Browse through these skills to get inspiration for your own skills or to understand different patterns and approaches.
+| Skill | Description |
+|-------|-------------|
+| [canvas-design](./skills/canvas-design) | Create beautiful visual art in `.png` and `.pdf` documents using design philosophy. For posters, art, and static visual designs. |
+| [frontend-design](./skills/frontend-design) | Create distinctive, production-grade frontend interfaces with high design quality. For web components, pages, landing pages, dashboards, etc. |
+| [style-extractor](./skills/style-extractor) | Extract evidence-based web UI style + motion guides (Markdown, optional HTML prototype). |
+| [theme-factory](./skills/theme-factory) | Toolkit for styling artifacts with a theme. 10 pre-set themes with colors/fonts for slides, docs, reports, HTML pages, etc. |
+| [ui-ux-pro-max-skill](./skills/ui-ux-pro-max-skill) | UI/UX design intelligence. 50 styles, 21 palettes, 50 font pairings, 20 charts, 9 stacks (React, Next.js, Vue, Svelte, SwiftUI, etc.). |
 
-Many skills in this repo are open source (Apache 2.0). We've also included the document creation & editing skills that power [Claude's document capabilities](https://www.anthropic.com/news/create-files) under the hood in the [`skills/docx`](./skills/docx), [`skills/pdf`](./skills/pdf), [`skills/pptx`](./skills/pptx), and [`skills/xlsx`](./skills/xlsx) subfolders. These are source-available, not open source, but we wanted to share these with developers as a reference for more complex skills that are actively used in a production AI application.
+### Development & Technical
 
-## Disclaimer
+| Skill | Description |
+|-------|-------------|
+| [cloudflare-tunnel](./skills/cloudflare-tunnel) | Manage and create Cloudflare Tunnels to expose local ports to the internet without opening firewall ports. |
+| [mcp-builder](./skills/mcp-builder) | Guide for creating high-quality MCP (Model Context Protocol) servers in Python (FastMCP) or Node/TypeScript (MCP SDK). |
+| [mermaid-live-preview](./skills/mermaid-live-preview) | Generate Mermaid diagram preview URLs for mermaid.live. Encodes diagram code into clickable URLs using pako (zlib) + base64. |
+| [perplexity-search](./skills/perplexity-search) | Real-time web search and deep research using Perplexity AI for latest web data, API docs, news, and investigations. |
+| [project-analysis](./skills/project-analysis) | Project analysis tool for codebase architecture, module data flow, dependency analysis, and Mermaid diagram generation. |
+| [skill-creator](./skills/skill-creator) | Guide for creating effective skills that extend Claude's capabilities with specialized knowledge and workflows. |
+| [webapp-testing](./skills/webapp-testing) | Toolkit for interacting with and testing local web applications using Playwright. Screenshots, browser logs, UI debugging. |
+| [web-artifacts-builder](./skills/web-artifacts-builder) | Suite of tools for creating elaborate multi-component HTML artifacts using React, Tailwind CSS, and shadcn/ui. |
 
-**These skills are provided for demonstration and educational purposes only.** While some of these capabilities may be available in Claude, the implementations and behaviors you receive from Claude may differ from what is shown in these skills. These skills are meant to illustrate patterns and possibilities. Always test skills thoroughly in your own environment before relying on them for critical tasks.
+### Enterprise & Utilities
 
-# Skill Sets
-- [./skills](./skills): Skill examples for Creative & Design, Development & Technical, Enterprise & Communication, and Document Skills
-- [./spec](./spec): The Agent Skills specification
-- [./template](./template): Skill template
+| Skill | Description |
+|-------|-------------|
+| [CPA-antigravity-RT-exract](./skills/CPA-antigravity-RT-exract) | Extract Google Refresh Tokens from Antigravity JSON configuration files. Batch process and deduplicate refresh_token values. |
+| [internal-comms](./skills/internal-comms) | Write internal communications: status reports, leadership updates, newsletters, FAQs, incident reports, project updates, etc. |
 
-# Try in Claude Code, Claude.ai, and the API
+### Document Skills
 
-## Claude Code
-You can register this repository as a Claude Code Plugin marketplace by running the following command in Claude Code:
+| Skill | Description |
+|-------|-------------|
+| [pdf](./skills/pdf) | Read, create, merge, split, rotate, watermark, encrypt/decrypt, OCR, and fill forms in PDF files. |
+| [xlsx](./skills/xlsx) | Open, read, edit, create, and convert spreadsheet files (`.xlsx`, `.xlsm`, `.csv`, `.tsv`). Formulas, charts, data cleaning. |
+
+## Structure
+
 ```
-/plugin marketplace add anthropics/skills
+skills/          # All skill folders
+spec/            # Agent Skills specification
+template/        # Skill template for creating new skills
 ```
 
-Then, to install a specific set of skills:
-1. Select `Browse and install plugins`
-2. Select `anthropic-agent-skills`
-3. Select `document-skills` or `example-skills`
-4. Select `Install now`
+## Creating a New Skill
 
-Alternatively, directly install either Plugin via:
-```
-/plugin install document-skills@anthropic-agent-skills
-/plugin install example-skills@anthropic-agent-skills
-```
-
-After installing the plugin, you can use the skill by just mentioning it. For instance, if you install the `document-skills` plugin from the marketplace, you can ask Claude Code to do something like: "Use the PDF skill to extract the form fields from `path/to/some-file.pdf`"
-
-## Claude.ai
-
-These example skills are all already available to paid plans in Claude.ai. 
-
-To use any skill from this repository or upload custom skills, follow the instructions in [Using skills in Claude](https://support.claude.com/en/articles/12512180-using-skills-in-claude#h_a4222fa77b).
-
-## Claude API
-
-You can use Anthropic's pre-built skills, and upload custom skills, via the Claude API. See the [Skills API Quickstart](https://docs.claude.com/en/api/skills-guide#creating-a-skill) for more.
-
-# Creating a Basic Skill
-
-Skills are simple to create - just a folder with a `SKILL.md` file containing YAML frontmatter and instructions. You can use the **template-skill** in this repository as a starting point:
+Each skill is a folder with a `SKILL.md` file:
 
 ```markdown
 ---
 name: my-skill-name
-description: A clear description of what this skill does and when to use it
+description: What this skill does and when to use it
 ---
 
 # My Skill Name
 
-[Add your instructions here that Claude will follow when this skill is active]
-
-## Examples
-- Example usage 1
-- Example usage 2
-
-## Guidelines
-- Guideline 1
-- Guideline 2
+Instructions, examples, and guidelines here.
 ```
 
-The frontmatter requires only two fields:
-- `name` - A unique identifier for your skill (lowercase, hyphens for spaces)
-- `description` - A complete description of what the skill does and when to use it
-
-The markdown content below contains the instructions, examples, and guidelines that Claude will follow. For more details, see [How to create custom skills](https://support.claude.com/en/articles/12512198-creating-custom-skills).
-
-# Partner Skills
-
-Skills are a great way to teach Claude how to get better at using specific pieces of software. As we see awesome example skills from partners, we may highlight some of them here:
-
-- **Notion** - [Notion Skills for Claude](https://www.notion.so/notiondevs/Notion-Skills-for-Claude-28da4445d27180c7af1df7d8615723d0)
+See [template/SKILL.md](./template/SKILL.md) for a starting point.
