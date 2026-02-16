@@ -23,7 +23,7 @@ import zlib
 
 
 def encode(mermaid_code: str, theme: str = "default") -> str:
-    """Encode Mermaid source code into a mermaid.live edit URL."""
+    """Encode Mermaid source code into a pako base64 payload."""
     state = {
         "code": mermaid_code,
         "mermaid": json.dumps({"theme": theme}, indent=2),
@@ -35,7 +35,17 @@ def encode(mermaid_code: str, theme: str = "default") -> str:
     json_bytes = json.dumps(state).encode("utf-8")
     compressed = zlib.compress(json_bytes, 9)
     b64 = base64.urlsafe_b64encode(compressed).rstrip(b"=").decode("ascii")
-    return f"https://mermaid.live/edit#pako:{b64}"
+    return b64
+
+
+def edit_url(mermaid_code: str, theme: str = "default") -> str:
+    """Return a mermaid.live edit URL."""
+    return f"https://mermaid.live/edit#pako:{encode(mermaid_code, theme)}"
+
+
+def view_url(mermaid_code: str, theme: str = "default") -> str:
+    """Return a mermaid.live view (read-only preview) URL."""
+    return f"https://mermaid.live/view#pako:{encode(mermaid_code, theme)}"
 
 
 def decode(url: str) -> str:
@@ -62,7 +72,8 @@ def main():
         print(code)
     elif len(sys.argv) > 1 and not sys.argv[1].startswith("-"):
         # Inline mermaid code as argument
-        print(encode(sys.argv[1]))
+        print(f"Edit: {edit_url(sys.argv[1])}")
+        print(f"View: {view_url(sys.argv[1])}")
     else:
         # Read from stdin
         if sys.stdin.isatty():
@@ -70,7 +81,8 @@ def main():
             print("       python3 encode.py --decode <url>", file=sys.stderr)
             sys.exit(1)
         code = sys.stdin.read()
-        print(encode(code))
+        print(f"Edit: {edit_url(code)}")
+        print(f"View: {view_url(code)}")
 
 
 if __name__ == "__main__":

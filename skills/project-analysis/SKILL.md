@@ -145,6 +145,7 @@ flowchart LR
 3. 使用 Grep 搜索 import/require 语句分析依赖
 4. 综合分析后生成 Mermaid 架构图
 5. 用中文标注各模块的职责
+6. 使用 `mermaid-live-preview` 编码脚本为每个 Mermaid 图生成在线预览链接
 
 ### 执行模块数据流分析
 
@@ -154,6 +155,7 @@ flowchart LR
 4. 记录每个步骤的数据变化
 5. 生成时序图和数据流图
 6. 用中文描述关键数据流转节点
+7. 使用 `mermaid-live-preview` 编码脚本为每个 Mermaid 图生成在线预览链接
 
 ---
 
@@ -227,9 +229,20 @@ flowchart LR
    - 使用 Write 工具将分析报告写入目标文件
    - 文档头部添加生成时间和分析范围说明
 
-4. **确认输出**
+4. **生成在线预览链接**
+   - 对每个生成的 Mermaid 图表，使用 `mermaid-live-preview` skill 的编码脚本生成在线预览链接：
+     ```bash
+     python3 <skills-root>/skills/mermaid-live-preview/scripts/encode.py "<mermaid代码>"
+     ```
+   - 将输出的 Edit 和 View 链接附加在对应 Mermaid 代码块之后
+   - 格式示例：
+     ```markdown
+     [在线编辑](https://mermaid.live/edit#pako:...) | [在线预览](https://mermaid.live/view#pako:...)
+     ```
+
+5. **确认输出**
    - 告知用户文档已保存的路径
-   - 提示用户可在支持 Mermaid 的编辑器中预览图表
+   - 附带在线预览链接，用户可直接点击查看图表
 
 ### 文档模板
 
@@ -247,6 +260,8 @@ flowchart LR
 ## 架构图
 ...
 
+[在线编辑](edit-url) | [在线预览](view-url)
+
 ## 模块说明
 ...
 ```
@@ -262,8 +277,12 @@ flowchart LR
 ## 时序图
 ...
 
+[在线编辑](edit-url) | [在线预览](view-url)
+
 ## 数据流图
 ...
+
+[在线编辑](edit-url) | [在线预览](view-url)
 
 ## 节点说明
 ...
@@ -287,5 +306,6 @@ flowchart LR
 - 时序图聚焦主流程，分支逻辑可单独说明
 - 所有图表使用中文标注
 - 为每个模块提供简短的职责说明
+- 每个 Mermaid 图表输出后，必须附带在线预览链接（使用 `mermaid-live-preview` skill 的 `encode.py`）
 - 分析完成后始终将结果保存到 `docs/` 目录
 - 更新现有文档时保留历史版本或做增量更新

@@ -36,7 +36,11 @@ Or pipe from a `.mmd` file:
 python3 scripts/encode.py < diagram.mmd
 ```
 
-Then present the resulting URL to the user as a clickable link.
+The script outputs two URLs:
+- **Edit**: `https://mermaid.live/edit#pako:...` — opens the editor with the diagram, user can modify
+- **View**: `https://mermaid.live/view#pako:...` — read-only preview, clean presentation for sharing
+
+Present both to the user as clickable markdown links.
 
 ### Decode an Existing URL
 
@@ -51,7 +55,9 @@ python3 scripts/encode.py --decode "https://mermaid.live/edit#pako:..."
 1. User asks to create a sequence diagram and preview it
 2. Write the Mermaid code
 3. Run `encode.py` with the code to get the URL
-4. Present the URL: `[Preview on Mermaid Live](https://mermaid.live/edit#pako:...)`
+4. Present both URLs to the user:
+   - `[Edit on Mermaid Live](https://mermaid.live/edit#pako:...)`
+   - `[Preview on Mermaid Live](https://mermaid.live/view#pako:...)`
 
 ## Supported Diagram Types
 
@@ -77,7 +83,7 @@ The default theme is `"default"`. You can modify `encode.py` to use other Mermai
 
 ## Guidelines
 
-- Always present the generated URL as a clickable markdown link
+- Always present both edit and view URLs as clickable markdown links
 - For large diagrams, write the code to a `.mmd` file first, then pipe it to `encode.py`
 - The script requires only Python 3 standard library (no pip installs needed)
 - If the user provides a mermaid.live URL, decode it first to understand the diagram before making modifications
