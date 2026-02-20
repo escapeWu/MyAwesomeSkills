@@ -70,10 +70,66 @@ python3 <skills-root>/skills/project-analysis/scripts/scan_docs_metadata.py <项
 
 ---
 
-## 输出规范
+## 文档输出步骤
 
-所有输出文档采用 **YAML Frontmatter Metadata + Markdown Content** 两段式结构，metadata 用于文档检索和去重。
+分析完成后，按以下步骤将结果保存到 `docs/` 目录。
 
-> 文档模板、命名规范和最佳实践参考：`references/output-spec.md`
+### 步骤 1：确定输出文件路径
 
-> Mermaid 图表模板参考：`references/mermaid-templates.md`
+根据分析类型确定文件名（命名规范见 `references/output-spec.md`）：
+
+| 分析类型 | 文件名 |
+|---------|--------|
+| 系统架构 | `docs/architecture.md` |
+| 模块架构 | `docs/architecture-{模块}.md` |
+| 数据流 | `docs/dataflow-{功能}.md` |
+| 时序图 | `docs/sequence-{流程}.md` |
+
+### 步骤 2：生成 Mermaid 在线预览链接
+
+对报告中每个 Mermaid 图表，运行编码脚本生成预览链接：
+
+```bash
+python3 <skills-root>/skills/mermaid-live-preview/scripts/encode.py "<mermaid代码>"
+```
+
+将输出的 Edit 和 View 链接附加在对应代码块之后。
+
+### 步骤 3：写入文档
+
+使用 Write 工具将报告写入目标文件。文档必须采用两段式结构：
+
+**第一段：YAML Frontmatter Metadata**
+
+```yaml
+---
+type: architecture | dataflow | sequence
+scope: full | module
+module: ""          # scope=module 时必填
+date: "YYYY-MM-DD"
+keywords:
+  - 关键词1
+  - 关键词2
+tech_stack:
+  - 技术栈1
+entry_point: ""     # 数据流分析时填写
+---
+```
+
+**第二段：Markdown 正文**
+
+按对应分析类型的报告模板填写（模板见 `references/output-spec.md`）。
+
+### 步骤 4：确认输出
+
+告知用户：
+- 文档已保存的完整路径
+- 各 Mermaid 图表的在线预览链接
+
+---
+
+## 参考文件
+
+- 分析模式详细步骤：`references/mode-architecture.md`、`references/mode-dataflow.md`
+- 文档模板与命名规范：`references/output-spec.md`
+- Mermaid 图表模板：`references/mermaid-templates.md`
