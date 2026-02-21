@@ -40,10 +40,11 @@
     },
     {
       "name": "crypto-utilities",
-      "description": "Crypto market data archiving tools for sentiment and technical analysis",
+      "description": "Crypto market tools for sentiment archiving, technical analysis, and market data visualization",
       "source": "./",
       "strict": false,
       "skills": [
+        "./skills/coinglass-liquidation-heatmap",
         "./skills/crypto-info-archive"
       ]
     },
