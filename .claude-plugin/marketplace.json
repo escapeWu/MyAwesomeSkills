@@ -39,13 +39,21 @@
       ]
     },
     {
+      "name": "crypto-utilities",
+      "description": "Crypto market data archiving tools for sentiment and technical analysis",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/crypto-info-archive"
+      ]
+    },
+    {
       "name": "enterprise-utilities",
       "description": "Enterprise & Utilities for token extraction and internal communications",
       "source": "./",
       "strict": false,
       "skills": [
         "./skills/CPA-antigravity-RT-exract",
-        "./skills/crypto-info-archive",
         "./skills/internal-comms"
       ]
     },
