@@ -45,6 +45,7 @@
       "strict": false,
       "skills": [
         "./skills/CPA-antigravity-RT-exract",
+        "./skills/crypto-info-archive",
         "./skills/internal-comms"
       ]
     },
