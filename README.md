@@ -18,6 +18,7 @@ Skills are folders of instructions, scripts, and resources that Claude loads dyn
 
 | Skill | Description |
 |-------|-------------|
+| [claude-agent-sdk-skill](./skills/claude-agent-sdk-skill) | Build production AI agents with the Claude Agent SDK. Covers Python and TypeScript SDKs with custom tools, hooks, multi-agent systems, and session management. |
 | [cloudflare-tunnel](./skills/cloudflare-tunnel) | Manage and create Cloudflare Tunnels to expose local ports to the internet without opening firewall ports. |
 | [mcp-builder](./skills/mcp-builder) | Guide for creating high-quality MCP (Model Context Protocol) servers in Python (FastMCP) or Node/TypeScript (MCP SDK). |
 | [mermaid-live-preview](./skills/mermaid-live-preview) | Generate Mermaid diagram preview URLs for mermaid.live. Encodes diagram code into clickable URLs using pako (zlib) + base64. |
@@ -26,6 +27,13 @@ Skills are folders of instructions, scripts, and resources that Claude loads dyn
 | [skill-creator](./skills/skill-creator) | Guide for creating effective skills that extend Claude's capabilities with specialized knowledge and workflows. |
 | [webapp-testing](./skills/webapp-testing) | Toolkit for interacting with and testing local web applications using Playwright. Screenshots, browser logs, UI debugging. |
 | [web-artifacts-builder](./skills/web-artifacts-builder) | Suite of tools for creating elaborate multi-component HTML artifacts using React, Tailwind CSS, and shadcn/ui. |
+
+### Crypto Utilities
+
+| Skill | Description |
+|-------|-------------|
+| [coinglass-liquidation-heatmap](./skills/coinglass-liquidation-heatmap) | Crypto liquidation heatmap data from Coinglass for market analysis and visualization. |
+| [crypto-info-archive](./skills/crypto-info-archive) | Archive crypto market sentiment and analysis data for historical reference. |
 
 ### Enterprise & Utilities
 

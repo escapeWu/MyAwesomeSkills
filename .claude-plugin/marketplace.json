@@ -28,6 +28,7 @@
       "source": "./",
       "strict": false,
       "skills": [
+        "./skills/claude-agent-sdk-skill",
         "./skills/cloudflare-tunnel",
         "./skills/mcp-builder",
         "./skills/mermaid-live-preview",
