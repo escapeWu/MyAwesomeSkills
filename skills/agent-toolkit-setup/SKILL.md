@@ -18,6 +18,9 @@ The Agent Skills system serves structured skill documents (Markdown + YAML front
 ## Quick Start
 
 ```
+# 0. Get full OpenAPI schema (no auth required)
+GET {BASE_URL}/api/docs
+
 # 1. Discover skills
 GET {BASE_URL}/api/agent-skills/manifest
 
@@ -29,6 +32,22 @@ GET {BASE_URL}/api/agent-skills/{skill_name}/reference/{file}.md
 ```
 
 All protected endpoints require `Authorization: Bearer {API_KEY}` with `agent-skills` permission.
+
+## API Docs (No Auth)
+
+The platform exposes its complete OpenAPI schema at a public endpoint — no authentication required:
+
+```
+GET {BASE_URL}/api/docs
+```
+
+Returns the full OpenAPI 3.x JSON schema covering all modules (market, sentiment, analysis, crawler, agent-skills, etc.). Use this to:
+
+- Understand all available API capabilities before integrating
+- Auto-generate client code or type definitions
+- Discover endpoints beyond agent-skills (market data, chart generation, etc.)
+
+An interactive Swagger UI is also available at `{BASE_URL}/docs` for manual exploration.
 
 ## Workflow
 

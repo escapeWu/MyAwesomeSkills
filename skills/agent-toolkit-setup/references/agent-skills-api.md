@@ -16,6 +16,18 @@ Obtain API keys via `POST {BASE_URL}/api/apikeys` (requires management access).
 
 ---
 
+## Platform API Docs (No Auth Required)
+
+```
+GET /api/docs
+```
+
+Returns the full OpenAPI 3.x JSON schema for the entire platform. No authentication required. Use this to explore all available APIs before integrating.
+
+An interactive UI is available at `/docs` (Swagger) and `/redoc` (ReDoc).
+
+---
+
 ## Endpoints
 
 ### List All Skills
