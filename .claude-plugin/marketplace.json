@@ -10,63 +10,31 @@
   },
   "plugins": [
     {
-      "name": "creative-design",
-      "description": "Creative & Design tools for visual art, frontend interfaces, style extraction, and theming",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/canvas-design",
-        "./skills/frontend-design",
-        "./skills/style-extractor",
-        "./skills/theme-factory",
-        "./skills/ui-ux-pro-max-skill"
-      ]
-    },
-    {
-      "name": "development-technical",
-      "description": "Development & Technical tools for tunneling, MCP servers, diagrams, search, analysis, and testing",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/claude-agent-sdk-skill",
-        "./skills/cloudflare-tunnel",
-        "./skills/mcp-builder",
-        "./skills/mermaid-live-preview",
-        "./skills/perplexity-search",
-        "./skills/project-analysis",
-        "./skills/skill-creator",
-        "./skills/webapp-testing",
-        "./skills/web-artifacts-builder"
-      ]
-    },
-    {
-      "name": "crypto-utilities",
-      "description": "Crypto market tools for sentiment archiving, technical analysis, and market data visualization",
+      "name": "all-skills",
+      "description": "All agent skills: creative design, development tools, crypto utilities, document processing, and enterprise utilities",
       "source": "./",
       "strict": false,
       "skills": [
         "./skills/agent-toolkit-setup",
+        "./skills/canvas-design",
+        "./skills/claude-agent-sdk-skill",
+        "./skills/cloudflare-tunnel",
         "./skills/coinglass-liquidation-heatmap",
-        "./skills/crypto-info-archive"
-      ]
-    },
-    {
-      "name": "enterprise-utilities",
-      "description": "Enterprise & Utilities for token extraction and internal communications",
-      "source": "./",
-      "strict": false,
-      "skills": [
         "./skills/CPA-antigravity-RT-exract",
-        "./skills/internal-comms"
-      ]
-    },
-    {
-      "name": "document-skills",
-      "description": "Document processing tools for PDF and spreadsheet files",
-      "source": "./",
-      "strict": false,
-      "skills": [
+        "./skills/crypto-info-archive",
+        "./skills/frontend-design",
+        "./skills/internal-comms",
+        "./skills/mcp-builder",
+        "./skills/mermaid-live-preview",
         "./skills/pdf",
+        "./skills/perplexity-search",
+        "./skills/project-analysis",
+        "./skills/skill-creator",
+        "./skills/style-extractor",
+        "./skills/theme-factory",
+        "./skills/ui-ux-pro-max-skill",
+        "./skills/web-artifacts-builder",
+        "./skills/webapp-testing",
         "./skills/xlsx"
       ]
     }
