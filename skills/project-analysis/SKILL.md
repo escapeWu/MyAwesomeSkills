@@ -85,17 +85,7 @@ python3 <skills-root>/skills/project-analysis/scripts/scan_docs_metadata.py <项
 | 数据流 | `docs/dataflow-{功能}.md` |
 | 时序图 | `docs/sequence-{流程}.md` |
 
-### 步骤 2：生成 Mermaid 在线预览链接
-
-对报告中每个 Mermaid 图表，运行编码脚本生成预览链接：
-
-```bash
-python3 <skills-root>/skills/mermaid-live-preview/scripts/encode.py "<mermaid代码>"
-```
-
-将输出的 Edit 和 View 链接附加在对应代码块之后。
-
-### 步骤 3：写入文档
+### 步骤 2：写入文档
 
 使用 Write 工具将报告写入目标文件。文档必须采用两段式结构：
 
@@ -120,11 +110,10 @@ entry_point: ""     # 数据流分析时填写
 
 按对应分析类型的报告模板填写（模板见 `references/output-spec.md`）。
 
-### 步骤 4：确认输出
+### 步骤 3：确认输出
 
 告知用户：
 - 文档已保存的完整路径
-- 各 Mermaid 图表的在线预览链接
 
 ---
 
