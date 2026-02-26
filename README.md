@@ -32,6 +32,7 @@ Skills are folders of instructions, scripts, and resources that Claude loads dyn
 
 | Skill | Description |
 |-------|-------------|
+| [agent-toolkit-setup](./skills/agent-toolkit-setup) | Guide for integrating external AI agents with the Agent Toolkit's skill discovery, loading, and version tracking APIs. |
 | [coinglass-liquidation-heatmap](./skills/coinglass-liquidation-heatmap) | Crypto liquidation heatmap data from Coinglass for market analysis and visualization. |
 | [crypto-info-archive](./skills/crypto-info-archive) | Archive crypto market sentiment and analysis data for historical reference. |
 

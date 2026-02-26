@@ -45,6 +45,7 @@
       "source": "./",
       "strict": false,
       "skills": [
+        "./skills/agent-toolkit-setup",
         "./skills/coinglass-liquidation-heatmap",
         "./skills/crypto-info-archive"
       ]
