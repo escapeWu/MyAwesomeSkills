@@ -22,6 +22,7 @@
         "./skills/coinglass-liquidation-heatmap",
         "./skills/CPA-antigravity-RT-exract",
         "./skills/crypto-info-archive",
+        "./skills/crypto-market-data",
         "./skills/frontend-design",
         "./skills/internal-comms",
         "./skills/mcp-builder",
