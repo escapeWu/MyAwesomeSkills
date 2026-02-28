@@ -12,7 +12,7 @@
     {
       "name": "shancw",
       "description": "All agent skills: creative design, development tools, crypto utilities, document processing, and enterprise utilities",
-      "source": "../",
+      "source": "./",
       "strict": false,
       "skills": [
         "./skills/agent-toolkit-setup",
