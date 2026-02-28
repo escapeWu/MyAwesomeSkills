@@ -33,7 +33,6 @@
         "./skills/skill-creator",
         "./skills/style-extractor",
         "./skills/theme-factory",
-        "./skills/ui-ux-pro-max-skill",
         "./skills/web-artifacts-builder",
         "./skills/webapp-testing",
         "./skills/xlsx"

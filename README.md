@@ -12,7 +12,6 @@ Skills are folders of instructions, scripts, and resources that Claude loads dyn
 | [frontend-design](./skills/frontend-design) | Create distinctive, production-grade frontend interfaces with high design quality. For web components, pages, landing pages, dashboards, etc. |
 | [style-extractor](./skills/style-extractor) | Extract evidence-based web UI style + motion guides (Markdown, optional HTML prototype). |
 | [theme-factory](./skills/theme-factory) | Toolkit for styling artifacts with a theme. 10 pre-set themes with colors/fonts for slides, docs, reports, HTML pages, etc. |
-| [ui-ux-pro-max-skill](./skills/ui-ux-pro-max-skill) | UI/UX design intelligence. 50 styles, 21 palettes, 50 font pairings, 20 charts, 9 stacks (React, Next.js, Vue, Svelte, SwiftUI, etc.). |
 
 ### Development & Technical
 
