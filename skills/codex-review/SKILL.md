@@ -1,12 +1,9 @@
+---
+name: codex-review
+description: AI-powered code review using OpenAI Codex CLI. Use when the user asks to review, audit, or check their code — including "代码审核", "代码审查", "审查代码", "review", "code review", "帮我审核", "检查代码", "审一下". Performs lint + codex review in an isolated context, auto-updates CHANGELOG, and adapts reasoning effort based on change size.
+---
+
 # Codex Code Review Skill
-
-## Trigger Conditions
-
-Triggered when user input contains:
-
-- "代码审核", "代码审查", "审查代码", "审核代码"
-- "review", "code review", "review code", "codex 审核"
-- "帮我审核", "检查代码", "审一下", "看看代码"
 
 ## Core Concept: Intention vs Implementation
 
