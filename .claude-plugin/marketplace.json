@@ -16,6 +16,7 @@
       "strict": false,
       "skills": [
         "./skills/agent-toolkit-setup",
+        "./skills/codex-review",
         "./skills/canvas-design",
         "./skills/claude-agent-sdk-skill",
         "./skills/cloudflare-tunnel",

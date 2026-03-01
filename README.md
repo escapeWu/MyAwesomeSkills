@@ -19,6 +19,7 @@ Skills are folders of instructions, scripts, and resources that Claude loads dyn
 |-------|-------------|
 | [claude-agent-sdk-skill](./skills/claude-agent-sdk-skill) | Build production AI agents with the Claude Agent SDK. Covers Python and TypeScript SDKs with custom tools, hooks, multi-agent systems, and session management. |
 | [cloudflare-tunnel](./skills/cloudflare-tunnel) | Manage and create Cloudflare Tunnels to expose local ports to the internet without opening firewall ports. |
+| [codex-review](./skills/codex-review) | AI-powered code review using codex CLI. Auto-updates CHANGELOG, stages new files, evaluates task difficulty, and runs Lint + codex review in isolated context. |
 | [mcp-builder](./skills/mcp-builder) | Guide for creating high-quality MCP (Model Context Protocol) servers in Python (FastMCP) or Node/TypeScript (MCP SDK). |
 | [mermaid-live-preview](./skills/mermaid-live-preview) | Generate Mermaid diagram preview URLs for mermaid.live. Encodes diagram code into clickable URLs using pako (zlib) + base64. |
 | [perplexity-search](./skills/perplexity-search) | Real-time web search and deep research using Perplexity AI for latest web data, API docs, news, and investigations. |
