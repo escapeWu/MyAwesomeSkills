@@ -1,11 +1,11 @@
 ---
-name: trading-logger
-description: 记录交易员的思考过程、执行动作和结果到本地 Markdown 日志文件中。每当进行市场分析、下达交易指令或获取交易结果时，必须使用此技能进行记录，以确保交易过程透明且可追溯。
+name: crypto-trading-logger
+description: 记录加密货币交易员的思考过程、执行动作和结果到本地 Markdown 日志文件中。每当进行市场分析、下达交易指令或获取交易结果时，必须使用此技能进行记录，以确保交易过程透明且可追溯。
 ---
 
-# Trading Logger
+# Crypto Trading Logger
 
-此技能用于将交易活动持久化到本地日志中。日志按日期分类存储在 `logs/YYYY-MM-DD.md` 中。
+此技能用于将加密货币交易活动持久化到本地日志中。日志按日期分类存储在 `logs/YYYY-MM-DD.md` 中。
 
 ## 核心流程
 

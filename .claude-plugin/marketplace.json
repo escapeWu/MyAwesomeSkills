@@ -1,12 +1,10 @@
 {
   "name": "escapeWu-agent-skills",
+  "version": "1.0.0",
+  "description": "Personalized AI agent skills library",
   "owner": {
     "name": "escapeWu",
     "email": "shancw@gmail.com"
-  },
-  "metadata": {
-    "description": "Personalized AI agent skills library",
-    "version": "1.0.0"
   },
   "plugins": [
     {
@@ -24,6 +22,7 @@
         "./skills/CPA-antigravity-RT-exract",
         "./skills/crypto-info-archive",
         "./skills/crypto-market-data",
+        "./skills/crypto-trading-logger",
         "./skills/frontend-design",
         "./skills/internal-comms",
         "./skills/mcp-builder",
