@@ -1,52 +1,69 @@
 # Skill: coinglass-liquidation-heatmap
 
 ## 1. 简介
-专门用于访问 Coinglass 清算热力图页面，获取指定币种的实时清算分布数据。通过视觉分析（VLM）识别图表中的流动性高亮区域（磁吸区），并按标准结构提供支撑与阻力的分析建议。
+专门用于访问 Coinglass 清算热力图页面，获取指定币种截图并上传到文件管理模块。
+
+> 本 Skill 只负责“打开页面 -> 截图 -> 上传”，不做任何图像内容分析。
 
 ## 2. 核心指令
 - **页面 URL**: `https://www.coinglass.com/zh/pro/futures/LiquidationHeatMap?coin={COIN}`
   - 默认币种为 `BTC`。
-  - 切换币种示例: `?coin=ETH`, `?coin=SOL` 等。
+  - 切换币种示例: `?coin=ETH`, `?coin=SOL`。
+- **上传接口**: `POST /api/files/upload`
+- **鉴权方式**: `Authorization: Bearer <API_KEY>`
 
 ## 3. 操作流程
-1. **初始化连接**: 
+1. **初始化连接**
    - 必须使用 `profile="chrome"`。
    - 检查 Browser Relay 状态。如果未连接，提醒用户点击 Chrome 插件图标。
-2. **页面导航**: 
+
+2. **页面导航**
    - 构造目标 URL（含 `?coin=` 参数）并调用 `browser:open`。
-3. **骨架侦察 (`snapshot`)**:
+
+3. **骨架侦察 (`snapshot`)**
    - 调用 `browser:snapshot(refs: "aria")`。
-   - 确认标题（例如 "Binance {COIN}/USDT 清算热力图"）已加载，确保数据渲染完成。
+   - 确认标题（例如 `Binance {COIN}/USDT 清算热力图`）已加载，确保数据渲染完成。
    - 识别图表容器的 `ref`（通常包含 `canvas` 元素）。
-4. **精准截图 (`screenshot`)**:
-   - 调用 `browser:screenshot`。建议使用 `fullPage: false` 截取当前视口，或针对图表容器 `ref` 进行局部截图。
-5. **视觉分析 (VLM)**:
-   - 观察截图中颜色最亮的区域（从紫色到黄色的过渡，黄色为最强）。
-   - 将黄色横条对应到纵轴的价格刻度。
-   - 识别当前价格（K线末端）相对于这些亮区的位置。
+
+4. **精准截图 (`screenshot`)**
+   - 调用 `browser:screenshot`。
+   - 建议使用 `fullPage: false` 截取当前视口，或针对图表容器 `ref` 进行局部截图。
+
+5. **生成上传文件名**
+   - 文件名格式必须为：`coinglass-[coinpair]-yyyy-mm-dd-liquid`
+   - `coinpair` 规则：将交易对转为去斜杠大写格式（如 `BTC/USDT -> BTCUSDT`）。
+   - 日期规则：按 `yyyy-mm-dd` 生成（推荐使用当日 UTC 日期，保持一致）。
+   - 上传时 `file` 的文件名必须使用该规范，不添加额外前后缀。
+
+6. **上传截图**
+   - 发起 `POST /api/files/upload`。
+   - `Headers`:
+     - `Authorization: Bearer <API_KEY>`
+   - `Content-Type`: `multipart/form-data`
+   - `FormData` 字段：
+     - `file`: 截图文件（二进制）
 
 ## 4. 返回结构规范
-分析结果必须严格遵守以下格式：
+返回结果必须是上传结果，不包含任何支撑阻力或流动性分析字段。推荐结构如下：
 
-### 1. 上方主要空单清算区（阻力位）
-价格上涨将触发空单止损或爆仓，图中最亮的黄色区域代表高强度清算：
-- **{价格区间1} 美元**：{简述：如“最近的高强度清算簇”}。
-- **{价格/关口} 美元**：{简述：如“心理关口附近的密集清算带”}。
+```json
+{
+  "coin": "BTC",
+  "coinpair": "BTCUSDT",
+  "filename": "coinglass-BTCUSDT-2026-03-04-liquid",
+  "upload": {
+    "key": "...",
+    "url": "..."
+  },
+  "source_page": "https://www.coinglass.com/zh/pro/futures/LiquidationHeatMap?coin=BTC"
+}
+```
 
-### 2. 下方主要多单清算区（支撑位）
-价格下跌将导致高杠杆多单被强制平仓，图中主要的支撑流动性位于：
-- **{价格区间1} 美元**：{简述：如“紧邻当前价格的初步多单清算区”}。
-- **{价格区间2} 美元**：{简述：如“最长、最亮的黄色支撑带”}。
+## 5. 失败处理
+- **页面未加载到目标图表**：返回页面加载失败并提示重试。
+- **上传失败**：返回 HTTP 状态码与错误信息，不执行任何分析回退。
 
-### 3. 图表分析要点
-- **流动性磁石**：分析多空两端亮区的分布，判断价格可能的“流动性狩猎”方向。
-- **当前重心**：对比上下方清算柱的高度和密集度，判断强支撑/强阻力的位置及连环清算风险。
-
-### 总结
-- **上方阻力**：{价格1} / {价格2}
-- **下方支撑**：{价格1} / {价格2}
-
-## 5. 注意事项
-- **环境要求**: 此 Skill 强依赖 Chrome 扩展程序 relay。
-- **刷新频率**: 热力图数据实时变动，每次分析应获取最新截图。
-- **语气风格**: (可选) 保持专业、敏锐，可带有小浣熊阿浣的幽默感。
+## 6. 注意事项
+- 不做图像内容分析，不输出“支撑/阻力/流动性磁石”等分析段落。
+- 文件名规范必须固定为：`coinglass-[coinpair]-yyyy-mm-dd-liquid`。
+- API Key 必须通过环境变量或运行环境注入，禁止在文档或代码中硬编码。
