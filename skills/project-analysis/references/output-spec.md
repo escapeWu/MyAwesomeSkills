@@ -154,12 +154,7 @@ entry_point: "src/path/to/entry.ts"
 3. **写入文档**
    - 使用 Write 工具将分析报告写入目标文件
    - 文档必须包含完整的 YAML frontmatter metadata
-4. **生成在线预览链接**
-   - 对每个 Mermaid 图表，使用 `mermaid-live-preview` skill 的编码脚本生成在线预览链接：
-     ```bash
-     python3 <skills-root>/skills/mermaid-live-preview/scripts/encode.py "<mermaid代码>"
-     ```
-   - 将 Edit 和 View 链接附加在对应 Mermaid 代码块之后
+4. **生成TUI ASCII预览图**
 5. **确认输出**
    - 告知用户文档已保存的路径
    - 附带在线预览链接
@@ -171,7 +166,6 @@ entry_point: "src/path/to/entry.ts"
 - 时序图聚焦主流程，分支逻辑可单独说明
 - 所有图表使用中文标注
 - 为每个模块提供简短的职责说明
-- 每个 Mermaid 图表输出后，必须附带在线预览链接
 - 分析完成后始终将结果保存到 `docs/` 目录
 - 更新现有文档时保留历史版本或做增量更新
 - **keywords 字段务必准确填写**，这是后续文档去重和相似性匹配的核心依据
