@@ -71,7 +71,7 @@ tech_stack:
 
 [Mermaid 图]
 
-[在线编辑](edit-url) | [在线预览](view-url)
+可选附带 TUI ASCII 预览图，便于在终端中快速查看结构关系
 
 ## 核心模块说明
 
@@ -114,13 +114,13 @@ entry_point: "src/path/to/entry.ts"
 
 [Mermaid 时序图]
 
-[在线编辑](edit-url) | [在线预览](view-url)
+可选附带 TUI ASCII 预览图，便于在终端中快速查看主流程
 
 ## 数据流图
 
 [Mermaid 流程图]
 
-[在线编辑](edit-url) | [在线预览](view-url)
+可选附带 TUI ASCII 预览图，便于在终端中快速查看数据流向
 
 ## 关键节点说明
 
@@ -154,10 +154,9 @@ entry_point: "src/path/to/entry.ts"
 3. **写入文档**
    - 使用 Write 工具将分析报告写入目标文件
    - 文档必须包含完整的 YAML frontmatter metadata
-4. **生成TUI ASCII预览图**
+4. **可选生成 TUI ASCII 预览图**
 5. **确认输出**
    - 告知用户文档已保存的路径
-   - 附带在线预览链接
 
 ## 最佳实践
 

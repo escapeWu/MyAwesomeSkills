@@ -63,4 +63,4 @@ graph TB
 3. 使用 Grep 搜索 import/require 语句分析依赖
 4. 综合分析后生成 Mermaid 架构图
 5. 用中文标注各模块的职责
-6. 使用 `mermaid-live-preview` 编码脚本为每个 Mermaid 图生成在线预览链接
+6. 可选绘制 TUI ASCII 预览图，帮助用户在终端里快速查看结构关系
