@@ -62,5 +62,6 @@ graph TB
 2. 分析目录结构，识别主要模块
 3. 使用 Grep 搜索 import/require 语句分析依赖
 4. 综合分析后生成 Mermaid 架构图
-5. 用中文标注各模块的职责
-6. 可选绘制 TUI ASCII 预览图，帮助用户在终端里快速查看结构关系
+5. 立即为该 Mermaid 架构图补充等价的 ASCII/TUI 预览图
+6. 用中文标注各模块的职责
+7. 输出时同时保留 Mermaid 与 ASCII/TUI 两种视图，便于用户审查
