@@ -151,13 +151,24 @@ entry_point: "src/path/to/entry.ts"
 1. **运行 metadata 扫描**（前置检查已完成时跳过此步）
 2. **检查 docs 目录**
    - 如果 `docs/` 目录不存在，创建该目录
-3. **写入文档**
+3. **处理相似文档冲突**
+   - 如果发现高相似度文档，必须先询问用户选择 `patch / overwrite / cancel`
+   - `patch`：基于旧文档做增量修补
+   - `overwrite`：重新生成完整文档并覆盖
+   - `cancel`：停止输出
+4. **汇总并 review**
+   - 汇总并行子任务结果
+   - 检查 frontmatter、图表、关键结论、文件路径引用是否完整
+   - 必要时先 patch 草稿，再写最终文档
+5. **写入文档**
    - 使用 Write 工具将分析报告写入目标文件
    - 文档必须包含完整的 YAML frontmatter metadata
-4. **生成 TUI ASCII 预览图**
+6. **生成 TUI ASCII 预览图**
    - 每张 Mermaid 图后都必须紧跟一张语义一致的 ASCII/TUI 预览图
-5. **确认输出**
+7. **确认输出**
    - 告知用户文档已保存的路径
+   - 说明本次是 new / patch / overwrite 中的哪一种
+   - 提供报告概览与关键发现
 
 ## 最佳实践
 
