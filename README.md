@@ -23,7 +23,8 @@ Skills are folders of instructions, scripts, and resources that Claude loads dyn
 | [mcp-builder](./skills/mcp-builder) | Guide for creating high-quality MCP (Model Context Protocol) servers in Python (FastMCP) or Node/TypeScript (MCP SDK). |
 | [mermaid-live-preview](./skills/mermaid-live-preview) | Generate Mermaid diagram preview URLs for mermaid.live. Encodes diagram code into clickable URLs using pako (zlib) + base64. |
 | [perplexity-search](./skills/perplexity-search) | Real-time web search and deep research using Perplexity AI for latest web data, API docs, news, and investigations. |
-| [project-analysis](./skills/project-analysis) | Project analysis tool for codebase architecture, module data flow, dependency analysis, and Mermaid diagram generation. |
+| [project-analysis](./skills/project-analysis) | Deep repository analysis layer for architecture, data flow, sequence, and risk investigation. Pairs with project-docs-workflow to produce evidence-backed conclusions, Mermaid diagrams, and optional docs patches or standalone reports. |
+| [project-docs-workflow](./skills/project-docs-workflow) | Thin docs orchestration layer for non-trivial code changes. Scans OVERVIEW/feature/reference docs as semi-trusted context, escalates to project-analysis when needed, and asks before patching docs. |
 | [skill-creator](./skills/skill-creator) | Guide for creating effective skills that extend Claude's capabilities with specialized knowledge and workflows. |
 | [webapp-testing](./skills/webapp-testing) | Toolkit for interacting with and testing local web applications using Playwright. Screenshots, browser logs, UI debugging. |
 | [web-artifacts-builder](./skills/web-artifacts-builder) | Suite of tools for creating elaborate multi-component HTML artifacts using React, Tailwind CSS, and shadcn/ui. |

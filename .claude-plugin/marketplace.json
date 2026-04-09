@@ -30,6 +30,7 @@
         "./skills/pdf",
         "./skills/perplexity-search",
         "./skills/project-analysis",
+        "./skills/project-docs-workflow",
         "./skills/skill-creator",
         "./skills/style-extractor",
         "./skills/theme-factory",
