@@ -7,7 +7,7 @@
 ### 1. 明确分析目标与执行模式
 - 确认当前分析主题是否为 `architecture`
 - 明确分析范围：全项目 / 模块级
-- 确认当前执行模式：`analysis-only` / `docs-patch` / `standalone-report`
+- 确认当前执行模式：`new-doc` / `update-doc`
 - 明确目标模块、关键入口点、重点关注的依赖或风险链路
 
 ### 2. 优先检查相关 docs
@@ -101,6 +101,6 @@ subagent 只负责读代码和整理事实，不负责写最终文档。
 6. 综合分析后生成 Mermaid 架构图
 7. 立即为该 Mermaid 架构图补充等价的 ASCII/TUI 预览图
 8. 产出结构化结论与可回填的 section 草稿
-9. 仅在 `docs-patch` 或 `standalone-report` 模式下执行写文档动作
-10. 若进入 `docs-patch`，优先 patch 到 `feature-*` / `reference-*` / `OVERVIEW.md`
-11. 若进入 `standalone-report`，再根据需要写独立分析文档
+9. 将结果整理进目标文档：已有合适承接文档则 `update-doc`，否则 `new-doc`
+10. 优先更新 `feature-*` / `reference-*` / `OVERVIEW.md`
+11. 若没有合适长期文档承接，再创建新的分析文档

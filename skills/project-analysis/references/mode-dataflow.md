@@ -8,7 +8,7 @@
 - 确认当前分析主题是 `dataflow` / `sequence`，或以流程链路为主的 `performance-risk`
 - 明确要分析的功能或模块
 - 识别入口点（API 端点、事件处理器、命令入口）
-- 确认当前执行模式：`analysis-only` / `docs-patch` / `standalone-report`
+- 确认当前执行模式：`new-doc` / `update-doc`
 
 ### 2. 优先检查相关 docs
 - 优先读取 `docs/OVERVIEW.md`
@@ -119,6 +119,6 @@ subagent 只负责事实提取与链路梳理，不直接写最终文档。
 6. 生成时序图和数据流图
 7. 为每张 Mermaid 图补充对应的 ASCII/TUI 预览图
 8. 产出结构化结论与可回填的 section 草稿
-9. 优先考虑将结果 patch 到 `feature-*` / `reference-*` / `OVERVIEW.md`
-10. 仅在 `docs-patch` 或 `standalone-report` 模式下执行写文档动作
-11. 若明确需要一次性调查稿，再写 `dataflow-*` / `sequence-*` 等独立分析文档
+9. 优先判断是否能更新到 `feature-*` / `reference-*` / `OVERVIEW.md`
+10. 能承接则执行 `update-doc`，不能承接则执行 `new-doc`
+11. 若明确需要独立成文或没有合适长期文档，再创建 `dataflow-*` / `sequence-*` 等新文档
