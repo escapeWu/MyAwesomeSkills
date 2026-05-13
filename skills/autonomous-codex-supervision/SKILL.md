@@ -122,8 +122,13 @@ Stop for owner decision when the task requires a new product lane, safety bounda
 2. Build or refresh repo map: purpose, stack, entrypoints, tests, docs/rules, task-relevant files, generated/runtime/secret-adjacent paths.
 3. Write task spec or taskBoard before launch.
 4. Create isolated worktree/branch if running parallel work.
-5. Launch Codex through tmux or `codex exec --full-auto` using a quoted prompt file.
-6. **Create a cron supervisor** (every 5 min) that polls Codex status, runs validation on exit, and reports to the user. This is NOT optional — skipping it means no one monitors completion or failure.
+5. **ATOMIC: Launch Codex + Create Cron Supervisor (不可分割)**
+   This is ONE step. You are NOT done until BOTH sub-actions are complete. Do NOT verify launch, do NOT check output, do NOT respond to user between 5a and 5b.
+   - **5a.** Write task spec to `/tmp/codex-taskspec-<timestamp>-<pid>.md`, then run `codex exec --full-auto - < /tmp/codex-taskspec-xxx.md 2>&1` with `background=true, notify_on_complete=true`. NEVER use `"$(cat ...)"` shell substitution.
+   - **5b.** IMMEDIATELY (same tool-call batch or next sequential call, NO intervening user response) create a cron supervisor (every 5 min) that polls Codex status, runs validation on exit, and reports using the Reporting Template below.
+   - **5c.** Only AFTER both 5a+5b are done, verify launch health (check output_preview).
+   
+   ⚠️ If you find yourself reporting "Codex launched" without having created the cron — STOP, go back, create it NOW. This failure has occurred 3+ times historically.
 7. Monitor tmux/cron and process state.
 7. On exit, collect `git status`, diff stat, pane output, validation output, static acceptance checks, and safety scan evidence.
 8. Update acceptance booleans in persisted state.
@@ -137,6 +142,45 @@ Stop for owner decision when the task requires a new product lane, safety bounda
 ### Bare `codex exec --full-auto` without task spec
 
 Never run `codex exec --full-auto "do X"` without acceptance criteria. Codex will choose the minimum-effort path (e.g., editing a prompt file instead of implementing code). Always build a task spec first with `acceptance`, `validation_commands`, and `stop_when` fields.
+
+### Codex hangs on "Reading additional input from stdin..." (stdin starvation)
+
+**Root cause (2026-05-13):** When `codex exec --full-auto "$(cat TASK_SPEC.md)"` is run in a background process, Codex may attempt to read additional input from stdin. Background processes have no interactive stdin, so Codex blocks indefinitely — zero files changed, process alive but idle.
+
+**Mandatory pattern — always use /tmp file + stdin redirect:**
+
+```bash
+# 1. Write spec to /tmp with unique name
+SPEC_FILE="/tmp/codex-taskspec-$(date +%s)-$$.md"
+cp TASK_SPEC.md "$SPEC_FILE"
+
+# 2. Launch with explicit stdin redirect (prevents stdin starvation)
+codex exec --full-auto - < "$SPEC_FILE" 2>&1
+```
+
+**NEVER do this:**
+```bash
+# BAD: shell substitution — Codex may still try to read stdin
+codex exec --full-auto "$(cat TASK_SPEC.md)" 2>&1
+```
+
+**Why /tmp:** Task specs can be large (3KB+). Shell argument substitution has length limits and doesn't close stdin. Redirecting from a file guarantees Codex receives the full spec and sees EOF on stdin immediately.
+
+### Codex does not `git add` new files
+
+Codex creates new files but does NOT stage or commit them. After Codex exits, `git status` will show new files as `??` (untracked) while modified files show as `M`. The supervisor must `git add` new files explicitly before committing. Always run `git status --short` after Codex exits to catch untracked files.
+
+### Cron supervisor `deliver: "origin"` thread affinity
+
+`deliver: "origin"` sends reports to the **specific conversation thread** where the cron was created. If the user moves to a different thread/channel, they won't see reports. For long-running supervisors (>1 session), consider using a fixed delivery target (e.g., a dedicated Discord channel) instead of `origin`. Always do a manual `cronjob(action="run")` immediately after creation to verify the delivery path works.
+
+### Forgetting to create cron supervisor after launch
+
+This has happened multiple times. The skill's Standard Harness Workflow step 6 explicitly says "Create a cron supervisor" and marks it NOT optional. If you find yourself reporting "Codex launched, waiting for completion" without having created a cron job — stop, go back, create it. The user should never have to ask "where's my status update?"
+
+### Problem → Fix → Prevent pattern (user mandate)
+
+When the user raises any issue, do not stop at fixing the immediate problem. Always ask: "What mechanism prevents this from recurring?" Then take action (patch a skill, add a checklist step, update a rule). This is a persistent work habit, not a one-time instruction.
 
 ### Issue body for Symphony/Linear-driven Codex must be structured
 
@@ -199,6 +243,8 @@ Tests passing are not enough. Verify the original acceptance criteria:
 
 ## Reporting Template
 
+**Mandatory:** Every cron supervisor prompt MUST embed this template verbatim as the required output format. Do not create cron supervisors with free-form reporting — the template ensures consistent, parseable status updates.
+
 ```text
 主人，supervisor 状态：
 - 范围：<single task | TaskNode wave | L1 plan>
@@ -210,6 +256,8 @@ Tests passing are not enough. Verify the original acceptance criteria:
 - Next action：<wait / repair / integrate / stop for decision>
 ```
 
+When creating a cron supervisor (step 6 of Standard Harness Workflow), copy this template into the cron prompt's "输出格式" section and instruct the cron agent to strictly follow it.
+
 ## References
 
 Historical narrow skills absorbed into this umbrella are preserved as support files:
@@ -218,5 +266,6 @@ Historical narrow skills absorbed into this umbrella are preserved as support fi
 - `references/release-the-hounds.md`
 - `references/tasknode-supervisor.md`
 - `references/global-release-the-hounds.md`
+- `references/codex-post-exit-checklist.md`
 
 Use those references for detailed legacy wording, examples, TradingSignal defaults, delivery-reliability notes, and tool-agnostic export instructions.
