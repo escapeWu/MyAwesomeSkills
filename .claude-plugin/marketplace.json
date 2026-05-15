@@ -29,6 +29,7 @@
         "./skills/mermaid-live-preview",
         "./skills/pdf",
         "./skills/perplexity-search",
+        "./skills/grok_search",
         "./skills/project-analysis",
         "./skills/project-docs-workflow",
         "./skills/skill-creator",

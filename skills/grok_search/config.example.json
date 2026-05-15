@@ -1,0 +1,10 @@
+{
+  "model": "grok-4.20-auto",
+  "auto_model": "grok-4.20-auto",
+  "fast_model": "grok-4.20-fast",
+  "expert_model": "grok-4.20-expert",
+  "default_mode": "auto",
+  "language": "zh-CN",
+  "base_url": "https://example.com/v1/",
+  "api_key": "REPLACE_ME"
+}
