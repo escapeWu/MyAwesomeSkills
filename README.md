@@ -4,54 +4,20 @@ Skills are folders of instructions, scripts, and resources that Claude loads dyn
 
 ## All Skills
 
-### Creative & Design
-
 | Skill | Description |
 |-------|-------------|
-| [canvas-design](./skills/canvas-design) | Create beautiful visual art in `.png` and `.pdf` documents using design philosophy. For posters, art, and static visual designs. |
-| [frontend-design](./skills/frontend-design) | Create distinctive, production-grade frontend interfaces with high design quality. For web components, pages, landing pages, dashboards, etc. |
-| [style-extractor](./skills/style-extractor) | Extract evidence-based web UI style + motion guides (Markdown, optional HTML prototype). |
-| [theme-factory](./skills/theme-factory) | Toolkit for styling artifacts with a theme. 10 pre-set themes with colors/fonts for slides, docs, reports, HTML pages, etc. |
-
-### Development & Technical
-
-| Skill | Description |
-|-------|-------------|
-| [claude-agent-sdk-skill](./skills/claude-agent-sdk-skill) | Build production AI agents with the Claude Agent SDK. Covers Python and TypeScript SDKs with custom tools, hooks, multi-agent systems, and session management. |
-| [cloudflare-tunnel](./skills/cloudflare-tunnel) | Manage and create Cloudflare Tunnels to expose local ports to the internet without opening firewall ports. |
-| [codex-review](./skills/codex-review) | AI-powered code review using codex CLI. Auto-updates CHANGELOG, stages new files, evaluates task difficulty, and runs Lint + codex review in isolated context. |
-| [mcp-builder](./skills/mcp-builder) | Guide for creating high-quality MCP (Model Context Protocol) servers in Python (FastMCP) or Node/TypeScript (MCP SDK). |
-| [mermaid-live-preview](./skills/mermaid-live-preview) | Generate Mermaid diagram preview URLs for mermaid.live. Encodes diagram code into clickable URLs using pako (zlib) + base64. |
-| [perplexity-search](./skills/perplexity-search) | Real-time web search and deep research using Perplexity AI for latest web data, API docs, news, and investigations. |
-| [grok_search](./skills/grok_search) | Adaptive Grok-powered real-time search and latest-information verification with quick, balanced, and deep routing modes. |
-| [project-analysis](./skills/project-analysis) | Deep repository analysis layer for architecture, data flow, sequence, and performance-risk investigation. Defaults to writing docs by choosing between update-doc and new-doc, producing evidence-backed conclusions, Mermaid + ASCII/TUI diagrams, and durable project documentation. |
-| [project-docs-workflow](./skills/project-docs-workflow) | Thin docs orchestration layer for non-trivial code changes. Scans OVERVIEW/feature/reference docs as semi-trusted context, escalates to project-analysis only when needed, and aligns with project-analysis choosing update-doc or new-doc as the documentation outcome. |
-| [skill-creator](./skills/skill-creator) | Guide for creating effective skills that extend Claude's capabilities with specialized knowledge and workflows. |
-| [webapp-testing](./skills/webapp-testing) | Toolkit for interacting with and testing local web applications using Playwright. Screenshots, browser logs, UI debugging. |
-| [web-artifacts-builder](./skills/web-artifacts-builder) | Suite of tools for creating elaborate multi-component HTML artifacts using React, Tailwind CSS, and shadcn/ui. |
-
-### Crypto Utilities
-
-| Skill | Description |
-|-------|-------------|
-| [agent-toolkit-setup](./skills/agent-toolkit-setup) | Guide for integrating external AI agents with the Agent Toolkit's skill discovery, loading, and version tracking APIs. |
-| [coinglass-liquidation-heatmap](./skills/coinglass-liquidation-heatmap) | Crypto liquidation heatmap data from Coinglass for market analysis and visualization. |
-| [crypto-info-archive](./skills/crypto-info-archive) | Archive crypto market sentiment and analysis data for historical reference. |
-| [crypto-market-data](./skills/crypto-market-data) | Fetch funding rate, long/short ratio, fear & greed index, and K-line screenshots for any trading pair in one parallel batch. |
-
-### Enterprise & Utilities
-
-| Skill | Description |
-|-------|-------------|
-| [CPA-antigravity-RT-exract](./skills/CPA-antigravity-RT-exract) | Extract Google Refresh Tokens from Antigravity JSON configuration files. Batch process and deduplicate refresh_token values. |
-| [internal-comms](./skills/internal-comms) | Write internal communications: status reports, leadership updates, newsletters, FAQs, incident reports, project updates, etc. |
-
-### Document Skills
-
-| Skill | Description |
-|-------|-------------|
-| [pdf](./skills/pdf) | Read, create, merge, split, rotate, watermark, encrypt/decrypt, OCR, and fill forms in PDF files. |
-| [xlsx](./skills/xlsx) | Open, read, edit, create, and convert spreadsheet files (`.xlsx`, `.xlsm`, `.csv`, `.tsv`). Formulas, charts, data cleaning. |
+| [autonomous-codex-supervision](./skills/autonomous-codex-supervision) | Use when planning, launching, supervising, or integrating Codex/agent implementation work: tmux/cron supervisors, TaskNode task boards, Release-the-Hounds parallel worktrees, L1 full-auto project ownership, validation... |
+| [codex-review](./skills/codex-review) | AI-powered code review using OpenAI Codex CLI. Use when the user asks to review, audit, or check their code — including "代码审核", "代码审查", "审查代码", "review", "code review", "帮我审核", "检查代码", "审一下". Performs lint + codex rev... |
+| [grok_search](./skills/grok_search) | 自适应 AI 搜索与最新信息检索 skill。会先评估任务复杂度，再在 grok-4.20-fast / grok-4.20-auto / grok-4.20-expert 之间做路由，必要时采用“fast 侦察 + fast 补缺 + expert 综合”的组合流程，在速度与质量之间取平衡。 |
+| [internal-comms](./skills/internal-comms) | A set of resources to help me write all kinds of internal communications, using the formats that my company likes to use. Claude should use this skill whenever asked to write some sort of internal communications (stat... |
+| [mcp-builder](./skills/mcp-builder) | Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. Use when building MCP servers to integrate external APIs or service... |
+| [mermaid-live-preview](./skills/mermaid-live-preview) | Generate Mermaid diagram preview URLs for mermaid.live. Use when the user asks to preview, share, or create a link for a Mermaid diagram. Encodes Mermaid diagram code into a clickable mermaid.live/edit URL using pako... |
+| [perplexity-search](./skills/perplexity-search) | Advanced real-time web search and deep research using Perplexity AI. Instructs the Agent to assess query complexity, route to either a single-shot fast search or an iterative deep investigation, and automatically fill... |
+| [project-analysis](./skills/project-analysis) | 深度项目分析工具。用于在现有 docs 不足、代码链路复杂、需要梳理系统架构、模块数据流、时序或性能风险时进行只读取证和结构化分析。常与 `project-docs-workflow` 配套使用，作为其升级步骤；也可在用户明确要求架构分析、数据流分析、时序图、调用链梳理或性能排查时直接使用。默认应落文档：优先新建或更新 `docs/` 下合适文档，不再停留在仅终端输出的 analysis-only 模式。 |
+| [project-docs-workflow](./skills/project-docs-workflow) | 项目 docs 维护编排器。用于非 trivial 的开发任务、功能开发、bug 修复、重构、API 变更、跨模块修改前后：先扫描 docs/OVERVIEW.md、feature-*、reference-*，把相关文档作为半可信上下文；判断是否需要升级使用 project-analysis 做深度分析；实现完成后判断哪些文档受影响，并先询问用户确认后再更新。看到用户要“实现/修改/开发/修复”项目代码时，应优先触发此技能，而不是... |
+| [skill-creator](./skills/skill-creator) | Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool inte... |
+| [webapp-testing](./skills/webapp-testing) | Toolkit for interacting with and testing local web applications using Playwright. Supports verifying frontend functionality, debugging UI behavior, capturing browser screenshots, and viewing browser logs. |
+| [xlsx](./skills/xlsx) | Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to: open, read, edit, or fix an existing .xlsx, .xlsm, .csv, or .tsv file (e.g., adding columns, comp... |
 
 ## Structure
 
