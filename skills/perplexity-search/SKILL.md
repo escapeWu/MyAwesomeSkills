@@ -1,57 +1,159 @@
 ---
 name: perplexity-search
-description: Advanced real-time web search and deep research using Perplexity AI. Instructs the Agent to assess query complexity, route to either a single-shot fast search or an iterative deep investigation, and automatically fill information gaps before returning the final answer.
+description: Advanced real-time web search and deep research using Perplexity over an HTTP chat-completions endpoint. Use when fetching current web data, API docs, news, or running multi-stage investigations with quick/balanced/expert/deep routing.
 ---
 
 # Perplexity Search & Analysis
 
-Use this skill for fetching real-time data, API docs, news, or performing complex investigations.
+Use this skill for fetching real-time data, API docs, news, current market facts, and complex investigations through Perplexity's HTTP endpoint. Prefer the bundled script instead of hand-writing HTTP requests:
 
-## Agent Execution SOP (Standard Operating Procedure)
+```bash
+python /Users/shancw/.hermes/skills/research/perplexity-search/scripts/perplexity_search.py \
+  --query "latest verified OpenAI news today"
+```
 
-When handling a user query that requires web search, you MUST follow this precise workflow:
+The script uses an OpenAI-compatible `/chat/completions` API, so it can point at Perplexity directly or at a compatible proxy.
 
-### Step 0: Assess Complexity & Route (评估复杂度与路由)
-Analyze the user's prompt to determine its complexity:
-- **Simple Queries** (e.g., current weather, quick fact checks, simple definitions, stock prices): Route to **[Fast Path]**.
-- **Complex Queries** (e.g., market research, code analysis, multi-step reasoning, comparative analysis): Route to **[Deep Path]**.
+## Configuration
 
----
+Public repos should commit `config.example.json` only. For local use, copy it to `config.json` and set the real key:
 
-### [Fast Path] (快速单次调用)
-1. **Single Tool Call**: Use `mcp__perplexity-mcp__search` with the exact user query or a directly optimized version.
-2. **Direct Answer**: Retrieve the result and provide a concise, direct answer to the user. Do not perform any further iterations or deep analysis.
+```bash
+cp /Users/shancw/.hermes/skills/research/perplexity-search/config.example.json \
+   /Users/shancw/.hermes/skills/research/perplexity-search/config.json
+```
 
----
+Default config shape:
 
-### [Deep Path] (深度迭代检索)
+```json
+{
+  "model": "sonar-pro",
+  "auto_model": "sonar-pro",
+  "fast_model": "sonar",
+  "expert_model": "sonar-deep-research",
+  "default_mode": "auto",
+  "language": "zh-CN",
+  "base_url": "https://api.perplexity.ai",
+  "api_key": "REPLACE_ME",
+  "stream": false,
+  "timeout_seconds": 240,
+  "max_sources": 5,
+  "technical_required_sources": ["Reddit", "Hacker News"],
+  "extra_body": {}
+}
+```
 
-#### 1. Deconstruct & Tool Allocation (问题拆解与工具智能分配)
-- Break down complex questions into distinct, logical sub-queries.
-- **CRITICAL: Balance Speed and Quality.** Do not use heavy research tools for everything. Intelligently assign the right tool to the right sub-query:
-  - **[High Speed]** `mcp__perplexity-mcp__search`: Use for fast, factual lookups, basic definitions, or verifying specific dates/names.
-  - **[Balanced]** `mcp__perplexity-mcp__research` + `mode: "reasoning"`: Use for evaluating options, synthesizing arguments, or comparative analysis.
-  - **[High Quality, Low Speed]** `mcp__perplexity-mcp__research` + `mode: "deep research"`: Use ONLY for comprehensive market data, deep technical investigations, or exhaustive evidence gathering.
+Key fields:
 
-#### 2. Execute Parallel Searches (并发调用)
-- Dispatch tool calls for the sub-queries. Execute them concurrently whenever supported to minimize overall latency.
+- `base_url`: HTTP endpoint base URL. The script posts to `${base_url}/chat/completions`.
+- `api_key`: bearer token for the endpoint.
+- `fast_model`: quick lookups, default `sonar`.
+- `auto_model` / `model`: balanced searches, default `sonar-pro`.
+- `expert_model`: final deep synthesis, default `sonar-deep-research`.
+- `extra_body`: optional endpoint-specific JSON fields merged into the request body.
 
-#### 3. Evaluate & Gap Analysis (校验与查漏补缺)
-- Synthesize the returned results.
-- **CRITICAL STEP**: Cross-check the synthesized data against the original user prompt.
-- Ask yourself: *Does this context fully and accurately satisfy the user's request? Are there missing dimensions?*
-- If **YES**: Proceed to Step 5.
-- If **NO**: Explicitly list the missing information (The "Gaps").
+## Routing Modes
 
-#### 4. Iterative Search (循环补搜)
-- Formulate new, highly targeted queries based ONLY on the identified gaps.
-- Prioritize using the faster `mcp__perplexity-mcp__search` for gap-filling unless deep analysis is strictly required.
-- Repeat Steps 3 and 4 until the context is complete. *(Note: Stop after a maximum of 3 iterations to prevent infinite loops).*
+### `auto` 默认模式
 
-#### 5. Final Synthesis (最终输出)
-- Compile all verified context into a cohesive, structured, and comprehensive final answer.
-- Ensure no raw tool output is shown unless requested.
+The script assesses query complexity and routes automatically:
 
-## Parameters
-- **query**: The targeted search string.
-- **language**: Default to "zh-CN" for Chinese.
+- simple lookup → `quick`
+- standard search / ordinary verification → `balanced`
+- complex investigation / timeline / comparison → `deep`
+
+### `quick`
+
+Single HTTP call with `fast_model`. Use for current facts, simple news checks, prices, definitions, or short API lookups.
+
+```bash
+python /Users/shancw/.hermes/skills/research/perplexity-search/scripts/perplexity_search.py \
+  --mode quick \
+  --query "BTC price now" \
+  --show-plan
+```
+
+### `balanced`
+
+Single HTTP call with `auto_model`. Use for normal “查一下 + 给结论” tasks where sources matter but exhaustive investigation is unnecessary.
+
+```bash
+python /Users/shancw/.hermes/skills/research/perplexity-search/scripts/perplexity_search.py \
+  --mode balanced \
+  --query "latest verified summary of Anthropic model releases"
+```
+
+### `expert`
+
+Single HTTP call with `expert_model`. Use when you want the strongest single-pass synthesis without a scout/gap-fill chain.
+
+```bash
+python /Users/shancw/.hermes/skills/research/perplexity-search/scripts/perplexity_search.py \
+  --mode expert \
+  --query "compare current OpenAI, Anthropic, and Google frontier model offerings"
+```
+
+### `deep`
+
+Three-stage route:
+
+1. Scout with `fast_model` to collect facts and gaps.
+2. Gap-fill with `fast_model` only when gaps are detected.
+3. Final synthesis with `expert_model`.
+
+```bash
+python /Users/shancw/.hermes/skills/research/perplexity-search/scripts/perplexity_search.py \
+  --mode deep \
+  --query "build a timeline of the latest SEC crypto ETF decisions and compare issuer status" \
+  --json
+```
+
+## Technical Queries
+
+For technical questions involving errors, APIs, libraries, versions, frameworks, deployment, databases, or model benchmarks, the script automatically appends a source requirement: cover Reddit and Hacker News when relevant, in addition to official docs, GitHub, and vendor sources. If one of those communities has no useful result, the answer should say so explicitly.
+
+## CLI Parameters
+
+- `--query`: required user query.
+- `--mode`: `auto | quick | balanced | expert | deep`.
+- `--model`: force a specific model and skip automatic routing.
+- `--base-url`: override HTTP endpoint base URL.
+- `--api-key`: override config API key.
+- `--max-sources`: number of source URLs to retain.
+- `--language`: preferred answer language, default `zh-CN`.
+- `--timeout`: HTTP timeout in seconds.
+- `--stream`: use SSE streaming if the endpoint supports it.
+- `--json`: emit structured JSON.
+- `--show-plan`: show routing metadata before the answer.
+- `--show-reasoning`: print model reasoning fields if the endpoint returns them.
+
+## Output Contract
+
+Text mode prints:
+
+```text
+概述：...
+搜索结果：
+...
+来源：
+1. https://...
+```
+
+JSON mode includes:
+
+- `query`
+- `model`
+- `route`
+- `base_url`
+- `overview`
+- `search_results`
+- `sources`
+- `stages`
+- `raw_response`
+
+## Common Pitfalls
+
+1. Do not commit a real `config.json` with API keys. Commit `config.example.json`; keep `config.json` local.
+2. Do not use MCP-only tool names in this skill. The script calls the HTTP endpoint directly.
+3. Do not run every query through `sonar-deep-research`; use `auto` unless the user explicitly needs deep investigation.
+4. If a proxy endpoint is used, keep it OpenAI-compatible: `/chat/completions`, `messages`, `model`, bearer auth.

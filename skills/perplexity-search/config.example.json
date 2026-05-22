@@ -1,0 +1,18 @@
+{
+  "model": "sonar-pro",
+  "auto_model": "sonar-pro",
+  "fast_model": "sonar",
+  "expert_model": "sonar-deep-research",
+  "default_mode": "auto",
+  "language": "zh-CN",
+  "base_url": "https://api.perplexity.ai",
+  "api_key": "REPLACE_ME",
+  "stream": false,
+  "timeout_seconds": 240,
+  "max_sources": 5,
+  "technical_required_sources": [
+    "Reddit",
+    "Hacker News"
+  ],
+  "extra_body": {}
+}

@@ -3,4 +3,4 @@ __pycache__/
 .idea/
 .vscode/
 --dry-run/
-
+skills/perplexity-search/config.json
