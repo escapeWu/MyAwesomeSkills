@@ -16,10 +16,11 @@ import requests
 
 CONFIG_PATH = Path(__file__).resolve().parents[1] / "config.json"
 CONFIG_EXAMPLE_PATH = Path(__file__).resolve().parents[1] / "config.example.json"
-DEFAULT_BASE_URL = "https://api.perplexity.ai"
-DEFAULT_FAST_MODEL = "sonar"
-DEFAULT_MODEL = "sonar-pro"
-DEFAULT_EXPERT_MODEL = "sonar-deep-research"
+DEFAULT_BASE_URL = "http://127.0.0.1:8000/v1"
+DEFAULT_FAST_MODEL = "perplexity-search"
+DEFAULT_MODEL = "perplexity-search"
+DEFAULT_EXPERT_MODEL = "perplexity-thinking"
+DEFAULT_DEEP_MODEL = "perplexity-deepsearch"
 DEFAULT_MODE = "auto"
 MAX_STAGE_NOTE_CHARS = 6000
 DEFAULT_TECH_REQUIRED_SOURCES = ["Reddit", "Hacker News"]
@@ -335,7 +336,12 @@ def assess_complexity(query: str) -> dict[str, Any]:
 
 def resolve_models(config: dict[str, Any]) -> dict[str, str]:
     balanced = config.get("auto_model") or config.get("model") or DEFAULT_MODEL
-    return {"fast": config.get("fast_model") or DEFAULT_FAST_MODEL, "balanced": balanced, "expert": config.get("expert_model") or DEFAULT_EXPERT_MODEL}
+    return {
+        "fast": config.get("fast_model") or DEFAULT_FAST_MODEL,
+        "balanced": balanced,
+        "expert": config.get("expert_model") or DEFAULT_EXPERT_MODEL,
+        "deep": config.get("deep_model") or DEFAULT_DEEP_MODEL,
+    }
 
 
 def choose_route(query: str, requested_mode: str, models: dict[str, str]) -> dict[str, Any]:
@@ -353,7 +359,7 @@ def choose_route(query: str, requested_mode: str, models: dict[str, str]) -> dic
         stages = [
             {"name": "scout", "purpose": "fast scouting + task decomposition", "model": models["fast"]},
             {"name": "gap_fill", "purpose": "targeted fast gap closing if needed", "model": models["fast"], "optional": True},
-            {"name": "final", "purpose": "expert final synthesis", "model": models["expert"]},
+            {"name": "final", "purpose": "deep research final synthesis", "model": models["deep"]},
         ]
     else:
         raise RuntimeError(f"Unsupported mode: {selected_mode}")
@@ -400,9 +406,9 @@ def run_deep_route(query: str, models: dict[str, str], base_url: str, api_key: s
     final_started = time.time()
     final_reasoning, final_text, final_raw = post_chat_completion(
         messages=[{"role": "system", "content": EXPERT_SYSTEM_PROMPT}, {"role": "user", "content": build_expert_prompt(query, scout_text, gap_notes or None, max_sources, language, required_sources)}],
-        model=models["expert"], base_url=base_url, api_key=api_key, temperature=0.15, stream=stream, timeout=timeout, extra_body=extra_body,
+        model=models["deep"], base_url=base_url, api_key=api_key, temperature=0.15, stream=stream, timeout=timeout, extra_body=extra_body,
     )
-    final_stage = {"name": "final", "model": models["expert"], "purpose": "expert final synthesis", "text": final_text.strip(), "reasoning": final_reasoning, "sources": stage_sources(final_text, final_raw, max_sources), "latency_seconds": round(time.time() - final_started, 2), "raw": final_raw}
+    final_stage = {"name": "final", "model": models["deep"], "purpose": "deep research final synthesis", "text": final_text.strip(), "reasoning": final_reasoning, "sources": stage_sources(final_text, final_raw, max_sources), "latency_seconds": round(time.time() - final_started, 2), "raw": final_raw}
     stages.append(final_stage)
     return final_stage, stages
 
@@ -442,7 +448,7 @@ def print_text_output(result: dict[str, Any], show_reasoning: bool = False, show
 def main() -> int:
     config = load_config()
     models = resolve_models(config)
-    parser = argparse.ArgumentParser(description="Adaptive Perplexity search/deep-research via HTTP chat completions")
+    parser = argparse.ArgumentParser(description="Adaptive escapeWu/perplexity-ai search via OpenAI-compatible HTTP endpoint")
     parser.add_argument("--query", required=True, help="Search query / latest-information request")
     parser.add_argument("--mode", choices=["auto", "quick", "balanced", "expert", "deep"], default=config.get("default_mode", DEFAULT_MODE), help="Routing mode")
     parser.add_argument("--model", default=None, help="Force a specific model and skip automatic routing")
