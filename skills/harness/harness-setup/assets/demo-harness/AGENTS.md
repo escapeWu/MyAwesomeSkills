@@ -84,6 +84,19 @@ Skill rules:
 - detailed variants live in the skill's `references/` or `assets/`;
 - do not put long implementation manuals in `AGENTS.md`.
 
+If these skills are not installed yet, install the harness bundle from the
+canonical skills repository:
+
+```bash
+SOURCE_REPO="https://github.com/escapeWu/MyAwesomeSkills.git"
+TMP_DIR="$(mktemp -d)"
+git clone --depth 1 "$SOURCE_REPO" "$TMP_DIR/MyAwesomeSkills"
+python "$TMP_DIR/MyAwesomeSkills/skills/harness/harness-setup/scripts/install_harness_bundle.py" \
+  --source "$TMP_DIR/MyAwesomeSkills" \
+  --target /path/to/this-repo \
+  --overwrite
+```
+
 Recommended local skill shape:
 
 ```text

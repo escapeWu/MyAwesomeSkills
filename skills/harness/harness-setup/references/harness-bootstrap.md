@@ -91,6 +91,61 @@ Recommended local skill shape:
         └── assets/
 ```
 
+## 2.2 Auto-install the harness skill bundle
+
+When the current GitHub repository is the canonical skill source, install the
+entire harness bundle from that repository instead of copying individual skills.
+
+Curated bundle manifest:
+
+```text
+skills/harness/harness-setup/assets/harness-bundle.json
+```
+
+Bundle members:
+
+```text
+skills/harness/harness-setup
+skills/harness/harness-engineering-plan
+skills/harness/progressive-disclosure-docs
+skills/harness/project-analysis
+skills/harness/project-docs-workflow
+skills/harness/codex-design-review
+skills/harness/code-organization-harness
+```
+
+Install from an existing local clone:
+
+```bash
+python skills/harness/harness-setup/scripts/install_harness_bundle.py \
+  --source /path/to/MyAwesomeSkills \
+  --target /path/to/target-repo \
+  --overwrite
+```
+
+Install from the current GitHub repo:
+
+```bash
+SOURCE_REPO="https://github.com/escapeWu/MyAwesomeSkills.git"
+TMP_DIR="$(mktemp -d)"
+git clone --depth 1 "$SOURCE_REPO" "$TMP_DIR/MyAwesomeSkills"
+python "$TMP_DIR/MyAwesomeSkills/skills/harness/harness-setup/scripts/install_harness_bundle.py" \
+  --source "$TMP_DIR/MyAwesomeSkills" \
+  --target /path/to/target-repo \
+  --overwrite
+```
+
+After installing:
+
+1. Register installed skills in the target repo's `AGENTS.md`.
+2. Copy or adapt `assets/demo-harness/AGENTS.md` and `assets/demo-harness/docs/`.
+3. Replace placeholders with target repo facts.
+4. Run the docs navigation validation checklist.
+
+If the target repo already has one of these skills, omit `--overwrite` to make
+the installer fail fast, review the difference manually, and only then re-run
+with `--overwrite`.
+
 ## 3. Docs tree skeleton
 
 ```text

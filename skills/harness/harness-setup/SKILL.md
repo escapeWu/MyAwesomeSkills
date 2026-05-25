@@ -53,6 +53,7 @@ Read `references/harness-bootstrap.md` for:
 - taskBoard decision rules
 - leaf-document link rules
 - validation checklist
+- bundle installation from the source GitHub repo
 
 ## Demo Pack
 
@@ -66,3 +67,28 @@ The demo pack includes:
 - one sample `taskBoard.md`
 
 Use it as a starting shape, not as a final domain model.
+
+## Bundle Install
+
+If the current GitHub repository is the source of truth for reusable skills,
+install the curated harness bundle instead of copying skills one by one.
+
+Use this when you want a target repo to receive the same harness stack:
+
+- `harness-setup`
+- `harness-engineering-plan`
+- `progressive-disclosure-docs`
+- `project-analysis`
+- `project-docs-workflow`
+- `codex-design-review`
+- `code-organization-harness`
+
+Recommended install flow:
+
+1. Clone or point at the source GitHub repository.
+2. Run the bundle installer in `scripts/install_harness_bundle.py`.
+3. The installer copies `skills/harness/*` into the target repo.
+4. Update the target repo's root `AGENTS.md` to register the installed skills.
+
+See `references/harness-bootstrap.md` and `assets/harness-bundle.json` for the
+bundle source layout and selection order.
