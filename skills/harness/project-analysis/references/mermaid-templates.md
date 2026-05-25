@@ -13,6 +13,53 @@
 
 ---
 
+## ASCII/TUI 伴随图模板
+
+在实际分析文档中，每个 Mermaid 图后立即放一个同名 ASCII/TUI 预览。预览不追求 Mermaid 全量语法，只要求节点、方向、关键分支与 Mermaid 语义一致。
+
+### 分层架构 ASCII
+
+```text
+Client
+  |
+  v
+API / Router
+  |
+  v
+Service / Domain
+  |        |
+  v        v
+Repository External I/O
+  |
+  v
+Database / Cache
+```
+
+### 时序 ASCII
+
+```text
+Client -> API: request
+API -> Service: validate + dispatch
+Service -> Data: query / write
+Data --> Service: result
+Service --> API: domain response
+API --> Client: JSON response
+```
+
+### 数据流 ASCII
+
+```text
+Input
+  |
+  v
+Validate -> Transform -> Domain Logic -> Persist / Emit
+                                      |
+                                      v
+                                    Output
+```
+
+---
+
 ## 架构图模板
 
 ### 分层架构（经典三层/多层）

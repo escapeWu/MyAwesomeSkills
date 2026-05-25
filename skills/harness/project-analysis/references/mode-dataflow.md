@@ -12,8 +12,8 @@
 
 ### 2. 优先检查相关 docs
 - 优先读取 `docs/OVERVIEW.md`
-- 优先读取相关 `docs/feature-*.md`
-- 优先读取相关 `docs/reference-*.md`
+- 优先读取 `docs/feature/INDEX.md`，再进入相关分类 `README.md`、子模块 `README.md` / `INDEX.md`
+- 优先读取 `docs/reference/INDEX.md`，再进入相关 reference 文件
 - 如调用方已提供候选文档路径，优先复用这些文档
 
 这些文档只能作为**半可信上下文**：
@@ -98,9 +98,11 @@ flowchart LR
 
 > 详细模板参考 `references/mermaid-templates.md` 中的时序图和数据流图模板部分。
 
-## SubAgent 执行要求
+## 并行取证要求
 
-下发并行子任务时，要求每个 subagent 返回结构化结果，至少包括：
+只有在当前工具环境允许、且用户或调用方明确授权并行 agent 时，才下发 subagent。未使用 subagent 时，主 agent 仍按相同结构整理本地只读取证结果。
+
+每个并行取证单元至少返回：
 - 入口点与触发方式
 - 关键调用链（按顺序列出）
 - 关键数据结构 / 参数 / 返回值
@@ -109,16 +111,23 @@ flowchart LR
 
 subagent 只负责事实提取与链路梳理，不直接写最终文档。
 
+如由 `harness-engineering-plan` 调用，还要额外返回可放入 TaskNode `Input Context` 的摘要：
+- Entry Points
+- Relevant Files
+- Contracts / Data Shapes
+- Risks / Open Questions
+- Validation Candidates
+
 ## 执行指南
 
 1. 明确分析目标、入口点与执行模式
-2. 优先检查 `docs/OVERVIEW.md`、相关 `feature-*`、相关 `reference-*`
+2. 优先检查 `docs/OVERVIEW.md`、`docs/feature/INDEX.md`、`docs/reference/INDEX.md` 与相关 leaf
 3. 如需要补充文档检索，再可选使用 metadata 扫描脚本
-4. 使用 Agent 工具将数据流 / 时序分析拆成 2-4 个只读子任务并行执行
+4. 将数据流 / 时序分析拆成 2-4 个只读取证子任务；有授权时并行 subagent，否则本地主 agent 执行
 5. 汇总入口点、调用链、数据结构、外部 I/O、异常路径与关键风险点
 6. 生成时序图和数据流图
 7. 为每张 Mermaid 图补充对应的 ASCII/TUI 预览图
 8. 产出结构化结论与可回填的 section 草稿
-9. 优先判断是否能更新到 `feature-*` / `reference-*` / `OVERVIEW.md`
+9. 优先判断是否能更新到 `docs/feature/<category>/...` / `docs/reference/...` / `docs/OVERVIEW.md`
 10. 能承接则执行 `update-doc`，不能承接则执行 `new-doc`
 11. 若明确需要独立成文或没有合适长期文档，再创建 `dataflow-*` / `sequence-*` 等新文档

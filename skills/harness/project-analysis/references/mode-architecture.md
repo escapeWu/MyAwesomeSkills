@@ -12,8 +12,8 @@
 
 ### 2. 优先检查相关 docs
 - 优先读取 `docs/OVERVIEW.md`
-- 优先读取相关 `docs/feature-*.md`
-- 优先读取相关 `docs/reference-*.md`
+- 优先读取 `docs/feature/INDEX.md`，再进入相关分类 `README.md`、子模块 `README.md` / `INDEX.md`
+- 优先读取 `docs/reference/INDEX.md`，再进入相关 reference 文件
 - 如调用方已提供候选文档路径，优先复用这些文档
 
 这些文档只能作为**半可信上下文**：
@@ -80,9 +80,11 @@ graph TB
 
 > 详细模板参考 `references/mermaid-templates.md` 中的架构图模板部分。
 
-## SubAgent 执行要求
+## 并行取证要求
 
-下发并行子任务时，要求每个 subagent 返回结构化结果，至少包括：
+只有在当前工具环境允许、且用户或调用方明确授权并行 agent 时，才下发 subagent。未使用 subagent 时，主 agent 仍按相同结构整理本地只读取证结果。
+
+每个并行取证单元至少返回：
 - 分析范围
 - 关键文件路径
 - 发现的模块 / 服务 / 入口点
@@ -91,16 +93,23 @@ graph TB
 
 subagent 只负责读代码和整理事实，不负责写最终文档。
 
+如由 `harness-engineering-plan` 调用，还要额外返回可放入 TaskNode `Input Context` 的摘要：
+- Entry Points
+- Relevant Files
+- Contracts / Data Shapes
+- Risks / Open Questions
+- Validation Candidates
+
 ## 执行指南
 
 1. 明确架构分析目标、范围与执行模式
-2. 优先检查 `docs/OVERVIEW.md`、相关 `feature-*`、相关 `reference-*`
+2. 优先检查 `docs/OVERVIEW.md`、`docs/feature/INDEX.md`、`docs/reference/INDEX.md` 与相关 leaf
 3. 如需要补充文档检索，再可选使用 metadata 扫描脚本
-4. 使用 Agent 工具将系统架构分析拆成 2-4 个只读子任务并行执行
+4. 将系统架构分析拆成 2-4 个只读取证子任务；有授权时并行 subagent，否则本地主 agent 执行
 5. 汇总技术栈、目录结构、模块边界、依赖关系、外部服务与风险点
 6. 综合分析后生成 Mermaid 架构图
 7. 立即为该 Mermaid 架构图补充等价的 ASCII/TUI 预览图
 8. 产出结构化结论与可回填的 section 草稿
 9. 将结果整理进目标文档：已有合适承接文档则 `update-doc`，否则 `new-doc`
-10. 优先更新 `feature-*` / `reference-*` / `OVERVIEW.md`
+10. 优先更新 `docs/feature/<category>/...` / `docs/reference/...` / `docs/OVERVIEW.md`
 11. 若没有合适长期文档承接，再创建新的分析文档
