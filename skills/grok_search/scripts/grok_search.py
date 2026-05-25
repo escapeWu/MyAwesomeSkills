@@ -21,6 +21,7 @@ DEFAULT_FAST_MODEL = "grok-4.20-fast"
 DEFAULT_EXPERT_MODEL = "grok-4.20-expert"
 DEFAULT_MODE = "auto"
 MAX_STAGE_NOTE_CHARS = 6000
+DEFAULT_TECH_REQUIRED_SOURCES = ["Reddit", "Hacker News"]
 
 SYSTEM_PROMPT = (
     "You are a fast web-aware research assistant. "
@@ -92,6 +93,55 @@ SIMPLE_HINTS = [
     "行情",
 ]
 
+TECHNICAL_QUERY_KEYWORDS = [
+    "api",
+    "sdk",
+    "bug",
+    "error",
+    "exception",
+    "stack trace",
+    "github",
+    "python",
+    "javascript",
+    "typescript",
+    "node",
+    "react",
+    "vue",
+    "next.js",
+    "docker",
+    "kubernetes",
+    "postgres",
+    "redis",
+    "linux",
+    "macos",
+    "llm",
+    "model",
+    "benchmark",
+    "framework",
+    "library",
+    "dependency",
+    "release",
+    "changelog",
+    "性能",
+    "报错",
+    "错误",
+    "异常",
+    "版本",
+    "兼容",
+    "依赖",
+    "框架",
+    "库",
+    "接口",
+    "源码",
+    "部署",
+    "容器",
+    "数据库",
+    "前端",
+    "后端",
+    "模型",
+    "基准",
+]
+
 
 def load_config() -> dict[str, str]:
     if not CONFIG_PATH.exists():
@@ -128,6 +178,44 @@ def truncate_text(text: str, limit: int = MAX_STAGE_NOTE_CHARS) -> str:
     if len(text) <= limit:
         return text
     return text[:limit].rstrip() + "\n\n[truncated]"
+
+
+def is_technical_query(query: str) -> bool:
+    q = query or ""
+    lower = q.lower()
+    if any(keyword in lower or keyword in q for keyword in TECHNICAL_QUERY_KEYWORDS):
+        return True
+    return bool(re.search(r"\b[A-Za-z0-9_.+-]+(?:\.js|\.py|\.ts|\.tsx|\.jsx|\.go|\.rs|\.java|\.yaml|\.yml|\.json)\b", q))
+
+
+def get_technical_required_sources(config: dict[str, Any]) -> list[str]:
+    raw_sources = config.get("technical_required_sources", DEFAULT_TECH_REQUIRED_SOURCES)
+    if isinstance(raw_sources, str):
+        sources = [part.strip() for part in raw_sources.split(",")]
+    elif isinstance(raw_sources, list):
+        sources = [str(part).strip() for part in raw_sources]
+    else:
+        sources = DEFAULT_TECH_REQUIRED_SOURCES
+    return [source for source in sources if source]
+
+
+def build_source_requirement_note(query: str, required_sources: list[str] | None = None) -> str:
+    if not required_sources or not is_technical_query(query):
+        return ""
+    sources_text = " and ".join(required_sources)
+    domains: list[str] = []
+    for source in required_sources:
+        normalized = source.lower().replace(" ", "")
+        if normalized in {"reddit", "r/reddit"}:
+            domains.append("reddit.com")
+        elif normalized in {"hackernews", "hn"}:
+            domains.append("news.ycombinator.com")
+    domain_text = f" ({', '.join(dedupe_keep_order(domains))})" if domains else ""
+    return (
+        "\n\nTechnical-source requirement: This is a technical query. "
+        f"You MUST include search coverage from {sources_text}{domain_text} in addition to official docs, GitHub, or vendor sources when relevant. "
+        "If one of these communities has no relevant/current result, explicitly say so instead of silently omitting it."
+    )
 
 
 def extract_choice_text(choice: dict[str, Any]) -> tuple[str, str]:
@@ -244,17 +332,18 @@ def post_chat_completion(messages: list[dict[str, str]], model: str, base_url: s
         raise RuntimeError(f"Unsupported response content-type={content_type!r}")
 
 
-def build_single_user_prompt(query: str, max_sources: int, language: str) -> str:
+def build_single_user_prompt(query: str, max_sources: int, language: str, required_sources: list[str] | None = None) -> str:
     return (
         f"User query: {query}\n\n"
         "Find the latest relevant information from the web. "
         "Return a concise answer first, then a 'Sources:' section with numbered source URLs. "
         f"Limit the sources section to at most {max_sources} URLs. "
         f"Reply in {language}."
+        f"{build_source_requirement_note(query, required_sources)}"
     )
 
 
-def build_scout_prompt(query: str, max_sources: int, language: str) -> str:
+def build_scout_prompt(query: str, max_sources: int, language: str, required_sources: list[str] | None = None) -> str:
     return (
         f"Original task: {query}\n\n"
         "Do a fast scouting pass. "
@@ -266,10 +355,11 @@ def build_scout_prompt(query: str, max_sources: int, language: str) -> str:
         "Key gaps:\n"
         "Sources:\n"
         f"Keep it compact. Limit Sources to at most {max_sources} URLs. Reply in {language}."
+        f"{build_source_requirement_note(query, required_sources)}"
     )
 
 
-def build_gap_fill_prompt(query: str, scout_notes: str, gaps: list[str], max_sources: int, language: str) -> str:
+def build_gap_fill_prompt(query: str, scout_notes: str, gaps: list[str], max_sources: int, language: str, required_sources: list[str] | None = None) -> str:
     gap_text = "\n".join(f"- {gap}" for gap in gaps[:6]) or "- No explicit gaps extracted; focus on weakly supported claims."
     return (
         f"Original task: {query}\n\n"
@@ -283,10 +373,11 @@ def build_gap_fill_prompt(query: str, scout_notes: str, gaps: list[str], max_sou
         "Remaining uncertainty:\n"
         "Sources:\n"
         f"Limit Sources to at most {max_sources} URLs. Reply in {language}."
+        f"{build_source_requirement_note(query, required_sources)}"
     )
 
 
-def build_expert_prompt(query: str, scout_notes: str, gap_notes: str | None, max_sources: int, language: str) -> str:
+def build_expert_prompt(query: str, scout_notes: str, gap_notes: str | None, max_sources: int, language: str, required_sources: list[str] | None = None) -> str:
     sections = [
         f"Original task: {query}",
         "",
@@ -303,6 +394,7 @@ def build_expert_prompt(query: str, scout_notes: str, gap_notes: str | None, max
             "Return a concise but complete answer first, then a 'Sources:' section with numbered URLs.",
             f"Limit Sources to at most {max_sources} URLs.",
             f"Reply in {language}.",
+            build_source_requirement_note(query, required_sources),
         ]
     )
     return "\n".join(sections)
@@ -420,12 +512,12 @@ def choose_route(query: str, requested_mode: str, models: dict[str, str]) -> dic
     }
 
 
-def run_single_stage(query: str, model: str, base_url: str, api_key: str, max_sources: int, language: str, system_prompt: str = SYSTEM_PROMPT) -> dict[str, Any]:
+def run_single_stage(query: str, model: str, base_url: str, api_key: str, max_sources: int, language: str, system_prompt: str = SYSTEM_PROMPT, required_sources: list[str] | None = None) -> dict[str, Any]:
     started = time.time()
     reasoning, text, raw = post_chat_completion(
         messages=[
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": build_single_user_prompt(query, max_sources, language)},
+            {"role": "user", "content": build_single_user_prompt(query, max_sources, language, required_sources)},
         ],
         model=model,
         base_url=base_url,
@@ -442,14 +534,14 @@ def run_single_stage(query: str, model: str, base_url: str, api_key: str, max_so
     }
 
 
-def run_deep_route(query: str, models: dict[str, str], base_url: str, api_key: str, max_sources: int, language: str) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+def run_deep_route(query: str, models: dict[str, str], base_url: str, api_key: str, max_sources: int, language: str, required_sources: list[str] | None = None) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     stages: list[dict[str, Any]] = []
 
     scout_started = time.time()
     scout_reasoning, scout_text, scout_raw = post_chat_completion(
         messages=[
             {"role": "system", "content": SCOUT_SYSTEM_PROMPT},
-            {"role": "user", "content": build_scout_prompt(query, max_sources, language)},
+            {"role": "user", "content": build_scout_prompt(query, max_sources, language, required_sources)},
         ],
         model=models["fast"],
         base_url=base_url,
@@ -474,7 +566,7 @@ def run_deep_route(query: str, models: dict[str, str], base_url: str, api_key: s
         gap_reasoning, gap_text, _gap_raw = post_chat_completion(
             messages=[
                 {"role": "system", "content": SCOUT_SYSTEM_PROMPT},
-                {"role": "user", "content": build_gap_fill_prompt(query, scout_text, gaps, max_sources, language)},
+                {"role": "user", "content": build_gap_fill_prompt(query, scout_text, gaps, max_sources, language, required_sources)},
             ],
             model=models["fast"],
             base_url=base_url,
@@ -498,7 +590,7 @@ def run_deep_route(query: str, models: dict[str, str], base_url: str, api_key: s
     final_reasoning, final_text, final_raw = post_chat_completion(
         messages=[
             {"role": "system", "content": EXPERT_SYSTEM_PROMPT},
-            {"role": "user", "content": build_expert_prompt(query, scout_text, gap_notes or None, max_sources, language)},
+            {"role": "user", "content": build_expert_prompt(query, scout_text, gap_notes or None, max_sources, language, required_sources)},
         ],
         model=models["expert"],
         base_url=base_url,
@@ -564,6 +656,9 @@ def print_text_output(result: dict[str, Any], show_reasoning: bool = False, show
         reasons = route.get("reasons") or []
         if reasons:
             print("- reasons: " + "; ".join(reasons))
+        source_requirements = route.get("source_requirements") or []
+        if source_requirements:
+            print("- source_requirements: " + ", ".join(source_requirements))
         print()
 
     if show_reasoning and result.get("reasoning"):
@@ -595,6 +690,8 @@ def main() -> int:
     args = parser.parse_args()
 
     max_sources = max(1, args.max_sources)
+    technical_required_sources = get_technical_required_sources(config)
+    required_sources = technical_required_sources if is_technical_query(args.query) else []
 
     if args.model:
         route = {
@@ -603,17 +700,19 @@ def main() -> int:
             "complexity": None,
             "complexity_score": None,
             "reasons": ["explicit --model override"],
+            "source_requirements": required_sources,
             "stages": [{"name": "answer", "purpose": "single-pass forced model", "model": args.model}],
         }
-        single = run_single_stage(args.query, args.model, args.base_url, args.api_key, max_sources, args.language)
+        single = run_single_stage(args.query, args.model, args.base_url, args.api_key, max_sources, args.language, required_sources=required_sources)
         single["purpose"] = "single-pass forced model"
         final_stage = single | {"name": "final"}
         result = build_result(args.query, route, args.base_url, final_stage, [final_stage], max_sources)
     else:
         route = choose_route(args.query, args.mode, models)
+        route["source_requirements"] = required_sources
         selected_mode = route["selected_mode"]
         if selected_mode == "deep":
-            final_stage, stages = run_deep_route(args.query, models, args.base_url, args.api_key, max_sources, args.language)
+            final_stage, stages = run_deep_route(args.query, models, args.base_url, args.api_key, max_sources, args.language, required_sources=required_sources)
             result = build_result(args.query, route, args.base_url, final_stage, stages, max_sources)
         else:
             key = "balanced"
@@ -621,7 +720,7 @@ def main() -> int:
                 key = "fast"
             elif selected_mode == "expert":
                 key = "expert"
-            single = run_single_stage(args.query, models[key], args.base_url, args.api_key, max_sources, args.language)
+            single = run_single_stage(args.query, models[key], args.base_url, args.api_key, max_sources, args.language, required_sources=required_sources)
             single["purpose"] = route["stages"][0]["purpose"]
             final_stage = single | {"name": "final"}
             result = build_result(args.query, route, args.base_url, final_stage, [final_stage], max_sources)

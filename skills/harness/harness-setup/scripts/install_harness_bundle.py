@@ -46,7 +46,7 @@ def main() -> int:
 
         bundle = json.loads(bundle_path.read_text(encoding="utf-8"))
         source_bundle_root = source_root / bundle["source_root"]
-        target_root = _repo_root(Path(args.target).resolve()) / "skills" / "harness"
+        target_root = _repo_root(Path(args.target).resolve()) / ".agents" / "skills" / "harness"
         target_root.mkdir(parents=True, exist_ok=True)
 
         for skill_name in bundle["skills"]:

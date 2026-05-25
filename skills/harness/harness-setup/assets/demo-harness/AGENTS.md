@@ -1,279 +1,108 @@
-# Agent Guide
+# Agent 开发规约
 
-> Replace `<project-name>`, `<domain>`, and command placeholders before adopting
-> this file in a real repository.
+> 项目上下文入口：[`docs/OVERVIEW.md`](docs/OVERVIEW.md)
 
-## Project Contract
+开始任何重要开发前，先读 [`docs/OVERVIEW.md`](docs/OVERVIEW.md)。本仓库是一个 Java 多模块后端项目，采用 docs-first、结构化契约、分层清晰、测试可执行的 harness 工作方式。禁止把密钥、凭证、私有运行时数据或任何敏感内容写入 docs、日志或用户可见输出。
 
-`<project-name>` uses a docs-first harness so agents can discover context,
-plan work, implement changes, and verify outcomes without relying on hidden
-memory or ad hoc repository knowledge.
+## 核心原则
 
-This repository is responsible for:
+- **Docs-first**：新增模块、接口或执行方式前，先更新 `docs/feature/` 或 `docs/reference/` 的索引与说明。
+- **单一事实来源（SSOT）**：每条稳定规则只保留一个 owner，不在多个模块里重复描述。
+- **结构化契约**：API、配置、脚本、目录与测试命名都优先使用明确的结构化约定。
+- **分层不反向**：控制层保持薄，编排放在服务层，底层模块不反向依赖上层。
+- **真实路径验证**：新增或修改能力必须留下可验证证据，不能只停留在推断或 mock。
 
-- `<primary capability 1>`;
-- `<primary capability 2>`;
-- `<primary capability 3>`.
+## 分层约束
 
-This repository is not responsible for:
+**Backend**: `model -> mapper -> service -> api -> boot`
 
-- `<explicit non-goal 1>`;
-- `<explicit non-goal 2>`;
-- `<safety or permission boundary>`.
+- `hisense-hr-api/src/main/java/com/mega/hr/<module>/api/` 只做 HTTP 入参、出参和接线。
+- `hisense-hr-api/src/main/java/com/mega/hr/<module>/service/` 承载业务编排和可测试逻辑。
+- `hisense-hr-api/src/main/java/com/mega/hr/<module>/mapper/` 承载持久化访问。
+- `hisense-hr-api/src/main/java/com/mega/hr/<module>/model/` 承载 `po/bo/bpo/dto/param` 等契约对象。
+- `hisense-hr-boot/src/main/java/com/mega/` 承载启动入口与运行装配。
 
-Sensitive data, credentials, private keys, tokens, production secrets, and
-private runtime dumps must not be committed, logged, copied into docs, or
-returned in user-facing output.
+## 代码组织约束
 
-## Core Principles
+新增功能模块、修复跨文件 bug、重构、增加 API / 配置 / 脚本前，先使用 `.agents/skills/harness/code-organization-harness` 判断模块边界、文件落点与上下文 grep 路径。
 
-- **Docs-first:** important work starts by reading the docs entry path and
-  updating docs when contracts, behavior, or validation change.
-- **Single source of truth:** each durable rule has one owner. Avoid copying
-  business rules across routers, scripts, UI, tests, and docs.
-- **Contracts before implementation:** stable names, schemas, CLI flags, API
-  shapes, file formats, and lifecycle states are defined before parallel work.
-- **Layer separation:** higher layers call lower layers through documented
-  interfaces. Avoid bypasses that make behavior untraceable.
-- **Observable execution:** meaningful work leaves evidence: tests, logs,
-  snapshots, taskBoard status, or documented manual validation.
-- **Progressive disclosure:** agents read maps first, then only the specific
-  module docs needed for the task.
+- **按领域归属优先**：先找 owning module，再按 layer 放文件；不要因为"能复用"就提前放进 `common` / `utils` / 全局层。
+- **先 grep 后新建**：按 endpoint、schema、表名、文案、配置键、domain noun 搜索现有 owner；只有现有模块没有清晰归属时才新建模块。
+- **文件与测试镜像**：后端 API / service / mapper / model 的测试应与其验证层级保持对应。
+- **框架细则进 skill**：Java / Maven / Spring 风格的具体文件组织与最佳实践，统一由 `code-organization-harness` 的 references 承接。
 
-## Reading Path
+## 文档渐进式披露规则
 
-Follow this path for non-trivial work:
+文档遵循渐进式披露（Progressive Disclosure），Agent 逐层深入、禁止全量读取：
 
 ```text
-AGENTS.md
-  -> docs/OVERVIEW.md
-  -> docs/feature/INDEX.md or docs/reference/INDEX.md
-  -> docs/feature/<module>/README.md
-  -> leaf docs or taskBoard.md only when needed
+Level 0: AGENTS.md            → 项目开发规约与读取入口
+Level 1: docs/OVERVIEW.md     → 项目地图与活动模块
+Level 2F: docs/feature/INDEX.md  → 功能模块索引，先选目标模块
+Level 2R: docs/reference/INDEX.md → 架构 / 接口 / 测试等稳定参考
+Level 2A: docs/archive/INDEX.md   → 已完成计划 / 历史归档，默认不读
+Level 3: docs/feature/<module>/  → 模块 README / INDEX，按任务进入
+Level 4: 具体设计 / taskBoard / RCA，仅按需读取
 ```
 
-Do not read the whole `docs/` tree by default.
+**Agent 读取规则**：`OVERVIEW.md -> feature/reference INDEX -> 按需读 1-3 个相关文档`。禁止全量读取 `docs/`。`taskBoard.md` 是执行上下文，只在继续实现、监督、验收或审计历史时读取。
 
-## Progressive Disclosure Levels
+### 强制：双向可追溯（Top-Down / Bottom-Up）
 
-| Level | File | Purpose |
-|------|------|---------|
-| L0 | `AGENTS.md` | root rules and reading path |
-| L1 | `docs/OVERVIEW.md` | repo map and active domains |
-| L2 | `docs/feature/INDEX.md` | feature/module routing |
-| L2 | `docs/reference/INDEX.md` | stable architecture, interfaces, runbook |
-| L2 | `docs/archive/INDEX.md` | historical material, not active context |
-| L3 | `docs/feature/<module>/README.md` | module-specific map |
-| L4 | leaf docs / `taskBoard.md` | detailed design, execution, evidence |
+任何 docs 维护行为（新增 / 改动 / 删除）必须保证：
 
-## Repo-local Skills
+1. **Top-Down 可达**：从 `AGENTS.md` 出发，沿 OVERVIEW → INDEX → 子 INDEX → leaf 一路下钻，每一步都能找到下一层入口链接。
+2. **Bottom-Up 可溯**：每个 leaf 文档顶部必须有类似 `> 上级：../README.md` 的反向引用，能一路向上回到 AGENTS.md。
+3. **新需求 context 发现**：开发任何新需求时，agent 必须能从 `AGENTS.md` 开始，仅用渐进式披露规则就发现待开发清单（`taskBoard.md`）和设计依据（如需要）。如果做不到，立即修补 docs 链路：
+   - 在缺失环节的父 INDEX 加路由表项；
+   - 在新建文件顶部加上级链接；
+   - 在子模块 INDEX 同步登记。
+4. **失败模式自检**：每次改 docs 前，先问自己"如果我清空记忆，从 AGENTS.md 出发能不能找到这个文件？" 答否即修。
+5. **路径书写约定（项目根目录优先）**：跨多层目录的链接（即 ≥ 3 个连续 `../`）必须改用项目根目录起始的路径，前缀 `/`。
 
-Register repo-local skills here when they exist.
+## 文档写入规则
 
-| Skill | Use When | Owns |
-|------|----------|------|
-| `harness-setup` | bootstrapping or repairing this harness | AGENTS/docs/taskBoard structure |
-| `harness-engineering-plan` | planning multi-wave or multi-owner work | milestones, TaskNodes, gates |
-| `project-docs-workflow` | non-trivial code changes may affect docs | docs impact review |
-| `<domain-skill>` | `<domain trigger>` | `<domain workflow>` |
+- 新增功能优先归入已有 `docs/feature/<module>/`；没有合适模块时再新建目录。
+- 大型模块使用 `INDEX.md` 或 `README.md` 作为模块地图，详细设计、数据流、RCA、taskBoard 放子文件。
+- 中小型模块使用 `README.md`，必要时补少量子文件。
+- 历史计划、一次性总结、旧执行记录进入 `docs/archive/`，并同步更新 `docs/archive/INDEX.md`。
+- 新增或变更模块时，同步更新 `docs/feature/INDEX.md` 与 `docs/OVERVIEW.md`。
+- 修改接口或契约时同步更新 `docs/reference/interfaces.md`。
+- 修改运行、测试、验证方式时同步更新 `docs/reference/runbook-testing.md`。
+- 保持每层信息密度一致：`OVERVIEW.md` 是地图，`INDEX.md` 是路由，模块文档放细节。
 
-Skill rules:
+## 项目内置 skills
 
-- each skill owns one workflow;
-- skill triggers must be explicit;
-- detailed variants live in the skill's `references/` or `assets/`;
-- do not put long implementation manuals in `AGENTS.md`.
+- `.agents/skills/harness/code-organization-harness`：新增功能模块、修 bug、重构、增加 API 前使用；帮助 Agent 先按模块和领域 grep 上下文，再按项目约定创建文件、放置测试与同步契约。
+- `.agents/skills/harness/project-analysis`：当现有 docs 不足、链路复杂，或需要架构 / 数据流 / 风险分析时使用；分析结果应沉淀到 `docs/`。
+- `.agents/skills/harness/project-docs-workflow`：非 trivial 的功能开发、bug 修复、重构、接口变更前后，先用它扫描 docs 并判断文档影响。
+- `.agents/skills/harness/harness-engineering-plan`：多 Wave、多 TaskNode 的功能开发必须先用它生成 `taskBoard.md`，作为该 milestone 唯一执行控制平面。
 
-If these skills are not installed yet, install the harness bundle from the
-canonical skills repository:
+> **强制规则**：开始任何新 milestone（≥ 2 wave 或 ≥ 5 TaskNode）的功能开发前，agent 必须用 `harness-engineering-plan` 生成 `taskBoard.md` 并在推进期间实时更新。仅修文档 / 单条 bug fix 等 trivial 改动不在此约束。
 
-```bash
-SOURCE_REPO="https://github.com/escapeWu/MyAwesomeSkills.git"
-TMP_DIR="$(mktemp -d)"
-git clone --depth 1 "$SOURCE_REPO" "$TMP_DIR/MyAwesomeSkills"
-python "$TMP_DIR/MyAwesomeSkills/skills/harness/harness-setup/scripts/install_harness_bundle.py" \
-  --source "$TMP_DIR/MyAwesomeSkills" \
-  --target /path/to/this-repo \
-  --overwrite
-```
+## Git Worktree 隔离开发
 
-Recommended local skill shape:
+开发新功能或修复 bug 时，优先使用 `git worktree` 在独立工作目录中进行，避免污染当前工作区。
 
-```text
-.agents/
-└── skills/
-    └── <skill-name>/
-        ├── SKILL.md
-        ├── agents/
-        │   └── openai.yaml
-        ├── references/
-        └── assets/
-```
+1. 先确认基线分支，再基于它创建 worktree。
+2. 功能开发使用 `feat/<slug>`；bug 修复使用 `fix/<slug>`。
+3. `<slug>` 使用小写 kebab-case，描述模块与目的。
+4. 在新 worktree 中完成所有开发、测试。
+5. 开发完毕后再决定是否合并回主分支。
+6. 仅修改文档、配置等 trivial 变更时，可直接在当前工作区操作。
 
-## Code Organization
+## 测试规则
 
-Replace this section with the target repo's actual layers.
+- 后端新增或修改功能必须更新对应测试。
+- 修改测试结构后同步更新测试说明文档（如存在）。
+- 推荐验证命令：`mvn -pl hisense-hr-api -am test`、`mvn -pl hisense-hr-boot -am test`。
+- 新增或调整 docs 后，至少跑一次文档链接校验，确认 Top-Down / Bottom-Up 可达。
 
-Generic default:
+## 历史教训
 
-```text
-contracts -> config -> domain/services -> adapters -> interface
-```
-
-Rules:
-
-- put orchestration in the owning domain/service layer;
-- keep interface layers thin;
-- keep reusable helpers small and genuinely cross-domain;
-- mirror tests to the layer they validate;
-- search for an existing owner before creating a new module.
-
-## Docs Organization
-
-The minimum docs tree is:
-
-```text
-docs/
-├── OVERVIEW.md
-├── feature/
-│   ├── INDEX.md
-│   └── <module>/
-│       ├── README.md
-│       └── taskBoard.md
-├── reference/
-│   ├── INDEX.md
-│   ├── architecture.md
-│   ├── interfaces.md
-│   └── runbook-testing.md
-└── archive/
-    └── INDEX.md
-```
-
-Docs rules:
-
-- add parent index entries before adding leaf docs;
-- every leaf doc starts with a parent link;
-- active plans stay under `docs/feature/`;
-- stable cross-cutting rules stay under `docs/reference/`;
-- old plans, one-off summaries, and retired designs go under `docs/archive/`;
-- use root-relative links for deep cross-tree references.
-
-Leaf doc header example:
-
-```md
-> 上级：[../README.md](../README.md)
-```
-
-or:
-
-```md
-> 上级：[/docs/OVERVIEW.md](/docs/OVERVIEW.md)
-```
-
-## TaskBoard Rules
-
-Create or update `taskBoard.md` when work has:
-
-- more than one wave;
-- meaningful task dependencies;
-- multiple owners or high-conflict files;
-- staged validation;
-- an auditable implementation record.
-
-Task status flow:
-
-```text
-planned -> ready -> running -> validating -> done
-                         \-> repair_needed -> running
-running -> blocked | failed
-```
-
-Each TaskNode should include:
-
-- id and title;
-- owner/layer;
-- dependencies;
-- input context;
-- expected output;
-- acceptance criteria;
-- validation commands;
-- done evidence.
-
-## Change Process
-
-Before editing:
-
-1. Read `docs/OVERVIEW.md`.
-2. Pick the relevant feature or reference index.
-3. Read the owning module README.
-4. Decide whether a `taskBoard.md` is required.
-
-During editing:
-
-1. Keep changes inside the owning module/layer.
-2. Update contracts before dependent implementation.
-3. Update taskBoard status as work advances.
-
-Before finishing:
-
-1. Run the relevant validation commands.
-2. Update docs affected by behavior, interfaces, or runbooks.
-3. Confirm top-down and bottom-up doc navigation still works.
-4. Summarize evidence, not intentions.
-
-## Validation
-
-Replace placeholders with repo-specific commands.
-
-Recommended categories:
-
-```bash
-<unit-test-command>
-<typecheck-or-compile-command>
-<lint-or-format-command>
-<integration-or-smoke-command>
-```
-
-Docs navigation validation:
-
-- start at `AGENTS.md`;
-- reach `docs/OVERVIEW.md`;
-- reach `docs/feature/INDEX.md`;
-- reach one module README;
-- reach one leaf doc or taskBoard;
-- walk back through parent links;
-- confirm archive files are not active execution paths.
-
-## Isolation
-
-For non-trivial feature work, prefer an isolated branch or worktree. Keep this
-rule aligned with the repo's actual branching model.
-
-Generic branch names:
-
-- `feat/<slug>` for features;
-- `fix/<slug>` for bug fixes;
-- `docs/<slug>` for documentation-only work.
-
-## History / Exceptions
-
-Use `docs/archive/INDEX.md` to route historical material.
-
-Archive:
-
-- completed taskBoards;
-- retired designs;
-- old RCA or bugfix notes;
-- one-off reports.
-
-Do not archive active contracts or current execution plans.
-
-## Failure Modes To Avoid
-
-- leaf docs that are only discoverable by search;
-- taskBoards created after implementation instead of before;
-- duplicate business rules in code and docs with no owner;
-- interface changes without contract docs;
-- tests that pass but do not prove the stated contract;
-- archived plans still linked as active context;
-- root instructions that mention skills without clear triggers.
+1. 模板必须避免保留旧路径诱导新项目走错层级；废弃路径应迁移后删除，而不是长期并存。
+2. 大型计划、taskBoard、一次性说明如果不归档，会被 Agent 误读成当前入口；必须通过 `docs/archive/INDEX.md` 收口。
+3. 架构外部环节必须在 `docs/OVERVIEW.md`、`docs/reference/architecture.md` 和子目录 README 三层都可见。
+4. 新 milestone 必须强制走 `harness-engineering-plan` 生成 `taskBoard.md`。
+5. docs 双向可追溯（Top-Down / Bottom-Up）是硬约束。
+6. docs 跨层链接必须优先使用项目根相对路径，杜绝深 `../` 漂移。

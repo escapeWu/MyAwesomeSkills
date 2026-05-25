@@ -12,4 +12,3 @@ Define stable names and contracts before implementation starts.
 - module identity
 - task identity
 - validation identity
-

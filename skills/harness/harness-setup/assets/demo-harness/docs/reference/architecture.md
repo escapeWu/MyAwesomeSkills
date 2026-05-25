@@ -11,4 +11,3 @@ Keep the harness layout independent from business logic and framework choice.
 - docs route the agent;
 - implementation lives elsewhere;
 - reference docs describe stable rules only.
-

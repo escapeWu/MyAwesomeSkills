@@ -63,6 +63,7 @@ The demo pack includes:
 
 - a root `AGENTS.md`
 - the `docs/` entry points
+- reference docs for architecture, interfaces, and validation
 - one sample feature module
 - one sample `taskBoard.md`
 
@@ -87,7 +88,7 @@ Recommended install flow:
 
 1. Clone or point at the source GitHub repository.
 2. Run the bundle installer in `scripts/install_harness_bundle.py`.
-3. The installer copies `skills/harness/*` into the target repo.
+3. The installer copies the source bundle into `.agents/skills/harness/*` in the target repo.
 4. Update the target repo's root `AGENTS.md` to register the installed skills.
 
 See `references/harness-bootstrap.md` and `assets/harness-bundle.json` for the

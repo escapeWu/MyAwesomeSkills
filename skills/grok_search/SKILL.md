@@ -20,6 +20,11 @@ description: 自适应 AI 搜索与最新信息检索 skill。会先评估任务
 - 查当前价格、事件状态、官方/主流媒体最新说法
 - 对某个新闻做时间线梳理、交叉验证、矛盾排查
 - 对高价值市场消息做更深的 web-aware 调查
+- 技术问题搜索：必须覆盖 Reddit 与 Hacker News 这两个社区来源
+
+## 技术问题默认搜索源
+
+当用户的问题属于技术问题（代码、报错、框架/库、API、版本兼容、部署、数据库、模型/benchmark 等）时，脚本会自动在 prompt 里追加硬性来源要求：**必须搜索/覆盖 Reddit 与 Hacker News**，同时仍可使用官方文档、GitHub、厂商博客等来源。若 Reddit 或 Hacker News 没有相关结果，最终回答需要显式说明“未找到相关 Reddit/HN 讨论”，不能静默省略。
 
 ## 核心升级：先评估复杂度，再选模型
 
@@ -230,6 +235,7 @@ python /Users/shancw/.hermes/skills/research/grok_search/scripts/grok_search.py 
   "expert_model": "grok-4.20-expert",
   "default_mode": "auto",
   "language": "zh-CN",
+  "technical_required_sources": ["Reddit", "Hacker News"],
   "base_url": "https://example.com/v1/",
   "api_key": "REPLACE_ME"
 }
@@ -240,6 +246,7 @@ python /Users/shancw/.hermes/skills/research/grok_search/scripts/grok_search.py 
 - `fast_model`：quick / scout / gap-fill 默认模型
 - `expert_model`：deep 最终综合模型
 - `default_mode`：默认 `auto`
+- `technical_required_sources`：技术问题搜索时必须覆盖的社区来源，默认 `Reddit` + `Hacker News`
 
 ## 输出契约
 

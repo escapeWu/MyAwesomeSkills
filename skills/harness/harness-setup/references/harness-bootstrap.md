@@ -16,45 +16,27 @@ The implementation details of the product are not part of the harness.
 Use this order:
 
 ```md
-# Agent Guide
+# Agent 开发规约
 
-## Project Contract
-- what the repo is
-- what it is not
-- primary safety boundaries
+> 项目上下文入口：[`docs/OVERVIEW.md`](docs/OVERVIEW.md)
 
-## Core Principles
-- docs-first
-- single source of truth
-- typed or structured contracts where applicable
-- layer separation
+## 核心原则
 
-## Reading Path
-- `AGENTS.md` -> `docs/OVERVIEW.md` -> `docs/feature/INDEX.md` / `docs/reference/INDEX.md`
-- then module docs
+## 分层约束
 
-## Code Organization
-- where domain logic lives
-- where adapters live
-- where tests live
+## 代码组织约束
 
-## Repo-local Skills
-- where skills live
-- when each skill triggers
-- which skill owns planning / docs / project analysis
+## 文档渐进式披露规则
 
-## Docs Rules
-- when to add/update indexes
-- when to add taskBoard
-- top-down discoverability
-- bottom-up traceability
+## 文档写入规则
 
-## Validation
-- required checks
-- how to prove the change
+## 项目内置 skills
 
-## History / Exceptions
-- archive only
+## Git Worktree 隔离开发
+
+## 测试规则
+
+## 历史教训
 ```
 
 Keep the section names stable once published.
@@ -66,9 +48,9 @@ If the repo uses project-local skills, add a concise registry in `AGENTS.md`.
 ```md
 ## Repo-local Skills
 
-- `harness-setup`: bootstrap or repair the agent/docs/taskBoard harness.
-- `harness-engineering-plan`: create a taskBoard for multi-wave work.
-- `project-docs-workflow`: inspect docs impact before and after non-trivial code changes.
+- `.agents/skills/harness/harness-setup`: bootstrap or repair the agent/docs/taskBoard harness.
+- `.agents/skills/harness/harness-engineering-plan`: create a taskBoard for multi-wave work.
+- `.agents/skills/harness/project-docs-workflow`: inspect docs impact before and after non-trivial code changes.
 ```
 
 Do not force these exact skill names into every repo. The invariant is:
@@ -77,6 +59,9 @@ Do not force these exact skill names into every repo. The invariant is:
 - each skill has a clear trigger;
 - each skill owns one workflow;
 - detailed variants live inside the skill's `references/` or `assets/`.
+
+Source repositories keep the canonical bundle under `skills/harness/`, while
+target repositories receive the installed bundle under `.agents/skills/harness/`.
 
 Recommended local skill shape:
 
@@ -176,7 +161,7 @@ Every leaf doc should begin with a parent link.
 Examples:
 
 ```md
-> 上级：[../README.md](../README.md)
+> 上级：../README.md
 ```
 
 or, for deeper locations, use repo-root links:
