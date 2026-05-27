@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Dev Standards"
+  short_description: "Extract project-specific coding standards from a local repository."
+  icon: "🧭"

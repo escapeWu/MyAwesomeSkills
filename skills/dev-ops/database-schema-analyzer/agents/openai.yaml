@@ -1,0 +1,13 @@
+interface:
+  display_name: Database Schema Analyzer
+  short_description: Analyze PostgreSQL/MySQL schema structure, relationships, ERD,
+    and DBML.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
