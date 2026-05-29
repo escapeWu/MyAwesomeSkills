@@ -70,6 +70,27 @@ The news-fetch API can be called in three practical ways:
 | Bundled Python helper | Repeated agent/operator usage without rewriting curl | `scripts/news_fetcher_client.py discover economist.com --limit 2`. |
 | Programmatic HTTP client | Product integration or scheduled jobs | Standard HTTP client with Bearer auth and JSON bodies. |
 
+## Monitoring Patterns
+
+For investment monitoring, use the fetcher as the collection layer and keep local state outside the API:
+
+| Monitoring level | Flow | Use when |
+|---|---|---|
+| URL watch | For each watchlist domain, call `/v1/discover/{domain}?since=1d&limit=N`, diff returned URLs against a local `seen_urls.json`, alert only new URLs. | Fast headline/link monitoring. |
+| Fetch watch | URL watch → call `/v1/fetch` for new URLs → store returned `path`, `title`, `text_length`, and domain. | Need readable article text for later summarization. |
+| Batch ingestion | Accumulate new URLs across domains → `/v1/filter-urls` → `/v1/batch-fetch`. | Many URLs per run; avoid one request per article. |
+| Refresh watch | `/v1/history?domain=...` → `/v1/discover/{domain}?since=...` → fetch missing URLs only. | Avoid duplicate fetches and keep coverage fresh. |
+| Search-assisted watch | `/v1/search?query=<topic>&site=<domain>` → `/v1/fetch`. | Topic monitoring such as rates, CPI, central bank, earnings. |
+
+Recommended loop for a scheduled monitor:
+
+1. Keep a watchlist of domains and topics in config, not hardcoded in the skill.
+2. Discover candidates with `/v1/discover/{domain}` using a short `since` window such as `1d` or `12h`.
+3. Normalize URLs and compare against local state to avoid repeated alerts.
+4. Fetch only new URLs, usually with `no_images=true` for monitoring jobs.
+5. Send a compact alert containing source, title, URL, and why it matters; do not alert when there is no new item.
+6. Persist state after a successful run.
+
 ## Fetch-Oriented Smoke Check
 
 Run these checks from the news-fetch path. Keep the token out of shell tracing (`set +x`).
