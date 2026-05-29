@@ -16,6 +16,7 @@
         "./skills/autonomous-codex-supervision",
         "./skills/codex-review",
         "./skills/dev-ops/database-schema-analyzer",
+        "./skills/dev-ops/news-fetcher-api",
         "./skills/dev-ops/project-dev-standards",
         "./skills/grok_search",
         "./skills/internal-comms",

@@ -1,0 +1,6 @@
+{
+  "base_url": "https://<news-fetcher-host>",
+  "token_env": "NEWS_FETCHER_TOKEN",
+  "auth_header": "Authorization: Bearer <token>",
+  "example_domain": "economist.com"
+}
