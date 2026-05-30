@@ -31,7 +31,7 @@ Do **not** use for general prose editing, API reference generation alone, or one
 ## Golden Navigation Skeleton
 
 ```text
-AGENTS.md / AGENTS.md
+AGENTS.md / CLAUDE.md
   ↓
 docs/OVERVIEW.md
   ↓
@@ -41,8 +41,17 @@ docs/feature/<module>/      stable technical facts        historical plans / bug
   ↓
 README.md or INDEX.md
   ↓
-design.md / dataflow.md / changelog.md / taskBoard.md / RCA.md
+design.md / dataflow.md / changelog.md / RCA.md
+
+(separate: .agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md — WIP execution, 非 SSOT)
 ```
+
+**docs/ 与 tasks/ 的分离**：
+
+| 目录 | 职责 | 生命周期 |
+|------|------|------|
+| `docs/` | SSOT — 描述系统"是什么" | 任务完成后更新，长期维护 |
+| `.agents/.../tasks/` | WIP — 描述"正在做什么" | 任务启动→推进→归档，临时存在 |
 
 Layer responsibilities:
 
@@ -54,7 +63,8 @@ Layer responsibilities:
 | 2R | docs/reference/INDEX.md | Stable facts: architecture, API references, contracts, runbooks. |
 | 2A | docs/archive/INDEX.md | Historical material: completed plans, bugfix notes, RCA. Default: do not read. |
 | 3 | docs/feature/\<module\>/INDEX.md | Module-level map or summary. |
-| 4 | Detailed module docs | Design, data flow, task board, logs. Read only when task-relevant. |
+| 4 | Detailed module docs | Design, data flow. Read only when task-relevant. |
+| — | `.agents/.../tasks/<module>/taskBoard.md` | WIP execution plan. Read only when continuing, supervising, or auditing execution. |
 
 ## Required Agent Reading Rule
 
@@ -63,15 +73,18 @@ Include in `AGENTS.md` and `docs/OVERVIEW.md`:
 ```text
 文档遵循渐进式披露（Progressive Disclosure），Agent 逐层深入、禁止全量读取：
 
-Level 0: AGENTS.md / AGENTS.md     → 项目开发规约与读取入口
+Level 0: AGENTS.md / CLAUDE.md     → 项目开发规约与读取入口
 Level 1: docs/OVERVIEW.md          → 项目是什么？有哪些模块？去哪里找？
 Level 2F: feature/INDEX.md         → 功能模块索引，先选目标模块
 Level 2R: reference/INDEX.md       → 架构 / API / 测试 / 运维等稳定参考
 Level 2A: archive/INDEX.md         → 已完成计划 / bugfix / RCA 归档，默认不读
 Level 3: feature/<module>/INDEX.md → 大型模块内部导航
-Level 4: 具体设计 / 数据流 / taskBoard / RCA，仅按需读取
+Level 4: 具体设计 / 数据流 / RCA，仅按需读取
+
+(执行层: tasks/<module>/taskBoard.md → WIP 控制平面，仅在继续实现/监督/审计时读取)
 
 Agent 读取规则：OVERVIEW → INDEX → 按需读 1-3 个相关文档。禁止全量读取 docs。
+taskBoard 是执行过程文件，非 SSOT，存放于 .agents/skills/harness/harness-engineering-plan/tasks/。
 ```
 
 ## AGENTS.md Requirements
@@ -116,15 +129,16 @@ docs/feature/<module>/
 ├── design.md      # detailed design
 ├── dataflow.md    # data flow / sequence / diagrams
 ├── changelog.md   # active changelog
-├── taskBoard.md   # execution plan; default do not read
 └── rca-*.md       # root-cause analysis when relevant
 ```
+
+taskBoard 不在此目录。执行过程文件统一存放在 `.agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md`。
 
 Module `INDEX.md` should route by task:
 - Need high-level behavior → `README.md`
 - Need implementation design → `design.md`
 - Need data flow / sequence → `dataflow.md`
-- Continuing execution work → `taskBoard.md`
+- Continuing execution work → `.agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md`
 - Debugging a known incident → matching `rca-*.md`
 
 Medium: `README.md` + optional sub-docs. Small: single `README.md`.
@@ -186,11 +200,15 @@ Both must include agent routing instructions and forbid full reads.
 
 ```text
 README.md / INDEX.md explains what the module is.
-taskBoard.md explains what was or will be executed.
-Agents read taskBoard.md only when continuing implementation, supervising execution, validating task completion, or auditing task history.
+taskBoard.md (under .agents/.../tasks/) explains what is being or was executed.
+taskBoard 是临时执行文件，不是 docs/ 的一部分。
+任务完成后移入 tasks/archive/，然后提炼稳定结论更新 docs/。
+
+Agent 读取 taskBoard.md 的时机：继续实现、监督执行、验证任务完成、审计任务历史。
+默认不读 — taskBoard 是执行上下文，不是项目真相。
 ```
 
-If a task board grows beyond a few hundred lines, add a `Current status` section at the top and move old completed tasks to archive.
+If a task board grows beyond a few hundred lines, add a `Current status` section at the top and move old completed tasks to `tasks/archive/`.
 
 ## Frontmatter Convention
 

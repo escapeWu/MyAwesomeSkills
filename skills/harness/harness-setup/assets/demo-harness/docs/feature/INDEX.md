@@ -12,5 +12,5 @@
 
 1. Start here.
 2. Open the module `README.md`.
-3. Read `taskBoard.md` only when executing or auditing multi-step work.
+3. Read `taskBoard.md` only when executing or auditing multi-step work (located under `.agents/skills/harness/harness-engineering-plan/tasks/`).
 

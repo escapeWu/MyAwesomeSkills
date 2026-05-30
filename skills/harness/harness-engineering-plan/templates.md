@@ -379,6 +379,9 @@ Gate: Full validation passes, bounded smoke passes, safety scan is clean, and fi
 
 ## Generic Task Board Structure
 
+> taskBoard 是临时执行文件，存放在 `.agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md`，不放入 `docs/`。
+> 任务完成后移入 `tasks/archive/`，然后提炼结论更新 `docs/`。
+
 ```markdown
 # <Feature Name> Task Board
 

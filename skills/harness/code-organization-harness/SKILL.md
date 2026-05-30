@@ -98,6 +98,7 @@ fail if the new behavior were broken.
 | Shared frontend UI | `frontend/src/components/` | keep route-only UI local until reused |
 | Frontend data access | `frontend/src/lib/api.ts` | never hardcode backend host in components/pages |
 | Feature docs | `docs/feature/<module>/` | `docs/feature/INDEX.md`, `docs/OVERVIEW.md` when adding modules |
+| Execution plan | `.agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md` | WIP, not under docs/ |
 
 ## Framework References
 

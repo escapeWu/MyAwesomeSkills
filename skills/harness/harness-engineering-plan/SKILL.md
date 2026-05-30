@@ -21,8 +21,8 @@ A milestone represents a phase that can be validated independently. It is comple
 
 - all required TaskNodes are done with validation evidence;
 - integrated behavior passes milestone-level validation;
-- docs/contracts are updated;
 - safety and non-goal boundaries are intact.
+- (After the final milestone) conclusions are distilled into `docs/` as SSOT.
 
 ### Do not advance before the previous major stage is complete
 
@@ -290,6 +290,37 @@ Then copy those facts into the TaskNode `Input Context`, `Acceptance Criteria`, 
 9. Run M5 full verification.
 10. Record final evidence and close the feature.
 ```
+
+## TaskBoard Location & Lifecycle
+
+**taskBoard is a temporary execution artifact, not a permanent doc.** It lives under this skill's own `tasks/` directory, separate from `docs/`.
+
+### Directory Layout
+
+```text
+.agents/skills/harness/harness-engineering-plan/
+├── SKILL.md
+├── templates.md
+└── tasks/                       ← temporary execution files (WIP)
+    ├── <module>/
+    │   └── taskBoard.md         ← active taskBoard
+    └── archive/                 ← completed taskBoards
+        └── <module>/
+            └── taskBoard-<phase>.md
+```
+
+### Lifecycle Rule
+
+```
+1. 任务启动 → 生成 taskBoard 到 tasks/<module>/taskBoard.md
+2. 执行中   → 在 tasks/ 下更新状态，不碰 docs/
+3. 完成后   → taskBoard 移入 tasks/archive/
+4. 然后     → 提炼结论更新 docs/feature/<module>/ 中的 SSOT
+```
+
+**Why**: taskBoard carries transient execution state (Status: planned→running→done, Evidence, wave gate status). Mixing it into `docs/` confuses WIP process with stable truth. `docs/` is SSOT — update it only after completion, not during execution.
+
+**docs/** stays clean of taskBoards. After a feature ships, the stable conclusions (data model, design rationale, new API contracts) flow into `docs/feature/<module>/` and `docs/reference/`. The spent taskBoard lives in `tasks/archive/` for audit only.
 
 ## Design Review Questions
 

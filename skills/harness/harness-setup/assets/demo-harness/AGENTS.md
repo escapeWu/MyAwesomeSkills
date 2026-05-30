@@ -42,7 +42,9 @@ Level 2F: docs/feature/INDEX.md  → 功能模块索引，先选目标模块
 Level 2R: docs/reference/INDEX.md → 架构 / 接口 / 测试等稳定参考
 Level 2A: docs/archive/INDEX.md   → 已完成计划 / 历史归档，默认不读
 Level 3: docs/feature/<module>/  → 模块 README / INDEX，按任务进入
-Level 4: 具体设计 / taskBoard / RCA，仅按需读取
+Level 4: 具体设计 / RCA，仅按需读取
+
+(执行层: .agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md → WIP 控制平面)
 ```
 
 **Agent 读取规则**：`OVERVIEW.md -> feature/reference INDEX -> 按需读 1-3 个相关文档`。禁止全量读取 `docs/`。`taskBoard.md` 是执行上下文，只在继续实现、监督、验收或审计历史时读取。
@@ -63,7 +65,8 @@ Level 4: 具体设计 / taskBoard / RCA，仅按需读取
 ## 文档写入规则
 
 - 新增功能优先归入已有 `docs/feature/<module>/`；没有合适模块时再新建目录。
-- 大型模块使用 `INDEX.md` 或 `README.md` 作为模块地图，详细设计、数据流、RCA、taskBoard 放子文件。
+- 大型模块使用 `INDEX.md` 或 `README.md` 作为模块地图，详细设计、数据流、RCA 放子文件。
+- taskBoard 不放在 docs/ 下。执行过程文件统一存放在 `.agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md`。
 - 中小型模块使用 `README.md`，必要时补少量子文件。
 - 历史计划、一次性总结、旧执行记录进入 `docs/archive/`，并同步更新 `docs/archive/INDEX.md`。
 - 新增或变更模块时，同步更新 `docs/feature/INDEX.md` 与 `docs/OVERVIEW.md`。
@@ -101,7 +104,7 @@ Level 4: 具体设计 / taskBoard / RCA，仅按需读取
 ## 历史教训
 
 1. 模板必须避免保留旧路径诱导新项目走错层级；废弃路径应迁移后删除，而不是长期并存。
-2. 大型计划、taskBoard、一次性说明如果不归档，会被 Agent 误读成当前入口；必须通过 `docs/archive/INDEX.md` 收口。
+2. 大型计划、taskBoard、一次性说明如果不归档，会被 Agent 误读成当前入口；必须通过 `tasks/archive/` 收口（不放入 `docs/archive/`，以区分执行归档与设计文档归档）。
 3. 架构外部环节必须在 `docs/OVERVIEW.md`、`docs/reference/architecture.md` 和子目录 README 三层都可见。
 4. 新 milestone 必须强制走 `harness-engineering-plan` 生成 `taskBoard.md`。
 5. docs 双向可追溯（Top-Down / Bottom-Up）是硬约束。

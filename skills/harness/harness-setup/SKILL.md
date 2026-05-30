@@ -22,7 +22,7 @@ Deliver the smallest useful harness that still gives an agent clear entry points
 - `docs/reference/INDEX.md`
 - `docs/archive/INDEX.md`
 - module-level `README.md` / `INDEX.md`
-- `taskBoard.md` for multi-wave or multi-node work
+- `tasks/<module>/taskBoard.md` for multi-wave or multi-node work (under harness-engineering-plan)
 - leaf docs with explicit parent links
 
 ## Workflow
@@ -42,7 +42,8 @@ Deliver the smallest useful harness that still gives an agent clear entry points
 - Keep stack-specific details in repo-local adapters or references.
 - Prefer repairing an existing partial harness over replacing it.
 - Use root-relative links for deep cross-tree references.
-- Keep `taskBoard.md` as the execution control plane, not as a changelog.
+- Keep `taskBoard.md` as the execution control plane under `harness-engineering-plan/tasks/`, not as a changelog in docs.
+- Separate WIP execution context (tasks/) from stable docs (docs/). Update docs only after task completion.
 
 ## Reference
 
@@ -65,7 +66,6 @@ The demo pack includes:
 - the `docs/` entry points
 - reference docs for architecture, interfaces, and validation
 - one sample feature module
-- one sample `taskBoard.md`
 
 Use it as a starting shape, not as a final domain model.
 

@@ -141,7 +141,8 @@ docs/
 │   └── <module>/
 │       ├── README.md
 │       ├── INDEX.md          # only when the module is large
-│       └── taskBoard.md      # only when the module is multi-wave
+│       ├── design.md         # detailed design (SSOT)
+│       └── data-model.md     # table/contract definitions (SSOT)
 ├── reference/
 │   ├── INDEX.md
 │   ├── architecture.md
@@ -149,10 +150,12 @@ docs/
 │   └── runbook-testing.md
 └── archive/
     └── INDEX.md
+
+(separate: .agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md — WIP)
 ```
 
-If the repo is smaller, collapse the module folder to a single `README.md`, but keep
-the four top-level docs entry points.
+taskBoard 不在 docs/ 下。它是 harness-engineering-plan 的临时产物，存放在 skill 自身的 `tasks/` 目录中。
+任务完成后移入 `tasks/archive/`，然后蒸馏稳定结论到 `docs/`。
 
 ## 4. Leaf-document rules
 
@@ -188,6 +191,14 @@ Create `taskBoard.md` when at least one of these is true:
 - the change needs an auditable execution record.
 
 If the work is a single small fix, a taskBoard is optional.
+
+**Location**: `.agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md`
+
+**Lifecycle**:
+1. Generate → `tasks/<module>/taskBoard.md`
+2. Execute → update status in `tasks/`
+3. Complete → move to `tasks/archive/<module>/taskBoard-<phase>.md`
+4. Distill → update `docs/feature/<module>/` with stable conclusions
 
 ## 6. TaskBoard skeleton
 
