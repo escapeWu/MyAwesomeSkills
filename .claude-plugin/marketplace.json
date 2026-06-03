@@ -19,14 +19,20 @@
         "./skills/dev-ops/news-fetcher-api",
         "./skills/dev-ops/project-dev-standards",
         "./skills/grok_search",
+        "./skills/harness/code-organization-harness",
+        "./skills/harness/codex-design-review",
+        "./skills/harness/harness-engineering-plan",
+        "./skills/harness/harness-setup",
+        "./skills/harness/progressive-disclosure-docs",
+        "./skills/harness/project-analysis",
+        "./skills/harness/project-docs-workflow",
         "./skills/internal-comms",
         "./skills/mcp-builder",
         "./skills/mermaid-live-preview",
         "./skills/perplexity-search",
-        "./skills/project-analysis",
-        "./skills/project-docs-workflow",
         "./skills/skill-creator",
-        "./skills/webapp-testing",
+        "./skills/style-extractor",
+        "./skills/ui-ux-pro-max-skill",
         "./skills/xlsx"
       ]
     }
