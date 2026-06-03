@@ -34,6 +34,8 @@ Use this order:
 
 ## 强制执行流程门（Mandatory Execution Gate）
 
+## 防目标漂移（Anti-Drift）
+
 ## Git Worktree 隔离开发
 
 ## 测试规则
@@ -44,6 +46,11 @@ Use this order:
 Keep the section names stable once published.
 
 The `强制执行流程门` section is what turns the harness from "described" into "enforced".
+The `防目标漂移` section keeps long runs on target: the goal lives in the taskBoard
+`## Board State` north-star (Goal / Acceptance / Active Milestone / Active TaskNode /
+Core Rule), re-read at the start of every wave/session and after context compaction —
+never trusted to the volatile context window. Pin Goal+Acceptance as the persistent
+TodoWrite anchor and write status back to the taskBoard after each TaskNode.
 It must force, in order: scope check → taskBoard via `harness-engineering-plan` →
 contracts-first → **parallel dispatch of independent ready TaskNodes to multiple
 implementation agents** (Cursor `Task` tool subagent or `codex` CLI) → per-milestone

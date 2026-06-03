@@ -421,16 +421,32 @@ Gate: Full validation passes, bounded smoke passes, safety scan is clean, and fi
 > taskBoard 是临时执行文件，存放在 `.agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md`，不放入 `docs/`。
 > 任务完成后移入 `tasks/archive/`，然后提炼结论更新 `docs/`。
 
+### Board State 北极星 + Re-read 协议（防目标漂移）
+
+上下文窗口易失且有限：跑久了主目标会被挤出注意力或被压缩摘要掉，导致 agent 漂去做局部子任务。**目标存文件（taskBoard），不存脑子（context）。**
+
+- **北极星块**：`## Board State` 的 `Goal` / `Acceptance` / `Active Milestone` / `Active TaskNode` / `Core Rule` 是整个任务的唯一事实来源。上下文丢了，taskBoard 不丢。
+- **每轮重锚**：每个 wave / 工作 session 开工前，**先 re-read `## Board State`**，用一句话复述「主目标 + 当前在哪个 TaskNode」再动手；上下文变长或被压缩(compaction)后，**以 taskBoard 为准恢复目标，不靠记忆**。
+- **TodoWrite 常驻锚点**：把 `Goal` + `Acceptance` 固定为 TodoWrite 第 0 项（始终可见、不删），子任务在其下展开。
+- **动作前自检**：每个非 trivial 动作前问「这一步服务于 Board State 的 Goal 吗？」偏了就停、回 taskBoard 对齐。
+- **及时回写**：每完成一个 TaskNode / wave，立即把 `Active TaskNode`、`Global Status` 和证据写回 taskBoard，让外置记忆始终最新。
+
 ```markdown
 # <Feature Name> Task Board
 
-## Board State
+## Board State  (← 北极星 / North-Star：每个 wave / session 开工前必先 re-read 此块)
+
+**Goal (北极星):** <one-sentence main objective — 永不漂移的最终目标>
+
+**Acceptance (验收):** <how we know the whole feature is done — 可验证>
 
 **Feature:** <feature name>
 
 **Active Milestone:** M0 - Planning Gate
 
 **Active Layer:** 1
+
+**Active TaskNode:** <current TaskNode id, e.g. M1-T03>
 
 **Global Status:** planned | in_progress | complete | blocked
 

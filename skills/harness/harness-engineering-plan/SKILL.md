@@ -109,6 +109,17 @@ Properties:
 
 If a wave's parallelism or dependency requires more detail (e.g., a single intra-wave fan-in), prefer expressing it in the per-TaskNode `Depends On` field rather than enriching the diagram with horizontal arrows.
 
+### Board State 是北极星：长任务防目标漂移
+
+上下文窗口易失且有限，taskBoard 持久。taskBoard 顶部 `## Board State`（Goal / Acceptance / Active Milestone / Active TaskNode / Core Rule）是整个任务的**北极星**与唯一事实来源。**目标存文件，不存脑子。**
+
+- 每个 wave / session 开工前先 re-read `## Board State`，用一句话复述「主目标 + 当前在哪个 TaskNode」再动手；
+- 上下文变长或被压缩(compaction)后，**以 taskBoard 恢复目标，不靠记忆**；
+- 把 `Goal` + `Acceptance` 固定为 TodoWrite 第 0 项常驻锚点（始终可见、不删）；
+- 每完成一个 TaskNode / wave，立即把 `Active TaskNode`、`Global Status` 与证据回写 taskBoard。
+
+详见 [templates.md §"Board State 北极星 + Re-read 协议（防目标漂移）"](templates.md)。
+
 ### Contracts before implementation
 
 Implementation tasks should not invent field names, schema names, lifecycle states, or safety semantics. A strong plan starts with:

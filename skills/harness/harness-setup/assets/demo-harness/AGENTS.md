@@ -96,6 +96,16 @@ Level 4: 具体设计 / RCA，仅按需读取
 
 执行器与并行细节见 `harness-engineering-plan` 的 SKILL.md §「Dispatching TaskNodes to Parallel Subagents」与 templates.md §「执行器映射」。Cursor 环境下本门同时由 `.cursor/rules/harness-execution.mdc`（alwaysApply）每轮注入。
 
+## 防目标漂移（Anti-Drift）
+
+上下文窗口易失且有限：跑久了主目标会被挤出注意力或被压缩(compaction)摘要掉，agent 就会漂去做局部子任务。**目标存文件，不存脑子。**
+
+1. **目标外置到 taskBoard 北极星**：每个任务的主目标(Goal)、验收(Acceptance)、当前 milestone / TaskNode、一句话不变量(Core Rule) 写在 `taskBoard.md` 顶部 `## Board State`，作为唯一事实来源。上下文丢了，taskBoard 不丢。
+2. **每轮重锚**：每个 wave / 工作 session 开工前，先 re-read `## Board State`，用一句话复述「主目标 + 当前在哪个 TaskNode」再动手；上下文变长或被压缩后，**以 taskBoard 为准恢复目标，不靠记忆**。
+3. **TodoWrite 常驻锚点**：把主目标 + 验收标准固定为 TodoWrite 第 0 项（始终可见、不删），子任务在其下展开。
+4. **动作前自检**：每个非 trivial 动作前问一句「这一步服务于 Board State 的主目标吗？」偏了就停、回 taskBoard 对齐。
+5. **及时回写**：每完成一个 TaskNode / wave，立即把状态与证据写回 taskBoard，让外置记忆始终最新。
+
 ## Git Worktree 隔离开发
 
 开发新功能或修复 bug 时，优先使用 `git worktree` 在独立工作目录中进行，避免污染当前工作区。
