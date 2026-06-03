@@ -81,7 +81,20 @@ Level 4: 具体设计 / RCA，仅按需读取
 - `.agents/skills/harness/project-docs-workflow`：非 trivial 的功能开发、bug 修复、重构、接口变更前后，先用它扫描 docs 并判断文档影响。
 - `.agents/skills/harness/harness-engineering-plan`：多 Wave、多 TaskNode 的功能开发必须先用它生成 `taskBoard.md`，作为该 milestone 唯一执行控制平面。
 
-> **强制规则**：开始任何新 milestone（≥ 2 wave 或 ≥ 5 TaskNode）的功能开发前，agent 必须用 `harness-engineering-plan` 生成 `taskBoard.md` 并在推进期间实时更新。仅修文档 / 单条 bug fix 等 trivial 改动不在此约束。
+> **强制规则**：开始任何新 milestone（≥ 2 wave 或 ≥ 5 TaskNode）的功能开发前，agent 必须用 `harness-engineering-plan` 生成 `taskBoard.md` 并在推进期间实时更新；wave 内相互独立的 ready TaskNode 必须并行派发给多个实施 agent（见下方「强制执行流程门」）。仅修文档 / 单条 bug fix 等 trivial 改动不在此约束。
+
+## 强制执行流程门（Mandatory Execution Gate）
+
+非 trivial 的「实现 / 修改 / 开发 / 修复」类编码任务，**在写任何实现代码前**必须按顺序走完这道门，不能跳步：
+
+1. **判定规模**：任务命中 ≥ 2 wave 或 ≥ 5 TaskNode、或跨多文件 / 多 owner / 需要分阶段验证 → 进入 harness 流程；单文件 trivial fix 豁免。
+2. **拆任务 + 建 taskBoard**：用 `harness-engineering-plan` 把目标拆成 milestone / TaskNode / wave，落到 `.agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md`，推进期间实时更新状态。**禁止跳过 taskBoard 直接埋头单线程把多步任务写完。**
+3. **契约先行**：先冻结契约（M1：schema / 字段 / 状态 / 安全边界 / 测试矩阵），再进入实现 wave。
+4. **并行派发**：一个 wave 内 ≥ 2 个相互独立、依赖已满足的 ready TaskNode，**默认并行派发给多个实施 agent**（Cursor `Task` 工具 subagent 或 `codex` CLI），主 agent 当 orchestrator 串行 review + 合并，**禁止 last-writer-wins 覆盖**，也禁止把多个独立 TaskNode 塞进一个串行实现。
+5. **逐 milestone 过 gate**：每个 milestone 收齐验证证据、过 integration gate，才进入下一个；未过 gate 不得推进。
+6. **收口**：任务完成后 taskBoard 移入 `tasks/archive/`，再把稳定结论提炼进 `docs/`。
+
+执行器与并行细节见 `harness-engineering-plan` 的 SKILL.md §「Dispatching TaskNodes to Parallel Subagents」与 templates.md §「执行器映射」。Cursor 环境下本门同时由 `.cursor/rules/harness-execution.mdc`（alwaysApply）每轮注入。
 
 ## Git Worktree 隔离开发
 

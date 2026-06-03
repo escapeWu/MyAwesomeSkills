@@ -1,0 +1,31 @@
+---
+description: Harness execution gate — force task decomposition, taskBoard planning, and parallel multi-agent dispatch before implementing any non-trivial multi-step feature.
+alwaysApply: true
+---
+
+# 强制执行流程门（每轮生效）
+
+> 本规则每轮注入。命中「实现 / 修改 / 开发 / 修复」类**非 trivial** 编码任务时，**写实现代码前**必须先走完这道门；只有单文件 trivial fix 才豁免。
+
+## 触发判定
+
+任务命中以下任一即进入 harness 流程：≥ 2 个执行 wave、≥ 5 个 TaskNode、跨多文件 / 多 owner、或需要分阶段验证。
+
+## 必须按序执行（不可跳步）
+
+1. **拆任务 + 建 taskBoard**：先用 `harness-engineering-plan` skill 把目标拆成 milestone / TaskNode / wave，写入 `.agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md`，并实时更新状态。**禁止跳过 taskBoard 直接单线程把多步任务写完。**
+2. **契约先行**：先冻结 M1 契约（schema / 字段 / 状态 / 安全边界 / 测试矩阵），再进入实现 wave。
+3. **并行派发多个实施 agent**：一个 wave 内 ≥ 2 个相互独立、依赖已满足的 ready TaskNode，**默认在同一条消息里并行派发**给多个实施 agent，主 agent 只当 orchestrator（拆 → 派 → review → 合并 → 过 gate）。
+   - 执行器二选一或混用：Cursor `Task` 工具 subagent（IDE 内首选，多个 `Task` 调用放同一条消息实现真正并行）；或 `codex` CLI（`/tmp` spec + `codex exec --full-auto - < spec.md`）。
+   - **禁止 last-writer-wins 覆盖**；合并按「接受行为的并集」，主 agent 串行 review。
+   - worktree 不强制，仅当并行 TaskNode 改重叠文件时才隔离。
+4. **逐 milestone 过 gate**：每个 milestone 收齐验证证据、过 integration gate，才进入下一个。
+5. **收口**：完成后 taskBoard 移入 `tasks/archive/`，稳定结论提炼进 `docs/`。
+
+## 自检（开工前问自己）
+
+- [ ] 这是多步 / 多文件任务吗？是 → 有没有先建 taskBoard？
+- [ ] 这个 wave 有没有 ≥ 2 个独立 ready TaskNode？有 → 有没有并行派发，而不是自己单线程写？
+- [ ] 上一个 milestone 过 gate 了吗？没过 → 不准推进下一个。
+
+执行器与并行细节见 `harness-engineering-plan/SKILL.md` §「Dispatching TaskNodes to Parallel Subagents」与 `templates.md` §「执行器映射」。

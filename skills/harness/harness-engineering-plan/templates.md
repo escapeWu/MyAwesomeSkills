@@ -164,6 +164,45 @@ Create two artifacts per parallel batch:
 - ❌ "写一个 BDState class" — 没指定文件路径、字段、prompt 与并行 task 的协调
 - ❌ 把所有 TaskNodes 塞进一个 prompt — 一旦失败整体回滚成本大、不能并行
 
+### 执行器映射：把同一份 prompt 派给 Cursor `Task` 或 `codex` CLI
+
+同一套 8-section prompt，两种派发器二选一或混用（见 SKILL.md §"Dispatching TaskNodes to Parallel Subagents"）。
+
+**A. Cursor `Task` 工具 subagent（IDE 内首选）**
+
+- 一个 wave 的 N 个相互独立 TaskNode，在**同一条消息**里发出 N 个 `Task` 调用以实现真正并行。
+- 每个 `Task` 的 `prompt` = 该 TaskNode 的完整 8-section prompt（在 prompt 顶部贴 `_shared_context.md` 内容，或让 subagent 先 read 它）。
+- `subagent_type` 选择：纯实现 / 多步用 `generalPurpose`；偏命令行 / 脚本用 `shell`；要 N 选优用 `best-of-n-runner`（自带独立 worktree）。
+- 长任务设 `run_in_background: true`，完成有通知；主 agent 收齐各 subagent 产出后**串行** review + 合并。
+- worktree 默认不开；仅当并行 TaskNode 改**重叠文件**时，用 `best-of-n-runner` 或显式 worktree 隔离。
+
+示例（一条消息内并行 3 个 TaskNode）：
+
+```text
+Task(subagent_type="generalPurpose", description="M2-T01 adapter A", prompt="<M2-T01 的 8-section prompt>")
+Task(subagent_type="generalPurpose", description="M2-T02 adapter B", prompt="<M2-T02 的 8-section prompt>")
+Task(subagent_type="generalPurpose", description="M2-T03 adapter C", prompt="<M2-T03 的 8-section prompt>")
+```
+
+**B. `codex` CLI（GPT 系列质量 / 长任务 / 已有 sandbox 链路）**
+
+每个 TaskNode 一个 `/tmp` spec 文件 + stdin 重定向后台启动；禁止裸 prompt、禁止 `"$(cat ...)"`：
+
+```bash
+# 1. 写 spec（含 8-section，尤其 acceptance / validation / safety）
+SPEC_FILE="/tmp/codex-taskspec-$(date +%s)-$$-M2-T01.md"
+cp tasks/<module>/prompts/M2-T01.prompt.md "$SPEC_FILE"
+
+# 2. stdin 重定向后台启动（防 stdin 饿死、零文件改动假活）
+codex exec --full-auto - < "$SPEC_FILE" 2>&1 | tee /tmp/codex-M2-T01.log &
+
+# 3. 退出后捡未 git add 的新文件 + 校验 acceptance
+git status --short
+```
+
+- 错峰启动（每 60-120s 一个）或限并发 2-3 个，避免 OpenAI 429。
+- 进阶：cron / tmux 监督、Release-the-Hounds、L1 全自动属于 `autonomous-codex-supervision` skill 的范畴（若已安装）；本 harness 不内置该环境耦合。
+
 ---
 
 ## Wave Overview Diagram (Top-Down)

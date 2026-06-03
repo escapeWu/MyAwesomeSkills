@@ -17,6 +17,7 @@ without guessing the repo shape.
 Deliver the smallest useful harness that still gives an agent clear entry points:
 
 - root `AGENTS.md` or equivalent
+- `.cursor/rules/harness-execution.mdc` (Cursor 原生 always-applied 执行门：强制 taskBoard + 并行派发；非 Cursor 仓库可省略)
 - `docs/OVERVIEW.md`
 - `docs/feature/INDEX.md`
 - `docs/reference/INDEX.md`
@@ -44,6 +45,7 @@ Deliver the smallest useful harness that still gives an agent clear entry points
 - Use root-relative links for deep cross-tree references.
 - Keep `taskBoard.md` as the execution control plane under `harness-engineering-plan/tasks/`, not as a changelog in docs.
 - Separate WIP execution context (tasks/) from stable docs (docs/). Update docs only after task completion.
+- **Enforcement must be runtime-injected, not just described.** A harness only authored as soft skill descriptions gets ignored at runtime. In a Cursor repo, land the mandatory execution gate in BOTH `.cursor/rules/harness-execution.mdc` (`alwaysApply: true`, injected every turn) AND root `AGENTS.md` (a "强制执行流程门" section), so task decomposition + taskBoard + parallel multi-agent dispatch are forced, not optional.
 
 ## Reference
 
@@ -62,7 +64,8 @@ If the target repo needs a fast bootstrap, copy the bundled demo harness from
 `assets/demo-harness/` into the repo root and then replace the placeholder names.
 The demo pack includes:
 
-- a root `AGENTS.md`
+- a root `AGENTS.md` (含「强制执行流程门」)
+- a Cursor-native `.cursor/rules/harness-execution.mdc` execution gate (`alwaysApply: true`)
 - the `docs/` entry points
 - reference docs for architecture, interfaces, and validation
 - one sample feature module

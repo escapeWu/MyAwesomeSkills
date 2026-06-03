@@ -32,6 +32,8 @@ Use this order:
 
 ## 项目内置 skills
 
+## 强制执行流程门（Mandatory Execution Gate）
+
 ## Git Worktree 隔离开发
 
 ## 测试规则
@@ -40,6 +42,13 @@ Use this order:
 ```
 
 Keep the section names stable once published.
+
+The `强制执行流程门` section is what turns the harness from "described" into "enforced".
+It must force, in order: scope check → taskBoard via `harness-engineering-plan` →
+contracts-first → **parallel dispatch of independent ready TaskNodes to multiple
+implementation agents** (Cursor `Task` tool subagent or `codex` CLI) → per-milestone
+integration gate → archive + distill to docs. Without this gate, agents default to
+single-threaded implementation and skip both the taskBoard and parallel dispatch.
 
 ## 2.1 Repo-local skill registry
 
@@ -130,6 +139,44 @@ After installing:
 If the target repo already has one of these skills, omit `--overwrite` to make
 the installer fail fast, review the difference manually, and only then re-run
 with `--overwrite`.
+
+## 2.3 Cursor 原生强制执行门（`.cursor/rules`）
+
+Soft skill descriptions and a buried `AGENTS.md` bullet are **not** enough — agents
+ignore them at runtime and fall back to single-threaded implementation. In a Cursor
+repo, land the execution gate in two always-injected places:
+
+1. **`.cursor/rules/harness-execution.mdc`** with `alwaysApply: true`. Cursor injects
+   this every turn, so the gate is always in context. Copy the template from
+   `assets/demo-harness/.cursor/rules/harness-execution.mdc`.
+2. **Root `AGENTS.md` → `## 强制执行流程门（Mandatory Execution Gate）`** as the
+   human-readable SSOT of the same gate.
+
+The gate must encode, in order:
+
+```text
+scope check (≥2 wave / ≥5 TaskNode / multi-file)
+  → taskBoard via harness-engineering-plan (禁止跳过)
+  → contracts-first (M1)
+  → 并行派发独立 ready TaskNode 给多个实施 agent
+       · Cursor `Task` 工具 subagent（同一条消息多个 Task 调用）
+       · 或 `codex` CLI（/tmp spec + codex exec --full-auto - < spec.md）
+       · 禁止 last-writer-wins；主 agent 串行 review + merge
+  → per-milestone integration gate
+  → archive taskBoard + distill to docs/
+```
+
+The `.mdc` frontmatter is minimal:
+
+```md
+---
+description: <one line>
+alwaysApply: true
+---
+```
+
+Non-Cursor repos can skip the `.mdc` file and rely on `AGENTS.md` + the skill, but
+should still keep the `强制执行流程门` section.
 
 ## 3. Docs tree skeleton
 
