@@ -64,7 +64,7 @@ Level 4: 具体设计 / RCA，仅按需读取
 
 ## 文档写入规则
 
-- 新增功能优先归入已有 `docs/feature/<module>/`；没有合适模块时再新建目录。
+- **一功能一目录**：独立 feature 必须独立成 `docs/feature/<feature>/` 并带自己的 README；命中以下任一即视为独立 feature，**禁止**长期堆在某个大类目录下当 leaf：① 自有长期目标 / 里程碑路线图；② 自有数据契约 / 接口 / 产出 artifact；③ 独立生命周期（独立演进与验收）；④ 该子主题已累计 leaf ≥ 3，或单文件 ≥ 500 行。「相关 / 能复用」不构成塞进大类的理由。
 - 大型模块使用 `INDEX.md` 或 `README.md` 作为模块地图，详细设计、数据流、RCA 放子文件。
 - taskBoard 不放在 docs/ 下。执行过程文件统一存放在 `.agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md`。
 - 中小型模块使用 `README.md`，必要时补少量子文件。
@@ -73,6 +73,15 @@ Level 4: 具体设计 / RCA，仅按需读取
 - 修改接口或契约时同步更新 `docs/reference/interfaces.md`。
 - 修改运行、测试、验证方式时同步更新 `docs/reference/runbook-testing.md`。
 - 保持每层信息密度一致：`OVERVIEW.md` 是地图，`INDEX.md` 是路由，模块文档放细节。
+
+### 文档自主治理门（强制）
+
+docs 是交付的一部分，不是事后补登。非 trivial 编码任务收尾必须包含 docs 自主维护与自主调整，禁止「代码改了 docs 没动」收口：
+
+1. **自主维护（不等人催）**：非 trivial 代码 / 契约 / 运行方式变更后，在同一任务内主动建或改 owning feature 的 README + `feature/INDEX.md` + `OVERVIEW.md` 模块表 + 反链，以及受影响的 `interfaces.md` / `runbook-testing.md`。
+2. **自主调整（主动拆分）**：读 / 写 docs 时若发现某大类目录下的子主题已命中「一功能一目录」触发条件（膨胀），必须主动提议拆成独立 feature；按项目交互规则先确认再落盘。
+3. **拆分不破链**：拆分 / 迁移时保证 Top-Down 可达（父 INDEX 与 OVERVIEW 增路由）、Bottom-Up 可溯（leaf 顶部反链）、旧路径迁移而非与新路径并存。
+4. **收尾自检**：问一句「这次代码 / 契约改动，对应 feature 的 README / INDEX / OVERVIEW / 反链是否都已同步？有没有该拆未拆的膨胀大类？」答否即补。
 
 ## 项目内置 skills
 

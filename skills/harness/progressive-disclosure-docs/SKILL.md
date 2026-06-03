@@ -143,6 +143,41 @@ Module `INDEX.md` should route by task:
 
 Medium: `README.md` + optional sub-docs. Small: single `README.md`.
 
+## Feature Granularity: One Feature, One Directory
+
+Do not bury an independent feature as scattered leaf files under a big catch-all
+category. A sub-topic must be **promoted to its own** `docs/feature/<feature>/`
+(with its own README) when it hits **any** of:
+
+- it has its own long-term goal or milestone roadmap (M0–Mn);
+- it has its own data contract / interface / output artifact;
+- it has an independent lifecycle (evolves and is accepted on its own);
+- it has accumulated **≥ 3 leaf docs**, or a single leaf has grown **≥ 500 lines**.
+
+"Related" or "reusable" is **not** a reason to nest it under a mega-category —
+mirror the code-organization rule "ownership by domain first". An overgrown
+category that hides several real features behind generic leaf names is an
+anti-pattern: agents can no longer route to the right feature from the INDEX.
+
+## Autonomous Docs Governance (hard rule)
+
+Docs are part of the deliverable, not an afterthought. The agent maintains and
+restructures docs **proactively**, without being told:
+
+1. **Autonomous maintenance**: after a non-trivial code / contract / runbook
+   change, in the same task update the owning feature README + `feature/INDEX.md`
+   + `OVERVIEW.md` module table + back-links, plus affected `interfaces.md` /
+   `runbook-testing.md`. "Code changed, docs untouched" is not an acceptable
+   end state.
+2. **Autonomous restructuring**: when reading or writing docs, if a sub-topic
+   under a big category now meets the feature-granularity trigger above, the
+   agent must proactively propose splitting it into an independent feature
+   (confirm first per the project's interaction rule, then land it).
+3. **Split without breaking links**: when splitting / migrating, preserve
+   Top-Down reachability (add routes in the parent INDEX and OVERVIEW),
+   Bottom-Up traceability (leaf parent back-links), and **migrate old paths
+   instead of leaving them alongside the new ones**.
+
 ## Large Proposal Decomposition
 
 Design proposals (under `docs/feature/<module>/proposals/`) often carry three different audiences:
@@ -252,6 +287,8 @@ read_by_default: false
 5. **Old docs at root with no status** — archive or index clearly.
 6. **No archive layer** — agents confuse historical plans with current requirements.
 7. **No write-back rule** — if new modules don't require index updates, the map rots.
+8. **Overgrown catch-all category** — an independent feature (own goal/milestones/contract, or ≥3 leaf docs) buried as leaf files under a mega-module; promote it to its own `docs/feature/<feature>/`.
+9. **Code changed, docs untouched** — non-trivial code/contract change shipped without updating the owning feature README + INDEX + OVERVIEW + back-links.
 
 ## Audit Checklist
 
@@ -264,3 +301,5 @@ read_by_default: false
 - [ ] `禁止全量读取` or equivalent appears in agent-facing rules.
 - [ ] No critical broken links in active docs.
 - [ ] New docs write rules specify which indexes must be updated.
+- [ ] Each independent feature (own goal/milestones/contract, or ≥3 leaf docs) has its own `docs/feature/<feature>/`, not buried under a catch-all category.
+- [ ] Agent-facing rules require autonomous docs maintenance and proactive split of overgrown categories.

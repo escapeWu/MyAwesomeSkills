@@ -211,6 +211,23 @@ docs/
 taskBoard 不在 docs/ 下。它是 harness-engineering-plan 的临时产物，存放在 skill 自身的 `tasks/` 目录中。
 任务完成后移入 `tasks/archive/`，然后蒸馏稳定结论到 `docs/`。
 
+## 3.1 Feature 粒度与文档自主治理
+
+把「一功能一目录 + 文档自主治理门」写进根 `AGENTS.md` 的 `## 文档写入规则`，避免文档退化成"全塞进一个大类、靠 leaf 文件名硬认"。完整规则见 `progressive-disclosure-docs` skill 的 §「Feature Granularity」与 §「Autonomous Docs Governance」。AGENTS.md 至少要编码：
+
+```text
+一功能一目录：独立 feature（自有目标/里程碑、或自有契约/产出、或独立生命周期、
+  或 leaf ≥ 3 / 单文件 ≥ 500 行）必须独立成 docs/feature/<feature>/ 带自己的 README，
+  禁止长期堆在大类下当 leaf。「相关 / 能复用」不构成塞进大类的理由。
+自主维护：非 trivial 代码 / 契约变更后，同任务内主动改 owning feature README +
+  feature/INDEX + OVERVIEW + 反链 + interfaces/runbook；禁止「代码改了 docs 没动」收口。
+自主调整：发现大类下子主题膨胀（命中上面触发条件）→ 主动提议拆成独立 feature，
+  按项目交互规则先确认再落盘。
+拆分不破链：父 INDEX/OVERVIEW 增路由、leaf 反链、旧路径迁移而非并存。
+```
+
+这条门和 `强制执行流程门` 互补：执行门保证"多步任务被拆解并行执行"，治理门保证"产物结构和文档随之收敛、不腐化"。
+
 ## 4. Leaf-document rules
 
 Every leaf doc should begin with a parent link.
