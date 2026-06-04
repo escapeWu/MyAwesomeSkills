@@ -39,12 +39,18 @@ docs/feature/INDEX.md      docs/reference/INDEX.md      docs/archive/INDEX.md
   ↓                         ↓                            ↓
 docs/feature/<module>/      stable technical facts        historical plans / bugfixes / RCA
   ↓
-README.md or INDEX.md
+INDEX.md / README.md / requirements.md
   ↓
-design.md / dataflow.md / changelog.md / RCA.md
+requirements.md / design.md / dataflow.md / changelog.md / RCA.md
 
 (separate: .agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md — WIP execution, 非 SSOT)
 ```
+
+`requirements.md` records expected product / business behavior and acceptance.
+`README.md` / `INDEX.md` record current implemented state, module routing, API
+inventory, and known gaps. Do not use a README as the only source of truth for
+both requirements and current implementation once a feature has meaningful
+business behavior.
 
 **docs/ 与 tasks/ 的分离**：
 
@@ -63,7 +69,7 @@ Layer responsibilities:
 | 2R | docs/reference/INDEX.md | Stable facts: architecture, API references, contracts, runbooks. |
 | 2A | docs/archive/INDEX.md | Historical material: completed plans, bugfix notes, RCA. Default: do not read. |
 | 3 | docs/feature/\<module\>/INDEX.md | Module-level map or summary. |
-| 4 | Detailed module docs | Design, data flow. Read only when task-relevant. |
+| 4 | Detailed module docs | Requirements, design, data flow. Read only when task-relevant. |
 | — | `.agents/.../tasks/<module>/taskBoard.md` | WIP execution plan. Read only when continuing, supervising, or auditing execution. |
 
 ## Required Agent Reading Rule
@@ -118,6 +124,9 @@ Classify modules by reading depth — not just list files:
 - **Small modules** (single file): link to `module/README.md`
 
 Include agent routing: "先读本 INDEX.md 确定目标模块，再按需进入子目录。禁止全量读取。"
+Route expected behavior / product acceptance to `requirements.md`; route current
+implementation, API lists, current status, and known gaps to `README.md` /
+`INDEX.md`.
 
 ## Module Directory Requirements
 
@@ -126,6 +135,8 @@ Large module:
 ```text
 docs/feature/<module>/
 ├── INDEX.md       # module map, always read before details
+├── README.md      # current implemented state, API inventory, known gaps
+├── requirements.md # expected product/business behavior and acceptance
 ├── design.md      # detailed design
 ├── dataflow.md    # data flow / sequence / diagrams
 ├── changelog.md   # active changelog
@@ -135,13 +146,17 @@ docs/feature/<module>/
 taskBoard 不在此目录。执行过程文件统一存放在 `.agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md`。
 
 Module `INDEX.md` should route by task:
-- Need high-level behavior → `README.md`
+- Need module map / reading order → `INDEX.md`
+- Need expected behavior / product requirements / acceptance → `requirements.md`
+- Need current implementation / API list / current state / known gaps → `README.md`
 - Need implementation design → `design.md`
 - Need data flow / sequence → `dataflow.md`
 - Continuing execution work → `.agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md`
 - Debugging a known incident → matching `rca-*.md`
 
-Medium: `README.md` + optional sub-docs. Small: single `README.md`.
+Medium: `README.md` + `requirements.md` when business behavior or acceptance
+matters + optional sub-docs. Small: single `README.md` unless requirements need
+their own source of truth.
 
 ## Feature Granularity: One Feature, One Directory
 
@@ -166,7 +181,8 @@ restructures docs **proactively**, without being told:
 
 1. **Autonomous maintenance**: after a non-trivial code / contract / runbook
    change, in the same task update the owning feature README + `feature/INDEX.md`
-   + `OVERVIEW.md` module table + back-links, plus affected `interfaces.md` /
+   + `OVERVIEW.md` module table + back-links, plus owning `requirements.md` when
+   expected behavior / acceptance changed, and affected `interfaces.md` /
    `runbook-testing.md`. "Code changed, docs untouched" is not an acceptable
    end state.
 2. **Autonomous restructuring**: when reading or writing docs, if a sub-topic
@@ -235,6 +251,9 @@ Both must include agent routing instructions and forbid full reads.
 
 ```text
 README.md / INDEX.md explains what the module is.
+requirements.md explains expected product/business behavior and acceptance.
+README.md / INDEX.md explains current implemented state, current API inventory,
+known gaps, and routing.
 taskBoard.md (under .agents/.../tasks/) explains what is being or was executed.
 taskBoard 是临时执行文件，不是 docs/ 的一部分。
 任务完成后移入 tasks/archive/，然后提炼稳定结论更新 docs/。
@@ -269,7 +288,7 @@ read_by_default: false
 
 1. Inventory Markdown files excluding runtime/build directories.
 2. Identify current entrypoints: `AGENTS.md`, `AGENTS.md`, `README.md`, `docs/OVERVIEW.md`.
-3. Classify docs into: feature / reference / archive / task boards.
+3. Classify docs into: requirements / feature current state / reference / archive / task boards.
 4. Create or update: `OVERVIEW.md`, `feature/INDEX.md`, `reference/INDEX.md`, `archive/INDEX.md`.
 5. Move or link root-level stray docs into the right index.
 6. Add the required reading rule to `AGENTS.md`.

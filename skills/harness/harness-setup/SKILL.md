@@ -22,7 +22,7 @@ Deliver the smallest useful harness that still gives an agent clear entry points
 - `docs/feature/INDEX.md`
 - `docs/reference/INDEX.md`
 - `docs/archive/INDEX.md`
-- module-level `README.md` / `INDEX.md`
+- module-level `README.md` / `INDEX.md` plus `requirements.md` for expected product/business behavior and acceptance
 - `tasks/<module>/taskBoard.md` for multi-wave or multi-node work (under harness-engineering-plan)
 - leaf docs with explicit parent links
 
@@ -30,7 +30,7 @@ Deliver the smallest useful harness that still gives an agent clear entry points
 
 1. Inspect existing root instructions, docs, and ownership boundaries.
 2. Identify the repo's real layers before writing any new structure.
-3. Create or repair the docs map first.
+3. Create or repair the docs map first; distinguish `requirements.md` for expected behavior from `README.md` / `INDEX.md` for current implemented state and routing.
 4. Add a taskBoard when the work spans multiple waves, dependencies, or validation gates.
 5. Write leaf docs only after the parent indexes exist.
 6. Keep top-down discoverability and bottom-up traceability intact.
@@ -45,6 +45,7 @@ Deliver the smallest useful harness that still gives an agent clear entry points
 - Use root-relative links for deep cross-tree references.
 - Keep `taskBoard.md` as the execution control plane under `harness-engineering-plan/tasks/`, not as a changelog in docs.
 - Separate WIP execution context (tasks/) from stable docs (docs/). Update docs only after task completion.
+- Do not mix pure requirements, current implementation inventory, and active taskBoard execution context in one README; keep requirements, current state, and WIP separate.
 - **Enforcement must be runtime-injected, not just described.** A harness only authored as soft skill descriptions gets ignored at runtime. In a Cursor repo, land the mandatory execution gate in BOTH `.cursor/rules/harness-execution.mdc` (`alwaysApply: true`, injected every turn) AND root `AGENTS.md` (a "强制执行流程门" section), so task decomposition + taskBoard + parallel multi-agent dispatch are forced, not optional.
 
 ## Reference
@@ -53,6 +54,7 @@ Read `references/harness-bootstrap.md` for:
 
 - AGENTS.md section order
 - docs tree templates
+- sample feature module with README + requirements separation
 - taskBoard decision rules
 - leaf-document link rules
 - validation checklist
@@ -68,7 +70,7 @@ The demo pack includes:
 - a Cursor-native `.cursor/rules/harness-execution.mdc` execution gate (`alwaysApply: true`)
 - the `docs/` entry points
 - reference docs for architecture, interfaces, and validation
-- one sample feature module
+- one sample feature module showing README + requirements separation
 
 Use it as a starting shape, not as a final domain model.
 
@@ -77,7 +79,8 @@ Use it as a starting shape, not as a final domain model.
 If the current GitHub repository is the source of truth for reusable skills,
 install the curated harness bundle instead of copying skills one by one.
 
-Use this when you want a target repo to receive the same harness stack:
+Use this when you want a target repo to receive the same harness stack, including
+skills that support a requirements-first docs layer:
 
 - `harness-setup`
 - `harness-engineering-plan`

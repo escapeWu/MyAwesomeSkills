@@ -21,7 +21,10 @@ for the next agent to grep.
    `time-axis replay compare`.
 2. **Map existing ownership.** Use docs as a map and code as truth. Start from
    `docs/OVERVIEW.md`, then `docs/feature/INDEX.md` or
-   `docs/reference/INDEX.md` only when relevant.
+   `docs/reference/INDEX.md` only when relevant. When locating a feature owner,
+   follow progressive disclosure into its `README.md` or `INDEX.md` and
+   `requirements.md`: requirements capture expected behavior, while README/INDEX
+   capture current state and routing.
 3. **Grep before placing.** Search by endpoint, schema name, table name, UI
    label, config key, task id, and domain noun before adding files.
 4. **Extend the nearest owner.** Prefer the existing module that already owns
@@ -32,7 +35,12 @@ for the next agent to grep.
    Promote to shared only after there are at least two real callers and a stable
    contract.
 6. **Mirror tests and docs.** New behavior gets tests near the corresponding
-   layer. API/schema/runtime changes update the docs listed in `AGENTS.md`.
+   layer. Mirror docs by intent: expected behavior or acceptance changes go to
+   `docs/feature/<module>/requirements.md`; current implementation, API lists,
+   and status go to the feature `README.md` or `INDEX.md`; stable interfaces go
+   to `docs/reference/interfaces.md`; runbook changes go to
+   `docs/reference/runbook-testing.md`. API/schema/runtime changes update the
+   docs listed in `AGENTS.md`.
 
 ## Context Grep Recipes
 
@@ -97,7 +105,12 @@ fail if the new behavior were broken.
 | Frontend route | `frontend/src/app/<route>/page.tsx` | API helper, shared types, UI tests/typecheck |
 | Shared frontend UI | `frontend/src/components/` | keep route-only UI local until reused |
 | Frontend data access | `frontend/src/lib/api.ts` | never hardcode backend host in components/pages |
-| Feature docs | `docs/feature/<module>/` | `docs/feature/INDEX.md`, `docs/OVERVIEW.md` when adding modules |
+| Feature requirements / expected behavior / acceptance | `docs/feature/<module>/requirements.md` | feature README/INDEX, tests |
+| Feature current state / API list / known gaps | `docs/feature/<module>/README.md` or `INDEX.md` | `docs/feature/INDEX.md`, `docs/OVERVIEW.md` when adding modules |
+| Design decisions | `docs/feature/<module>/design.md` | feature README/INDEX |
+| Data flow / sequence | `docs/feature/<module>/dataflow.md` | design docs, tests |
+| Stable API/config/schema contracts | `docs/reference/interfaces.md` | feature README/INDEX, schemas/types |
+| Feature docs | `docs/feature/<module>/` | use the specific docs rows above before adding generic files |
 | Execution plan | `.agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md` | WIP, not under docs/ |
 
 ## Framework References
@@ -118,5 +131,9 @@ project convention unless the task is explicitly to migrate it.
 - I am extending an existing file/module unless there is a clear new boundary.
 - Any new shared helper has at least two callers or an obvious stable contract.
 - API changes update backend schemas, frontend types, and interface docs.
+- I know whether this change affects expected behavior or current
+  implementation, and I updated the corresponding docs.
+- For bug fixes, unclear expected behavior is clarified first through
+  project-analysis or `requirements.md`.
 - Tests are placed where the behavior is observed, not where the helper happens
   to live.

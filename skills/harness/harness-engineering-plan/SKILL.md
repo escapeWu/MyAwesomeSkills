@@ -120,6 +120,19 @@ If a wave's parallelism or dependency requires more detail (e.g., a single intra
 
 详见 [templates.md §"Board State 北极星 + Re-read 协议（防目标漂移）"](templates.md)。
 
+### Requirements before contracts
+
+Before any non-trivial new feature, bug fix, or behavior change to an already
+implemented feature, first locate the owning module through progressive docs:
+`docs/OVERVIEW.md -> docs/feature/INDEX.md -> docs/feature/<module>/README.md`
+or `INDEX.md`.
+
+Read the module README/INDEX as the **current state source**, and read
+`docs/feature/<module>/requirements.md` as the **expected behavior / acceptance
+source**. If `requirements.md` is missing and the task depends on expected
+behavior, create a TaskNode to backfill and freeze requirements before contract
+work.
+
 ### Contracts before implementation
 
 Implementation tasks should not invent field names, schema names, lifecycle states, or safety semantics. A strong plan starts with:
@@ -168,6 +181,8 @@ Every executable unit is represented as a TaskNode with these fields:
 **Input Context:**
 - `path/to/file.py` — why this file matters.
 - `docs/path.md` — governing design or contract.
+- `docs/feature/<module>/README.md` or `docs/feature/<module>/INDEX.md` — current state source.
+- `docs/feature/<module>/requirements.md` — expected behavior / acceptance source.
 
 **Expected Output:**
 - Concrete files, behavior, schema, API response, UI component, or docs.
@@ -261,8 +276,8 @@ A typical feature follows this milestone sequence:
 
 | Milestone | Purpose | Parallelism |
 |---|---|---|
-| M0 | Planning Gate — plan, task board, scope, safety boundaries | n/a |
-| M1 | Contract Foundation — schemas, statuses, degradation, test matrix, docs | high |
+| M0 | Planning Gate + Requirement Context Gate — locate module docs, read/freeze requirements, plan task board, scope, safety boundaries | n/a |
+| M1 | Contract Foundation from Requirements — schemas, statuses, degradation, test matrix, docs | high |
 | M2 | Input Adapters — normalize upstream data into stable contract | high |
 | M3A | Evidence Scorers — independent, auditable evidence items | high |
 | M3B | Resolver & Document Builder — combine evidence into decisions | medium |
@@ -280,6 +295,9 @@ Use `project-analysis` as the read-only evidence layer when M0 or M1 cannot conf
 Trigger it before finalizing the task board when:
 
 - existing docs do not reveal the relevant module boundary through `docs/OVERVIEW.md -> docs/feature/INDEX.md` or `docs/reference/INDEX.md`;
+- implemented-feature questions or bug fixes need expected behavior clarified before changing code;
+- `docs/feature/<module>/requirements.md` is missing, stale, or not reachable through the module docs;
+- requirements and current implementation appear inconsistent;
 - the feature crosses multiple services, routers, workers, frontend surfaces, or external systems;
 - TaskNode `Input Context` would otherwise contain guesses instead of concrete entry points and files;
 - contract names, data shapes, sequence boundaries, or performance risks need analysis before implementation waves.
@@ -288,15 +306,15 @@ Expected handoff from `project-analysis`:
 
 - a new or updated long-lived docs entry, reachable through the project docs indexes;
 - Mermaid diagrams paired with ASCII/TUI previews when diagrams are produced;
-- a **TaskNode-ready Context** section with `Entry Points`, `Relevant Files`, `Contracts / Data Shapes`, `Risks / Open Questions`, and `Validation Candidates`.
+- a **TaskNode-ready Context** section with `Entry Points`, `Relevant Files`, `Expected Behavior Source`, `Contracts / Data Shapes`, `Risks / Open Questions`, and `Validation Candidates`.
 
 Then copy those facts into the TaskNode `Input Context`, `Acceptance Criteria`, and `Validation Commands`. Do not use `project-analysis` to replace the task board; it supplies evidence for the harness, while this skill owns milestones, waves, gates, and TaskNode shape.
 
 ## Minimal Execution Flow
 
 ```text
-1. Write M0 plan and task board.
-2. Complete M1 contracts before implementation.
+1. Locate/read requirements and current module docs, then write M0 plan and task board.
+2. Freeze M1 contracts from requirements before implementation.
 3. Release independent M2 input tasks.
 4. Integrate M2 and pass gate.
 5. Release independent M3A scorer tasks.
@@ -336,7 +354,7 @@ Then copy those facts into the TaskNode `Input Context`, `Acceptance Criteria`, 
 
 **Why**: taskBoard carries transient execution state (Status: planned→running→done, Evidence, wave gate status). Mixing it into `docs/` confuses WIP process with stable truth. `docs/` is SSOT — update it only after completion, not during execution.
 
-**docs/** stays clean of taskBoards. After a feature ships, the stable conclusions (data model, design rationale, new API contracts) flow into `docs/feature/<module>/` and `docs/reference/`. The spent taskBoard lives in `tasks/archive/` for audit only.
+**docs/** stays clean of taskBoards. After a feature ships, the stable conclusions flow into `docs/feature/<module>/` and `docs/reference/`: expected behavior / acceptance changes are distilled into `docs/feature/<module>/requirements.md`, while current implementation, design rationale, and API changes are distilled into the module README/INDEX or `docs/reference/interfaces.md`. The spent taskBoard lives in `tasks/archive/` for audit only.
 
 ## Design Review Questions
 
