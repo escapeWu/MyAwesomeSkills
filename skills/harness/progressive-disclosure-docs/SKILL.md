@@ -194,6 +194,46 @@ restructures docs **proactively**, without being told:
    Bottom-Up traceability (leaf parent back-links), and **migrate old paths
    instead of leaving them alongside the new ones**.
 
+## SSOT Validation Gate（硬性判定）
+
+`docs/` 存放的是 SSOT（Single Source of Truth），描述**系统是什么、应该如何运行**。执行过程文件、一次性分析、gap/diff 记录不属于 SSOT，严禁混入 `docs/`。
+
+### 判定流程
+
+对每个拟放入 `docs/feature/<module>/` 的文件，agent 必须按顺序回答以下问题。任何一个回答为"否"则该文件不属于 `docs/`：
+
+| # | 判定问题 | SSOT（放入 docs/） | 非 SSOT（改放别处） |
+|---|---------|-------------------|-------------------|
+| 1 | 文件描述的是**稳定的系统知识**（功能是什么、数据流如何、接口契约、组件关系），还是**临时的执行上下文**（正在做什么、差异在哪里、下一步计划）？ | 稳定知识 → SSOT | 执行上下文 → `.agents/skills/harness/harness-engineering-plan/tasks/` |
+| 2 | 功能实现**完成后**，这个文件是否仍然需要**长期维护**（随代码演进持续更新）？ | 是 → SSOT | 否（一次性分析/总结/批注）→ `tasks/archive/` |
+| 3 | 文件属于**模块功能描述**还是**运行/测试/验证方式**？ | 模块功能 → `docs/feature/<module>/` | 运行/测试方式 → `docs/reference/runbook-testing.md` |
+| 4 | 文件记录的是接口/字段/状态/枚举的**稳定契约**吗？ | 是 → SSOT，同步更新 `docs/reference/interfaces.md` | 否 → 属于不稳定草稿或执行上下文 |
+| 5 | 文件描述的是**预期行为/验收条件**（requirements），还是**当前实现状态**（implementation），还是两者都不是？ | requirements → `requirements.md`；当前状态 → `README.md`/`INDEX.md` | 两者都不是 → 非 SSOT，改放执行目录 |
+
+### 典型非 SSOT 文件去向
+
+| 文件类型 | 典型示例 | 正确去向 |
+|----------|---------|---------|
+| Gap analysis / 差异分析 | `agent-io-gap-analysis.md`（模块A与模块B的接口差异） | `.agents/.../tasks/` 或 `tasks/archive/` |
+| 一次性总结/总结批注 | `agent-http-call-summary.md`（某次对接后的总结记录） | 关键内容并入 SSOT 后，原文件归入 `tasks/archive/` |
+| 测试运行方式 | `test.md` 描述如何启动服务、运行 E2E | `docs/reference/runbook-testing.md` |
+| 执行计划 / wave 列表 | 不含稳定结论的 wave 进度、子任务拆分 | `.agents/.../tasks/<module>/taskBoard.md` |
+| 中间 review 产物 | Codex review 原始输出、一次性 lint 报告 | `docs/archive/<module>-reviews/` |
+| 临时设计草稿 | 未经评审的 schema 草稿 | 评审通过后按 SSOT 格式写入 doc，草稿废弃 |
+
+### 目录自检（交叉校验）
+
+每次创建或修改 `docs/feature/<module>/` 后，agent 必须对该目录执行一次自检：
+
+1. 列出目录下所有 `.md` 文件
+2. 对每个文件应用上述判定流程
+3. 如果发现非 SSOT 文件，立即移出（到 `tasks/` 或 `tasks/archive/` 对应位置）
+4. 确认每个文件的 `> 上级：` 反链指向正确的父文档
+5. 确认 `docs/feature/INDEX.md` 的路由表已同步更新（新增、迁移或删除均需同步）
+6. 确认 `docs/OVERVIEW.md` 的模块表和反链无需增补
+
+> **失败模式**：某个 feature 目录下出现 gap analysis、测试运行方式、一次性总结等非 SSOT 文件 → 说明上一步的 SSOT 判定被跳过，需要立即纠正。
+
 ## Large Proposal Decomposition
 
 Design proposals (under `docs/feature/<module>/proposals/`) often carry three different audiences:

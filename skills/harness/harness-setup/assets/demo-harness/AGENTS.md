@@ -88,6 +88,7 @@ docs 是交付的一部分，不是事后补登。非 trivial 编码任务收尾
 - `.agents/skills/harness/code-organization-harness`：新增功能模块、修 bug、重构、增加 API 前使用；帮助 Agent 先按模块和领域 grep 上下文，再按项目约定创建文件、放置测试与同步契约。
 - `.agents/skills/harness/project-analysis`：当现有 docs 不足、链路复杂，或需要架构 / 数据流 / 风险分析时使用；分析结果应沉淀到 `docs/`。
 - `.agents/skills/harness/project-docs-workflow`：非 trivial 的功能开发、bug 修复、重构、接口变更前后，先用它扫描 docs 并判断文档影响。
+- `.agents/skills/harness/progressive-disclosure-docs`：创建或重构项目文档时使用；定义 docs 的渐进式披露结构、SSOT 与 WIP 分离、模块目录规约和文档自主治理规则。`project-docs-workflow` 编排器识别出 docs 结构性问题时，可升级到本 skill 做深度审计与重构。
 - `.agents/skills/harness/harness-engineering-plan`：多 Wave、多 TaskNode 的功能开发必须先用它生成 `taskBoard.md`，作为该 milestone 唯一执行控制平面。
 
 > **强制规则**：开始任何新 milestone（≥ 2 wave 或 ≥ 5 TaskNode）的功能开发前，agent 必须用 `harness-engineering-plan` 生成 `taskBoard.md` 并在推进期间实时更新；wave 内相互独立的 ready TaskNode 必须并行派发给多个实施 agent（见下方「强制执行流程门」）。仅修文档 / 单条 bug fix 等 trivial 改动不在此约束。
