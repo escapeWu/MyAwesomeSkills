@@ -2,12 +2,9 @@
   "bundle_name": "harness",
   "source_root": "skills/harness",
   "skills": [
-    "harness-setup",
-    "harness-engineering-plan",
+    "document-organization-harness",
     "progressive-disclosure-docs",
     "project-analysis",
-    "project-docs-workflow",
-    "codex-design-review",
-    "code-organization-harness"
+    "project-docs-workflow"
   ]
 }

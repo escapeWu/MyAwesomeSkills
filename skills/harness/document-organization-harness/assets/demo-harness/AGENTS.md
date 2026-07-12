@@ -24,12 +24,12 @@
 
 ## 代码组织约束
 
-新增功能模块、修复跨文件 bug、重构、增加 API / 配置 / 脚本前，先使用 `.agents/skills/harness/code-organization-harness` 判断模块边界、文件落点与上下文 grep 路径。
+新增功能模块、修复跨文件 bug、重构、增加 API / 配置 / 脚本前，先判断模块边界、文件落点与上下文 grep 路径。
 
 - **按领域归属优先**：先找 owning module，再按 layer 放文件；不要因为"能复用"就提前放进 `common` / `utils` / 全局层。
 - **先 grep 后新建**：按 endpoint、schema、表名、文案、配置键、domain noun 搜索现有 owner；只有现有模块没有清晰归属时才新建模块。
 - **文件与测试镜像**：后端 API / service / mapper / model 的测试应与其验证层级保持对应。
-- **框架细则进 skill**：Java / Maven / Spring 风格的具体文件组织与最佳实践，统一由 `code-organization-harness` 的 references 承接。
+- **框架细则服从仓库约定**：Java / Maven / Spring 风格以现有模块、构建配置和测试布局为准。
 
 ## 文档渐进式披露规则
 
@@ -44,7 +44,7 @@ Level 2A: docs/archive/INDEX.md   → 已完成计划 / 历史归档，默认不
 Level 3: docs/feature/<module>/  → 模块 README / INDEX，按任务进入
 Level 4: 具体设计 / RCA，仅按需读取
 
-(执行层: .agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md → WIP 控制平面)
+(执行层: .agents/tasks/<module>/taskBoard.md → WIP 控制平面)
 ```
 
 **Agent 读取规则**：`OVERVIEW.md -> feature/reference INDEX -> 按需读 1-3 个相关文档`。禁止全量读取 `docs/`。`taskBoard.md` 是执行上下文，只在继续实现、监督、验收或审计历史时读取。
@@ -66,7 +66,7 @@ Level 4: 具体设计 / RCA，仅按需读取
 
 - **一功能一目录**：独立 feature 必须独立成 `docs/feature/<feature>/` 并带自己的 README；命中以下任一即视为独立 feature，**禁止**长期堆在某个大类目录下当 leaf：① 自有长期目标 / 里程碑路线图；② 自有数据契约 / 接口 / 产出 artifact；③ 独立生命周期（独立演进与验收）；④ 该子主题已累计 leaf ≥ 3，或单文件 ≥ 500 行。「相关 / 能复用」不构成塞进大类的理由。
 - 大型模块使用 `INDEX.md` 或 `README.md` 作为模块地图，详细设计、数据流、RCA 放子文件。
-- taskBoard 不放在 docs/ 下。执行过程文件统一存放在 `.agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md`。
+- taskBoard 不放在 docs/ 下。执行过程文件统一存放在 `.agents/tasks/<module>/taskBoard.md`。
 - 中小型模块使用 `README.md`，必要时补少量子文件。
 - 历史计划、一次性总结、旧执行记录进入 `docs/archive/`，并同步更新 `docs/archive/INDEX.md`。
 - 新增或变更模块时，同步更新 `docs/feature/INDEX.md` 与 `docs/OVERVIEW.md`。
@@ -85,26 +85,24 @@ docs 是交付的一部分，不是事后补登。非 trivial 编码任务收尾
 
 ## 项目内置 skills
 
-- `.agents/skills/harness/code-organization-harness`：新增功能模块、修 bug、重构、增加 API 前使用；帮助 Agent 先按模块和领域 grep 上下文，再按项目约定创建文件、放置测试与同步契约。
+- `.agents/skills/harness/document-organization-harness`：创建、修复或重构项目文档结构、索引、模块边界与导航规则时使用。
 - `.agents/skills/harness/project-analysis`：当现有 docs 不足、链路复杂，或需要架构 / 数据流 / 风险分析时使用；分析结果应沉淀到 `docs/`。
 - `.agents/skills/harness/project-docs-workflow`：非 trivial 的功能开发、bug 修复、重构、接口变更前后，先用它扫描 docs 并判断文档影响。
 - `.agents/skills/harness/progressive-disclosure-docs`：创建或重构项目文档时使用；定义 docs 的渐进式披露结构、SSOT 与 WIP 分离、模块目录规约和文档自主治理规则。`project-docs-workflow` 编排器识别出 docs 结构性问题时，可升级到本 skill 做深度审计与重构。
-- `.agents/skills/harness/harness-engineering-plan`：多 Wave、多 TaskNode 的功能开发必须先用它生成 `taskBoard.md`，作为该 milestone 唯一执行控制平面。
-
-> **强制规则**：开始任何新 milestone（≥ 2 wave 或 ≥ 5 TaskNode）的功能开发前，agent 必须用 `harness-engineering-plan` 生成 `taskBoard.md` 并在推进期间实时更新；wave 内相互独立的 ready TaskNode 必须并行派发给多个实施 agent（见下方「强制执行流程门」）。仅修文档 / 单条 bug fix 等 trivial 改动不在此约束。
+> **强制规则**：开始任何新 milestone（≥ 2 wave 或 ≥ 5 TaskNode）的功能开发前，agent 必须在 `.agents/tasks/<module>/taskBoard.md` 建立执行控制平面并实时更新；wave 内相互独立的 ready TaskNode 必须并行派发给多个实施 agent。仅修文档 / 单条 bug fix 等 trivial 改动不在此约束。
 
 ## 强制执行流程门（Mandatory Execution Gate）
 
 非 trivial 的「实现 / 修改 / 开发 / 修复」类编码任务，**在写任何实现代码前**必须按顺序走完这道门，不能跳步：
 
 1. **判定规模**：任务命中 ≥ 2 wave 或 ≥ 5 TaskNode、或跨多文件 / 多 owner / 需要分阶段验证 → 进入 harness 流程；单文件 trivial fix 豁免。
-2. **拆任务 + 建 taskBoard**：用 `harness-engineering-plan` 把目标拆成 milestone / TaskNode / wave，落到 `.agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md`，推进期间实时更新状态。**禁止跳过 taskBoard 直接埋头单线程把多步任务写完。**
+2. **拆任务 + 建 taskBoard**：把目标拆成 milestone / TaskNode / wave，落到 `.agents/tasks/<module>/taskBoard.md`，推进期间实时更新状态。**禁止跳过 taskBoard 直接埋头单线程把多步任务写完。**
 3. **契约先行**：先冻结契约（M1：schema / 字段 / 状态 / 安全边界 / 测试矩阵），再进入实现 wave。
 4. **并行派发**：一个 wave 内 ≥ 2 个相互独立、依赖已满足的 ready TaskNode，**默认并行派发给多个实施 agent**（Cursor `Task` 工具 subagent 或 `codex` CLI），主 agent 当 orchestrator 串行 review + 合并，**禁止 last-writer-wins 覆盖**，也禁止把多个独立 TaskNode 塞进一个串行实现。
 5. **逐 milestone 过 gate**：每个 milestone 收齐验证证据、过 integration gate，才进入下一个；未过 gate 不得推进。
 6. **收口**：任务完成后 taskBoard 移入 `tasks/archive/`，再把稳定结论提炼进 `docs/`。
 
-执行器与并行细节见 `harness-engineering-plan` 的 SKILL.md §「Dispatching TaskNodes to Parallel Subagents」与 templates.md §「执行器映射」。Cursor 环境下本门同时由 `.cursor/rules/harness-execution.mdc`（alwaysApply）每轮注入。
+Cursor 环境下，本门同时由 `.cursor/rules/harness-execution.mdc`（`alwaysApply: true`）每轮注入。
 
 ## 防目标漂移（Anti-Drift）
 
@@ -139,6 +137,6 @@ docs 是交付的一部分，不是事后补登。非 trivial 编码任务收尾
 1. 模板必须避免保留旧路径诱导新项目走错层级；废弃路径应迁移后删除，而不是长期并存。
 2. 大型计划、taskBoard、一次性说明如果不归档，会被 Agent 误读成当前入口；必须通过 `tasks/archive/` 收口（不放入 `docs/archive/`，以区分执行归档与设计文档归档）。
 3. 架构外部环节必须在 `docs/OVERVIEW.md`、`docs/reference/architecture.md` 和子目录 README 三层都可见。
-4. 新 milestone 必须强制走 `harness-engineering-plan` 生成 `taskBoard.md`。
+4. 新 milestone 必须先在 `.agents/tasks/` 建立并持续更新 `taskBoard.md`。
 5. docs 双向可追溯（Top-Down / Bottom-Up）是硬约束。
 6. docs 跨层链接必须优先使用项目根相对路径，杜绝深 `../` 漂移。

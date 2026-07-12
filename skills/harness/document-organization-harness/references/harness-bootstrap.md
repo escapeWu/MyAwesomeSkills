@@ -51,7 +51,7 @@ The `防目标漂移` section keeps long runs on target: the goal lives in the t
 Core Rule), re-read at the start of every wave/session and after context compaction —
 never trusted to the volatile context window. Pin Goal+Acceptance as the persistent
 TodoWrite anchor and write status back to the taskBoard after each TaskNode.
-It must force, in order: scope check → taskBoard via `harness-engineering-plan` →
+It must force, in order: scope check → taskBoard under `.agents/tasks/` →
 contracts-first → **parallel dispatch of independent ready TaskNodes to multiple
 implementation agents** (Cursor `Task` tool subagent or `codex` CLI) → per-milestone
 integration gate → archive + distill to docs. Without this gate, agents default to
@@ -64,8 +64,7 @@ If the repo uses project-local skills, add a concise registry in `AGENTS.md`.
 ```md
 ## Repo-local Skills
 
-- `.agents/skills/harness/harness-setup`: bootstrap or repair the agent/docs/taskBoard harness.
-- `.agents/skills/harness/harness-engineering-plan`: create a taskBoard for multi-wave work.
+- `.agents/skills/harness/document-organization-harness`: organize or repair project documentation, navigation, and taskBoard routing.
 - `.agents/skills/harness/project-docs-workflow`: inspect docs impact before and after non-trivial code changes.
 ```
 
@@ -100,25 +99,22 @@ entire harness bundle from that repository instead of copying individual skills.
 Curated bundle manifest:
 
 ```text
-skills/harness/harness-setup/assets/harness-bundle.json
+skills/harness/document-organization-harness/assets/harness-bundle.json
 ```
 
 Bundle members:
 
 ```text
-skills/harness/harness-setup
-skills/harness/harness-engineering-plan
+skills/harness/document-organization-harness
 skills/harness/progressive-disclosure-docs
 skills/harness/project-analysis
 skills/harness/project-docs-workflow
-skills/harness/codex-design-review
-skills/harness/code-organization-harness
 ```
 
 Install from an existing local clone:
 
 ```bash
-python skills/harness/harness-setup/scripts/install_harness_bundle.py \
+python skills/harness/document-organization-harness/scripts/install_harness_bundle.py \
   --source /path/to/MyAwesomeSkills \
   --target /path/to/target-repo \
   --overwrite
@@ -130,7 +126,7 @@ Install from the current GitHub repo:
 SOURCE_REPO="https://github.com/escapeWu/MyAwesomeSkills.git"
 TMP_DIR="$(mktemp -d)"
 git clone --depth 1 "$SOURCE_REPO" "$TMP_DIR/MyAwesomeSkills"
-python "$TMP_DIR/MyAwesomeSkills/skills/harness/harness-setup/scripts/install_harness_bundle.py" \
+python "$TMP_DIR/MyAwesomeSkills/skills/harness/document-organization-harness/scripts/install_harness_bundle.py" \
   --source "$TMP_DIR/MyAwesomeSkills" \
   --target /path/to/target-repo \
   --overwrite
@@ -163,7 +159,7 @@ The gate must encode, in order:
 
 ```text
 scope check (≥2 wave / ≥5 TaskNode / multi-file)
-  → taskBoard via harness-engineering-plan (禁止跳过)
+  → taskBoard under .agents/tasks/ (禁止跳过)
   → contracts-first (M1)
   → 并行派发独立 ready TaskNode 给多个实施 agent
        · Cursor `Task` 工具 subagent（同一条消息多个 Task 调用）
@@ -205,10 +201,10 @@ docs/
 └── archive/
     └── INDEX.md
 
-(separate: .agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md — WIP)
+(separate: .agents/tasks/<module>/taskBoard.md — WIP)
 ```
 
-taskBoard 不在 docs/ 下。它是 harness-engineering-plan 的临时产物，存放在 skill 自身的 `tasks/` 目录中。
+taskBoard 不在 docs/ 下。它是临时执行产物，存放在 `.agents/tasks/` 中。
 任务完成后移入 `tasks/archive/`，然后蒸馏稳定结论到 `docs/`。
 
 ## 3.1 Feature 粒度与文档自主治理
@@ -263,7 +259,7 @@ Create `taskBoard.md` when at least one of these is true:
 
 If the work is a single small fix, a taskBoard is optional.
 
-**Location**: `.agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md`
+**Location**: `.agents/tasks/<module>/taskBoard.md`
 
 **Lifecycle**:
 1. Generate → `tasks/<module>/taskBoard.md`

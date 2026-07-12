@@ -1,4 +1,0 @@
-interface:
-  display_name: "Harness Setup"
-  short_description: "Bootstrap AGENTS.md and docs routing for a new or existing repo."
-  default_prompt: "Use $harness-setup to build a portable harness layer: AGENTS.md, docs indexes, taskBoard, and progressive-disclosure links."

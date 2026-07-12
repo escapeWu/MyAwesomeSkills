@@ -1,0 +1,4 @@
+interface:
+  display_name: "Document Organization Harness"
+  short_description: "Organize project docs, indexes, routing, and governance."
+  default_prompt: "Use $document-organization-harness to organize this project's AGENTS.md, docs indexes, module boundaries, taskBoard routing, and progressive-disclosure links."

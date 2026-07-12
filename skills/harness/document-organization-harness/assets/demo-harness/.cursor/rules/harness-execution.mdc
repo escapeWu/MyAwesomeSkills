@@ -13,7 +13,7 @@ alwaysApply: true
 
 ## 必须按序执行（不可跳步）
 
-1. **拆任务 + 建 taskBoard**：先用 `harness-engineering-plan` skill 把目标拆成 milestone / TaskNode / wave，写入 `.agents/skills/harness/harness-engineering-plan/tasks/<module>/taskBoard.md`，并实时更新状态。**禁止跳过 taskBoard 直接单线程把多步任务写完。**
+1. **拆任务 + 建 taskBoard**：先把目标拆成 milestone / TaskNode / wave，写入 `.agents/tasks/<module>/taskBoard.md`，并实时更新状态。**禁止跳过 taskBoard 直接单线程把多步任务写完。**
 2. **契约先行**：先冻结 M1 契约（schema / 字段 / 状态 / 安全边界 / 测试矩阵），再进入实现 wave。
 3. **并行派发多个实施 agent**：一个 wave 内 ≥ 2 个相互独立、依赖已满足的 ready TaskNode，**默认在同一条消息里并行派发**给多个实施 agent，主 agent 只当 orchestrator（拆 → 派 → review → 合并 → 过 gate）。
    - 执行器二选一或混用：Cursor `Task` 工具 subagent（IDE 内首选，多个 `Task` 调用放同一条消息实现真正并行）；或 `codex` CLI（`/tmp` spec + `codex exec --full-auto - < spec.md`）。
@@ -27,5 +27,3 @@ alwaysApply: true
 - [ ] 这是多步 / 多文件任务吗？是 → 有没有先建 taskBoard？
 - [ ] 这个 wave 有没有 ≥ 2 个独立 ready TaskNode？有 → 有没有并行派发，而不是自己单线程写？
 - [ ] 上一个 milestone 过 gate 了吗？没过 → 不准推进下一个。
-
-执行器与并行细节见 `harness-engineering-plan/SKILL.md` §「Dispatching TaskNodes to Parallel Subagents」与 `templates.md` §「执行器映射」。

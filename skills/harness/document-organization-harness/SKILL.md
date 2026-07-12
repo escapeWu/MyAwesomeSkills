@@ -1,12 +1,13 @@
 ---
-name: harness-setup
+name: document-organization-harness
 description: >-
-  Bootstrap or retrofit a repo-wide harness setup: author AGENTS.md, docs
-  overview/index maps, taskBoard control planes, and progressive-disclosure
-  documentation that stays business- and stack-agnostic.
+  Organize or retrofit project documentation: author AGENTS.md, docs
+  overview/index maps, module documentation boundaries, taskBoard routing, and
+  progressive-disclosure documentation. Use when a repository needs a clear
+  documentation structure, navigation hierarchy, or documentation governance.
 ---
 
-# Harness Setup
+# Document Organization Harness
 
 Use this skill when a repo needs a portable harness layer: a root instruction file,
 a navigable docs map, a task execution board, and a doc tree an agent can follow
@@ -23,7 +24,7 @@ Deliver the smallest useful harness that still gives an agent clear entry points
 - `docs/reference/INDEX.md`
 - `docs/archive/INDEX.md`
 - module-level `README.md` / `INDEX.md` plus `requirements.md` for expected product/business behavior and acceptance
-- `tasks/<module>/taskBoard.md` for multi-wave or multi-node work (under harness-engineering-plan)
+- `.agents/tasks/<module>/taskBoard.md` for multi-wave or multi-node work
 - leaf docs with explicit parent links
 
 ## Workflow
@@ -43,7 +44,7 @@ Deliver the smallest useful harness that still gives an agent clear entry points
 - Keep stack-specific details in repo-local adapters or references.
 - Prefer repairing an existing partial harness over replacing it.
 - Use root-relative links for deep cross-tree references.
-- Keep `taskBoard.md` as the execution control plane under `harness-engineering-plan/tasks/`, not as a changelog in docs.
+- Keep `taskBoard.md` as the execution control plane under `.agents/tasks/`, not as a changelog in docs.
 - Separate WIP execution context (tasks/) from stable docs (docs/). Update docs only after task completion.
 - Do not mix pure requirements, current implementation inventory, and active taskBoard execution context in one README; keep requirements, current state, and WIP separate.
 - **Enforcement must be runtime-injected, not just described.** A harness only authored as soft skill descriptions gets ignored at runtime. In a Cursor repo, land the mandatory execution gate in BOTH `.cursor/rules/harness-execution.mdc` (`alwaysApply: true`, injected every turn) AND root `AGENTS.md` (a "强制执行流程门" section), so task decomposition + taskBoard + parallel multi-agent dispatch are forced, not optional.
@@ -82,13 +83,10 @@ install the curated harness bundle instead of copying skills one by one.
 Use this when you want a target repo to receive the same harness stack, including
 skills that support a requirements-first docs layer:
 
-- `harness-setup`
-- `harness-engineering-plan`
+- `document-organization-harness`
 - `progressive-disclosure-docs`
 - `project-analysis`
 - `project-docs-workflow`
-- `codex-design-review`
-- `code-organization-harness`
 
 Recommended install flow:
 

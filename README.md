@@ -12,7 +12,7 @@ Skills are folders of instructions, scripts, and resources that Claude loads dyn
 | [dev-ops/news-fetcher-api](./skills/dev-ops/news-fetcher-api) | Work with the news fetcher REST API: supported-site lookup, domain article discovery, URL fetching, batch fetch/crawl, fetch history, and Bearer-authenticated integration. |
 | [dev-ops/project-dev-standards](./skills/dev-ops/project-dev-standards) | Bootstrap or refresh repository-specific development standards from a real codebase. Generates evidence-backed `docs/ai-dev-standards/` and updates managed blocks in `AGENTS.md` / `CLAUDE.md`. |
 | [grok_search](./skills/grok_search) | 自适应 AI 搜索与最新信息检索。先评估任务复杂度，再在 grok-4.20-fast / auto / expert 之间路由，必要时用「fast 侦察 + fast 补缺 + expert 综合」组合流程。 |
-| [harness/harness-setup](./skills/harness/harness-setup) | Bootstrap or retrofit a repo-wide harness: `AGENTS.md`, docs overview/index maps, `.cursor/rules` execution gate, and taskBoard control plane. |
+| [harness/document-organization-harness](./skills/harness/document-organization-harness) | Organize or retrofit project documentation: `AGENTS.md`, docs overview/index maps, module boundaries, progressive-disclosure links, and taskBoard routing. |
 | [harness/progressive-disclosure-docs](./skills/harness/progressive-disclosure-docs) | Design, audit, or refactor docs so agents navigate by progressive disclosure: AGENTS/OVERVIEW maps, index routing layers, detail/taskBoards loaded only on demand. |
 | [harness/project-analysis](./skills/harness/project-analysis) | Deep read-only project analysis (architecture, dataflow, sequence, performance risk); results land in `docs/`. |
 | [harness/project-docs-workflow](./skills/harness/project-docs-workflow) | Orchestrate docs maintenance before and after non-trivial feature / bug / refactor / API changes. |
@@ -25,7 +25,7 @@ Skills are folders of instructions, scripts, and resources that Claude loads dyn
 | [ui-ux-pro-max-skill](./skills/ui-ux-pro-max-skill) | AI skill providing design intelligence for building professional UI/UX across platforms.（submodule: `nextlevelbuilder/ui-ux-pro-max-skill`） |
 | [xlsx](./skills/xlsx) | Read, edit, or create spreadsheet files (`.xlsx` / `.xlsm` / `.csv` / `.tsv`) — add columns, compute, fix, or convert. |
 
-> `harness/*` is the reusable harness bundle (see `skills/harness/harness-setup/assets/harness-bundle.json`).
+> `harness/*` is the reusable harness bundle (see `skills/harness/document-organization-harness/assets/harness-bundle.json`).
 > `style-extractor` and `ui-ux-pro-max-skill` are git submodules; run `git submodule update --init` to populate them.
 
 ## Structure

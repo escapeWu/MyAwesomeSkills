@@ -40,7 +40,7 @@ def main() -> int:
 
     source_root, tmp = _clone_source(args.source)
     try:
-        bundle_path = source_root / "skills" / "harness" / "harness-setup" / "assets" / "harness-bundle.json"
+        bundle_path = source_root / "skills" / "harness" / "document-organization-harness" / "assets" / "harness-bundle.json"
         if not bundle_path.exists():
             raise SystemExit(f"bundle manifest not found: {bundle_path}")
 
