@@ -1,29 +1,29 @@
 ---
-description: Harness execution gate — force task decomposition, taskBoard planning, and parallel multi-agent dispatch before implementing any non-trivial multi-step feature.
+description: Harness execution gate for contract freeze, bounded implementation, validation evidence, and durable documentation synchronization.
 alwaysApply: true
 ---
 
 # 强制执行流程门（每轮生效）
 
-> 本规则每轮注入。命中「实现 / 修改 / 开发 / 修复」类**非 trivial** 编码任务时，**写实现代码前**必须先走完这道门；只有单文件 trivial fix 才豁免。
+命中「实现 / 修改 / 开发 / 修复」类非 trivial 编码任务时，写实现代码前必须完成以下检查；单文件 trivial fix 可使用精简验证。
 
-## 触发判定
+## 必须按序执行
 
-任务命中以下任一即进入 harness 流程：≥ 2 个执行 wave、≥ 5 个 TaskNode、跨多文件 / 多 owner、或需要分阶段验证。
+1. **确认 owner 与范围**：定位 owning module、预期行为来源、当前实现入口和禁止跨越的边界。
+2. **契约先行**：冻结 schema、字段、状态、安全边界和验证矩阵；存在歧义时先停止并澄清。
+3. **更新 durable state**：在 owning GOAL/README 记录已完成、待完成、阻塞和下一验证门。
+4. **边界内实施**：只修改声明范围内的代码与文档；保留不相关的现有修改。
+5. **逐门验证**：先运行聚焦验证，再运行与影响范围匹配的广泛检查；未通过不得提升证据状态。
+6. **稳定收口**：将最终状态、决策和证据同步到 owning docs 与 append-only artifacts。
 
-## 必须按序执行（不可跳步）
+## 委派边界
 
-1. **拆任务 + 建 taskBoard**：先把目标拆成 milestone / TaskNode / wave，写入 `.agents/tasks/<module>/taskBoard.md`，并实时更新状态。**禁止跳过 taskBoard 直接单线程把多步任务写完。**
-2. **契约先行**：先冻结 M1 契约（schema / 字段 / 状态 / 安全边界 / 测试矩阵），再进入实现 wave。
-3. **并行派发多个实施 agent**：一个 wave 内 ≥ 2 个相互独立、依赖已满足的 ready TaskNode，**默认在同一条消息里并行派发**给多个实施 agent，主 agent 只当 orchestrator（拆 → 派 → review → 合并 → 过 gate）。
-   - 执行器二选一或混用：Cursor `Task` 工具 subagent（IDE 内首选，多个 `Task` 调用放同一条消息实现真正并行）；或 `codex` CLI（`/tmp` spec + `codex exec --full-auto - < spec.md`）。
-   - **禁止 last-writer-wins 覆盖**；合并按「接受行为的并集」，主 agent 串行 review。
-   - worktree 不强制，仅当并行 TaskNode 改重叠文件时才隔离。
-4. **逐 milestone 过 gate**：每个 milestone 收齐验证证据、过 integration gate，才进入下一个。
-5. **收口**：完成后 taskBoard 移入 `tasks/archive/`，稳定结论提炼进 `docs/`。
+本规则不自动授权委派。只有用户明确要求时，才使用边界清晰的 owner scope；修改范围重叠时使用隔离 worktree，主 agent 负责集成与验证。
 
-## 自检（开工前问自己）
+## 自检
 
-- [ ] 这是多步 / 多文件任务吗？是 → 有没有先建 taskBoard？
-- [ ] 这个 wave 有没有 ≥ 2 个独立 ready TaskNode？有 → 有没有并行派发，而不是自己单线程写？
-- [ ] 上一个 milestone 过 gate 了吗？没过 → 不准推进下一个。
+- [ ] owner、预期行为来源和安全边界是否明确？
+- [ ] owning GOAL/README 是否记录当前状态与下一验证门？
+- [ ] 当前动作是否直接推进目标且不越界？
+- [ ] 验证证据是否足以支持当前结论？
+- [ ] 稳定文档与索引是否同步？

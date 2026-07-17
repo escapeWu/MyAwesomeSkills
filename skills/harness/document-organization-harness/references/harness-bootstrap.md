@@ -6,7 +6,7 @@ The harness should expose four things:
 
 1. where to start reading;
 2. how the repo is organized;
-3. how to plan multi-step work;
+3. where expected behavior, current state, and durable progress are owned;
 4. how to verify a change.
 
 The implementation details of the product are not part of the harness.
@@ -45,17 +45,38 @@ Use this order:
 
 Keep the section names stable once published.
 
-The `强制执行流程门` section is what turns the harness from "described" into "enforced".
-The `防目标漂移` section keeps long runs on target: the goal lives in the taskBoard
-`## Board State` north-star (Goal / Acceptance / Active Milestone / Active TaskNode /
-Core Rule), re-read at the start of every wave/session and after context compaction —
-never trusted to the volatile context window. Pin Goal+Acceptance as the persistent
-TodoWrite anchor and write status back to the taskBoard after each TaskNode.
-It must force, in order: scope check → taskBoard under `.agents/tasks/` →
-contracts-first → **parallel dispatch of independent ready TaskNodes to multiple
-implementation agents** (Cursor `Task` tool subagent or `codex` CLI) → per-milestone
-integration gate → archive + distill to docs. Without this gate, agents default to
-single-threaded implementation and skip both the taskBoard and parallel dispatch.
+The `强制执行流程门` section turns the harness from described guidance into an
+enforced workflow. It must require, in order:
+
+```text
+scope and ownership check
+  → freeze contracts, safety boundaries, and validation matrix
+  → update the owning GOAL/README current-state section
+  → implement within the declared boundary
+  → collect focused validation evidence
+  → update durable docs and append-only artifacts
+```
+
+The `防目标漂移` section keeps long runs aligned. The owning GOAL,
+`requirements.md`, and README current-state section are the durable anchors.
+Re-read them at the start of each work session, after context compaction, and
+before advancing through a validation gate.
+
+### Recommended current-state section
+
+```md
+## Current State
+
+- Status:
+- Completed:
+- Pending:
+- Blockers:
+- Next validation gate:
+- Evidence:
+```
+
+Use the session's planning surface for transient sequencing. Persist only
+durable state, decisions, blockers, and evidence in the owning documents.
 
 ## 2.1 Repo-local skill registry
 
@@ -64,8 +85,12 @@ If the repo uses project-local skills, add a concise registry in `AGENTS.md`.
 ```md
 ## Repo-local Skills
 
-- `.agents/skills/harness/document-organization-harness`: organize or repair project documentation, navigation, and taskBoard routing.
+- `.agents/skills/harness/document-organization-harness`: organize or repair project documentation, navigation, ownership, and governance.
+- `.agents/skills/harness/progressive-disclosure-docs`: enforce progressive disclosure, truth ownership, route overlays, and lifecycle structure.
+- `.agents/skills/harness/project-analysis`: investigate architecture, dataflow, route impact, and expected-vs-implemented gaps when shallow docs are insufficient.
 - `.agents/skills/harness/project-docs-workflow`: inspect docs impact before and after non-trivial code changes.
+- `.agents/skills/harness/external-collaboration-workflow`: preserve external proposal provenance and translate accepted items into internal contracts.
+- `.agents/skills/harness/refactor-large-modules`: split oversized or mixed-responsibility modules while preserving behavior and public contracts.
 ```
 
 Do not force these exact skill names into every repo. The invariant is:
@@ -109,6 +134,8 @@ skills/harness/document-organization-harness
 skills/harness/progressive-disclosure-docs
 skills/harness/project-analysis
 skills/harness/project-docs-workflow
+skills/harness/external-collaboration-workflow
+skills/harness/refactor-large-modules
 ```
 
 Install from an existing local clone:
@@ -143,43 +170,16 @@ If the target repo already has one of these skills, omit `--overwrite` to make
 the installer fail fast, review the difference manually, and only then re-run
 with `--overwrite`.
 
-## 2.3 Cursor 原生强制执行门（`.cursor/rules`）
+## 2.3 Cursor native execution gate (`.cursor/rules`)
 
-Soft skill descriptions and a buried `AGENTS.md` bullet are **not** enough — agents
-ignore them at runtime and fall back to single-threaded implementation. In a Cursor
-repo, land the execution gate in two always-injected places:
+In a Cursor repo, land the execution gate in two always-visible places:
 
-1. **`.cursor/rules/harness-execution.mdc`** with `alwaysApply: true`. Cursor injects
-   this every turn, so the gate is always in context. Copy the template from
-   `assets/demo-harness/.cursor/rules/harness-execution.mdc`.
-2. **Root `AGENTS.md` → `## 强制执行流程门（Mandatory Execution Gate）`** as the
-   human-readable SSOT of the same gate.
+1. `.cursor/rules/harness-execution.mdc` with `alwaysApply: true`;
+2. root `AGENTS.md` under `## 强制执行流程门（Mandatory Execution Gate）`.
 
-The gate must encode, in order:
-
-```text
-scope check (≥2 wave / ≥5 TaskNode / multi-file)
-  → taskBoard under .agents/tasks/ (禁止跳过)
-  → contracts-first (M1)
-  → 并行派发独立 ready TaskNode 给多个实施 agent
-       · Cursor `Task` 工具 subagent（同一条消息多个 Task 调用）
-       · 或 `codex` CLI（/tmp spec + codex exec --full-auto - < spec.md）
-       · 禁止 last-writer-wins；主 agent 串行 review + merge
-  → per-milestone integration gate
-  → archive taskBoard + distill to docs/
-```
-
-The `.mdc` frontmatter is minimal:
-
-```md
----
-description: <one line>
-alwaysApply: true
----
-```
-
-Non-Cursor repos can skip the `.mdc` file and rely on `AGENTS.md` + the skill, but
-should still keep the `强制执行流程门` section.
+The gate enforces contract freeze, bounded implementation, focused validation,
+and durable documentation synchronization. It does not require delegation.
+Delegation remains opt-in and requires explicit user authorization.
 
 ## 3. Docs tree skeleton
 
@@ -191,50 +191,46 @@ docs/
 │   └── <module>/
 │       ├── README.md
 │       ├── INDEX.md          # only when the module is large
-│       ├── design.md         # detailed design (SSOT)
-│       └── data-model.md     # table/contract definitions (SSOT)
+│       ├── requirements.md   # expected behavior and acceptance
+│       ├── design.md         # detailed design
+│       └── data-model.md     # table and contract definitions
 ├── reference/
 │   ├── INDEX.md
 │   ├── architecture.md
 │   ├── interfaces.md
 │   └── runbook-testing.md
+├── collaboration/
+│   └── INDEX.md
 └── archive/
     └── INDEX.md
-
-(separate: .agents/tasks/<module>/taskBoard.md — WIP)
 ```
 
-taskBoard 不在 docs/ 下。它是临时执行产物，存放在 `.agents/tasks/` 中。
-任务完成后移入 `tasks/archive/`，然后蒸馏稳定结论到 `docs/`。
+The owning feature README or GOAL records current implementation state,
+completed work, pending work, blockers, and the next validation gate. Do not
+create a parallel execution-control hierarchy.
 
-## 3.1 Feature 粒度与文档自主治理
+## 3.1 Feature granularity and autonomous governance
 
-把「一功能一目录 + 文档自主治理门」写进根 `AGENTS.md` 的 `## 文档写入规则`，避免文档退化成"全塞进一个大类、靠 leaf 文件名硬认"。完整规则见 `progressive-disclosure-docs` skill 的 §「Feature Granularity」与 §「Autonomous Docs Governance」。AGENTS.md 至少要编码：
+Encode these rules in root `AGENTS.md`:
 
 ```text
 一功能一目录：独立 feature（自有目标/里程碑、或自有契约/产出、或独立生命周期、
-  或 leaf ≥ 3 / 单文件 ≥ 500 行）必须独立成 docs/feature/<feature>/ 带自己的 README，
-  禁止长期堆在大类下当 leaf。「相关 / 能复用」不构成塞进大类的理由。
-自主维护：非 trivial 代码 / 契约变更后，同任务内主动改 owning feature README +
-  feature/INDEX + OVERVIEW + 反链 + interfaces/runbook；禁止「代码改了 docs 没动」收口。
-自主调整：发现大类下子主题膨胀（命中上面触发条件）→ 主动提议拆成独立 feature，
-  按项目交互规则先确认再落盘。
-拆分不破链：父 INDEX/OVERVIEW 增路由、leaf 反链、旧路径迁移而非并存。
+  或 leaf ≥ 3 / 单文件 ≥ 500 行）必须独立成 docs/feature/<feature>/ 带自己的 README。
+自主维护：非 trivial 代码 / 契约变更后，同任务内主动更新 owning feature README、
+  requirements、feature/INDEX、OVERVIEW、反链及受影响的 interfaces/runbook。
+自主调整：发现大类下子主题膨胀时，主动提议拆成独立 feature。
+拆分不破链：父 INDEX/OVERVIEW 增路由、leaf 增反链、旧路径迁移而非并存。
 ```
-
-这条门和 `强制执行流程门` 互补：执行门保证"多步任务被拆解并行执行"，治理门保证"产物结构和文档随之收敛、不腐化"。
 
 ## 4. Leaf-document rules
 
 Every leaf doc should begin with a parent link.
 
-Examples:
-
 ```md
 > 上级：../README.md
 ```
 
-or, for deeper locations, use repo-root links:
+For deeper locations, use a repo-root link:
 
 ```md
 > 上级：[/docs/OVERVIEW.md](/docs/OVERVIEW.md)
@@ -247,57 +243,36 @@ Rules:
 - avoid orphan docs;
 - avoid deep `../` chains when a repo-root link is clearer.
 
-## 5. TaskBoard decision rule
+## 5. Durable status rule
 
-Create `taskBoard.md` when at least one of these is true:
+Use the owning GOAL/README when work has meaningful dependencies, staged
+validation, multiple owners, or a durable audit requirement.
 
-- the work has more than one wave;
-- tasks have meaningful dependencies;
-- validation must happen in stages;
-- multiple files or owners need coordination;
-- the change needs an auditable execution record.
+Update only these durable fields:
 
-If the work is a single small fix, a taskBoard is optional.
+1. expected behavior and acceptance;
+2. current implementation state;
+3. completed and pending work;
+4. blockers and decisions;
+5. next validation gate;
+6. stable evidence and append-only artifact locations.
 
-**Location**: `.agents/tasks/<module>/taskBoard.md`
+Transient session sequencing stays in the active planning surface and is not
+promoted into a separate repository control plane.
 
-**Lifecycle**:
-1. Generate → `tasks/<module>/taskBoard.md`
-2. Execute → update status in `tasks/`
-3. Complete → move to `tasks/archive/<module>/taskBoard-<phase>.md`
-4. Distill → update `docs/feature/<module>/` with stable conclusions
-
-## 6. TaskBoard skeleton
-
-```md
-# TaskBoard
-
-## Goal
-
-## Milestones
-
-## Wave plan
-
-## TaskNodes
-
-## Validation gates
-
-## Done evidence
-```
-
-Keep task status explicit and update it as work progresses.
-
-## 7. Validation checklist
+## 6. Validation checklist
 
 - Start at `AGENTS.md`.
 - Reach `docs/OVERVIEW.md`.
 - Reach `docs/feature/INDEX.md` and `docs/reference/INDEX.md`.
+- Reach `docs/collaboration/INDEX.md` without treating external sources as internal contracts.
 - Reach at least one module README.
 - Walk back to the root through parent links.
 - Confirm no leaf doc is orphaned.
 - Confirm archive material is not mixed into active paths.
+- Confirm the owning GOAL/README exposes current state and the next gate.
 
-## 8. Demo harness pack
+## 7. Demo harness pack
 
 This skill includes a copyable demo pack at `assets/demo-harness/`.
 
@@ -313,6 +288,7 @@ After copying:
 
 1. Replace generic names with the target repo's actual module names.
 2. Delete the demo module if the repo already has a real feature module.
-3. Keep `OVERVIEW.md`, `feature/INDEX.md`, `reference/INDEX.md`, and `archive/INDEX.md`.
+3. Keep `OVERVIEW.md`, `feature/INDEX.md`, `reference/INDEX.md`, and
+   `archive/INDEX.md`.
 4. Add repo-local skills to `AGENTS.md` only if they exist or will be installed.
 5. Run the validation checklist above.

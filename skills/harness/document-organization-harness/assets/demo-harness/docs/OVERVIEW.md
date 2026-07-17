@@ -8,8 +8,9 @@ This is the demo entry point for a portable harness layout.
 
 - how to find the next document;
 - how to separate feature docs from reference docs;
+- how to isolate external source records from internal contracts;
 - how to keep active and archived material apart;
-- how to stage multi-step work in a task board.
+- how to route durable progress and validation evidence through owning docs.
 
 ## Entry Points
 
@@ -17,9 +18,9 @@ This is the demo entry point for a portable harness layout.
 |------|---------|
 | [`feature/INDEX.md`](feature/INDEX.md) | feature routing |
 | [`reference/INDEX.md`](reference/INDEX.md) | stable technical reference |
+| [`collaboration/INDEX.md`](collaboration/INDEX.md) | external source records and adoption routing |
 | [`archive/INDEX.md`](archive/INDEX.md) | historical material |
 
 ## Demo Module
 
 - [`feature/demo-module/`](feature/demo-module/README.md)
-

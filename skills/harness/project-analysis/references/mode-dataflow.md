@@ -111,7 +111,7 @@ flowchart LR
 
 subagent 只负责事实提取与链路梳理，不直接写最终文档。
 
-如由 `harness-engineering-plan` 调用，还要额外返回可放入 TaskNode `Input Context` 的摘要：
+如由项目实施规划工作流调用，还要额外返回 `Implementation Context` 摘要：
 - Entry Points
 - Relevant Files
 - Contracts / Data Shapes

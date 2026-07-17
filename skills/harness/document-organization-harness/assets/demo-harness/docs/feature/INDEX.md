@@ -12,4 +12,4 @@
 
 1. Start here.
 2. Open the module `README.md`.
-3. Read `taskBoard.md` only when executing or auditing multi-step work (located under `.agents/tasks/`).
+3. Read the module's `requirements.md` for expected behavior and its README current-state section for durable progress.

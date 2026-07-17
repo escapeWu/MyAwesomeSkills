@@ -3,11 +3,19 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
+
+_TEXT_SUFFIXES = {".md", ".mdc", ".yaml", ".yml", ".json", ".py", ".txt"}
+_PROHIBITED_EXECUTION_PATTERNS = (
+    re.compile(r"task\s*[-_ ]?board", re.IGNORECASE),
+    re.compile(r"task\s*[-_ ]?node", re.IGNORECASE),
+)
 
 
 def _run(cmd: list[str]) -> None:
@@ -31,6 +39,25 @@ def _clone_source(source: str) -> tuple[Path, tempfile.TemporaryDirectory[str] |
     return clone_dir, tmp
 
 
+def _validate_bundle_contract(bundle_root: Path, skill_names: list[str]) -> None:
+    violations: list[str] = []
+    for skill_name in skill_names:
+        skill_root = bundle_root / skill_name
+        if not skill_root.is_dir():
+            violations.append(f"missing skill directory: {skill_root}")
+            continue
+        for path in skill_root.rglob("*"):
+            if not path.is_file() or path.suffix.lower() not in _TEXT_SUFFIXES:
+                continue
+            text = path.read_text(encoding="utf-8")
+            for pattern in _PROHIBITED_EXECUTION_PATTERNS:
+                if pattern.search(text):
+                    violations.append(f"prohibited execution-control term in {path}")
+                    break
+    if violations:
+        raise SystemExit("bundle contract validation failed:\n" + "\n".join(violations))
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Install the harness skill bundle from a source repo.")
     parser.add_argument("--source", required=True, help="Source repo path or Git URL.")
@@ -46,6 +73,7 @@ def main() -> int:
 
         bundle = json.loads(bundle_path.read_text(encoding="utf-8"))
         source_bundle_root = source_root / bundle["source_root"]
+        _validate_bundle_contract(source_bundle_root, bundle["skills"])
         target_root = _repo_root(Path(args.target).resolve()) / ".agents" / "skills" / "harness"
         target_root.mkdir(parents=True, exist_ok=True)
 

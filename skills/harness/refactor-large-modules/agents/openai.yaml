@@ -1,0 +1,4 @@
+interface:
+  display_name: "Large Module Refactoring"
+  short_description: "Consistent responsibility-based module extraction"
+  default_prompt: "Use $refactor-large-modules to split an oversized module while preserving behavior and public contracts."

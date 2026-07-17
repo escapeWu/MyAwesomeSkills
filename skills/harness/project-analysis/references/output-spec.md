@@ -149,12 +149,24 @@ python3 <skills-root>/skills/project-analysis/scripts/scan_docs_metadata.py <项
 - 限制条件 / 注意事项
 - 排障或性能观察要点
 
-### 回填给 harness TaskNode
+### 回填为 Implementation Context
 - Entry Points
 - Relevant Files
 - Contracts / Data Shapes
 - Risks / Open Questions
 - Validation Candidates
+
+### 回填为 Route Impact Context
+- Current Route
+- Proposed Mutation
+- Dependency / Gate Impact
+- Owner / Docs Impact
+- Risks / Open Questions
+- Validation
+
+Route Impact 默认回填 owning README、development plan 与 changelog，不生成独立 route/progress
+报告。用户可见摘要保持 goal、route、focus、blocker、next gate、authorization 六项，并只显示
+语义化模块/里程碑名称；内部阶段编号和 node ID 仅按明确请求展开。
 
 ### 回填到 `OVERVIEW.md`
 - 模块边界

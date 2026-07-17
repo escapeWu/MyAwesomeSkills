@@ -5,6 +5,8 @@
     "document-organization-harness",
     "progressive-disclosure-docs",
     "project-analysis",
-    "project-docs-workflow"
+    "project-docs-workflow",
+    "external-collaboration-workflow",
+    "refactor-large-modules"
   ]
 }

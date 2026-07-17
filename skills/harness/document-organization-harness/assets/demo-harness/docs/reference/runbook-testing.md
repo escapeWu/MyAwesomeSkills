@@ -8,5 +8,6 @@
 - reach `docs/OVERVIEW.md`
 - reach `docs/feature/INDEX.md`
 - reach `docs/reference/INDEX.md`
+- reach `docs/collaboration/INDEX.md`
 - reach at least one feature module
 - walk back to root

@@ -1,0 +1,4 @@
+interface:
+  display_name: "External Collaboration Workflow"
+  short_description: "Versioned external analysis and proposal handoff"
+  default_prompt: "Use $external-collaboration-workflow to create or review an external-team collaboration case and translate accepted recommendations into internal project contracts."
