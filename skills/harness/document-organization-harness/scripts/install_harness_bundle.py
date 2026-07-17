@@ -77,6 +77,17 @@ def main() -> int:
         target_root = _repo_root(Path(args.target).resolve()) / ".agents" / "skills" / "harness"
         target_root.mkdir(parents=True, exist_ok=True)
 
+        root_files = bundle.get("root_files", [])
+        for relative_path in root_files:
+            src = source_bundle_root / relative_path
+            dst = target_root / relative_path
+            if not src.is_file():
+                raise SystemExit(f"missing bundle root file: {src}")
+            if dst.exists() and not args.overwrite:
+                raise SystemExit(f"target already exists: {dst}")
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+
         for skill_name in bundle["skills"]:
             src = source_bundle_root / skill_name
             dst = target_root / skill_name
@@ -86,7 +97,12 @@ def main() -> int:
                 shutil.rmtree(dst)
             shutil.copytree(src, dst)
 
-        print(f"installed {len(bundle['skills'])} skills into {target_root}")
+        root_file_label = "file" if len(root_files) == 1 else "files"
+        print(
+            f"installed {len(bundle['skills'])} skills and {len(root_files)} bundle "
+            f"{root_file_label} "
+            f"into {target_root}"
+        )
         return 0
     finally:
         if tmp is not None:

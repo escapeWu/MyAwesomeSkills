@@ -27,7 +27,11 @@ Skills are folders of instructions, scripts, and resources that Claude loads dyn
 | [ui-ux-pro-max-skill](./skills/ui-ux-pro-max-skill) | AI skill providing design intelligence for building professional UI/UX across platforms.（submodule: `nextlevelbuilder/ui-ux-pro-max-skill`） |
 | [xlsx](./skills/xlsx) | Read, edit, or create spreadsheet files (`.xlsx` / `.xlsm` / `.csv` / `.tsv`) — add columns, compute, fix, or convert. |
 
-> `harness/*` is the reusable harness bundle (see `skills/harness/document-organization-harness/assets/harness-bundle.json`).
+> `harness/*` is the reusable harness bundle. Start with
+> [`skills/harness/README.md`](./skills/harness/README.md) for the target-repo
+> `AGENTS.md` patch contract, then see the
+> [`harness-bundle.json`](./skills/harness/document-organization-harness/assets/harness-bundle.json)
+> manifest for bundle membership.
 > `style-extractor` and `ui-ux-pro-max-skill` are git submodules; run `git submodule update --init` to populate them.
 
 ## Structure

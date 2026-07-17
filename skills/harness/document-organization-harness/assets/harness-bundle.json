@@ -1,6 +1,9 @@
 {
   "bundle_name": "harness",
   "source_root": "skills/harness",
+  "root_files": [
+    "README.md"
+  ],
   "skills": [
     "document-organization-harness",
     "progressive-disclosure-docs",

@@ -114,9 +114,10 @@ Recommended install flow:
 
 1. Clone or point at the source GitHub repository.
 2. Run the bundle installer in `scripts/install_harness_bundle.py`.
-3. The installer copies the source bundle into `.agents/skills/harness/*` in
-   the target repo.
-4. Update the target repo's root `AGENTS.md` to register the installed skills.
+3. The installer copies this bundle README and the source skills into
+   `.agents/skills/harness/` in the target repo.
+4. Follow the bundle-level [`AGENTS.md` patch contract](../README.md) to
+   incrementally update the target repo's root `AGENTS.md`.
 
 See `references/harness-bootstrap.md` and `assets/harness-bundle.json` for the
 bundle source layout and selection order.

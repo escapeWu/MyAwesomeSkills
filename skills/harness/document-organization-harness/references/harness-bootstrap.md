@@ -161,7 +161,9 @@ python "$TMP_DIR/MyAwesomeSkills/skills/harness/document-organization-harness/sc
 
 After installing:
 
-1. Register installed skills in the target repo's `AGENTS.md`.
+1. Read the installed `.agents/skills/harness/README.md` (source:
+   [`skills/harness/README.md`](../../README.md)) to incrementally patch the
+   target repo's `AGENTS.md` and register only installed skills.
 2. Copy or adapt `assets/demo-harness/AGENTS.md` and `assets/demo-harness/docs/`.
 3. Replace placeholders with target repo facts.
 4. Run the docs navigation validation checklist.
