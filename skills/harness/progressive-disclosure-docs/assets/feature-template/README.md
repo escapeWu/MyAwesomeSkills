@@ -6,6 +6,9 @@ date: YYYY-MM-DD
 status: draft
 role: separate-planned
 lifecycle: proposed
+requirements_status: draft
+spec_status: none
+decision_status: clear
 milestone: not_started
 milestone_status: not_started
 implementation_status: not_started
@@ -28,9 +31,9 @@ read_by_default: true
 {
   "schema_version": 2,
   "route_version": "YYYY-MM-DD.1",
-  "summary": "合同冻结当前焦点 → 功能实施未授权",
+  "summary": "需求确认与 Spec 判定当前焦点 → 功能实施未授权",
   "nodes": [
-    {"id": "contract-freeze", "name": "合同冻结", "progress": "active", "authorization": "docs-only", "owner": "requirements.md"},
+    {"id": "contract-freeze", "name": "需求确认与 Spec 判定", "progress": "active", "authorization": "docs-only", "owner": "requirements.md"},
     {"id": "implementation", "name": "功能实施", "progress": "planned", "authorization": "unauthorized", "owner": "README.md"}
   ],
   "edges": [["contract-freeze", "implementation"]],
@@ -41,11 +44,11 @@ read_by_default: true
 }
 MAINLINE-ROUTE:END -->
 
-路线：`合同冻结当前焦点 → 功能实施未授权`
+路线：`需求确认与 Spec 判定当前焦点 → 功能实施未授权`
 
-- **当前焦点**：冻结合同。
-- **当前阻塞**：expected behavior、schema、validation matrix 与 stop rules 尚未冻结。
-- **下一验证门**：合同冻结。
+- **当前焦点**：确认 requirements，并判断是否需要 Spec / ADR。
+- **当前阻塞**：expected behavior 与 acceptance 尚未确认；实施合同尚未判定。
+- **下一验证门**：requirements confirmation / Spec decision。
 - **授权边界**：仅 docs/contract；无实施授权。
 
 ## 当前状态
@@ -54,12 +57,15 @@ MAINLINE-ROUTE:END -->
 |---|---|
 | Role | `SEPARATE_PLANNED` |
 | Lifecycle | `PROPOSED` |
+| Requirements | `DRAFT` |
+| Active Spec | `NONE` |
+| Blocking Decisions | `CLEAR` |
 | Milestone | `NOT_STARTED` |
 | Implementation | `NOT_STARTED` |
 | Evidence | `CONTRACT_ONLY` |
 | Authorization | `NONE` |
 | Last verified | `YYYY-MM-DD` |
-| Next gate | 合同冻结 |
+| Next gate | Requirements confirmation / Spec decision |
 
 ## 已完成
 
@@ -67,15 +73,16 @@ MAINLINE-ROUTE:END -->
 
 ## 待完成
 
-- 冻结 scope、expected behavior、schema、validation matrix、stop rules 和 evidence outputs。
+- 确认 scope、expected behavior、acceptance、NFR 与 stop rules。
+- 判断是否需要首个 Spec，以及是否存在阻塞 Spec freeze 的 ADR candidate。
 
 ## 当前阻塞
 
-- 尚未完成合同冻结；尚无实施授权。
+- requirements 尚未确认；尚无实施授权。
 
 ## 下一验证门
 
-合同冻结
+Requirements confirmation / Spec decision
 
 ## 证据
 
@@ -85,23 +92,18 @@ MAINLINE-ROUTE:END -->
 
 见 [changelog.md](changelog.md)。
 
-## 实施前模块设计
+## 活跃合同
 
-Lifecycle 进入 `IMPLEMENTATION_ACTIVE` 前必须完成下表；手写代码文件最多 1000 物理行，
-800 行进入拆分预警。
-
-| 模块 | 单一责任 | 公共接口 | 允许依赖 | 文件预算 | 测试归属 |
-|---|---|---|---|---|---|
-| TODO | TODO | TODO | TODO | `< 800` | TODO |
-
-- 可变状态 owner：TODO。
-- 共享/复用边界与现有消费者：TODO。
-- CLI/adapter/runner 薄层入口：TODO。
-- 禁止的反向或环形依赖：TODO。
+- Requirements：[requirements.md](requirements.md)（`DRAFT`）。
+- Active Spec：无；实现相关合同明确后按需在 `specs/` 创建。
+- Blocking ADR：无；满足 durable decision trigger 时按需在 `decisions/` 创建。
+- Implementation authorization：`NONE`。
 
 ## 文档所有权
 
-- [requirements.md](requirements.md) 持有 expected behavior、acceptance 和 stop rules。
-- 本页持有 current route overlay 与 current snapshot。
+- [requirements.md](requirements.md) 持有 expected behavior、acceptance、NFR 和 stop rules。
+- `specs/` 持有 bounded implementation contracts；详细模块图、接口、状态、迁移和 validation matrix 不写入本页。
+- `decisions/` 持有 Feature-local ADR；系统级 ADR 由 `docs/reference/decisions/` 持有。
+- 本页只持有 Feature map、current route overlay、contract links 与 current snapshot。
 - 稳定节点、依赖、并行和汇合关系进入 development plan（需要时创建）。
-- [changelog.md](changelog.md) 持有 milestone/gate/route 级迁移历史。
+- [changelog.md](changelog.md) 持有 Feature/Spec/ADR 的 milestone/gate/route 级迁移历史。

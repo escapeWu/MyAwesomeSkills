@@ -12,6 +12,7 @@ Skills are folders of instructions, scripts, and resources that Claude loads dyn
 | [dev-ops/news-fetcher-api](./skills/dev-ops/news-fetcher-api) | Work with the news fetcher REST API: supported-site lookup, domain article discovery, URL fetching, batch fetch/crawl, fetch history, and Bearer-authenticated integration. |
 | [dev-ops/project-dev-standards](./skills/dev-ops/project-dev-standards) | Bootstrap or refresh repository-specific development standards from a real codebase. Generates evidence-backed `docs/ai-dev-standards/` and updates managed blocks in `AGENTS.md` / `CLAUDE.md`. |
 | [grok_search](./skills/grok_search) | 自适应 AI 搜索与最新信息检索。先评估任务复杂度，再在 grok-4.20-fast / auto / expert 之间路由，必要时用「fast 侦察 + fast 补缺 + expert 综合」组合流程。 |
+| [harness/add-idea](./skills/harness/add-idea) | Unified docs-only intake: clarify vague ideas one decision at a time, choose a new or existing Feature owner, and create the right requirements, Spec, and conditional ADR artifacts. |
 | [harness/document-organization-harness](./skills/harness/document-organization-harness) | Organize or retrofit project documentation: root agent rules, overview/index maps, truth ownership, durable status routing, and validation gates. |
 | [harness/progressive-disclosure-docs](./skills/harness/progressive-disclosure-docs) | Design, audit, or refactor docs so agents navigate progressively through maps, indexes, owning feature docs, references, collaboration records, and archives. |
 | [harness/project-analysis](./skills/harness/project-analysis) | Deep project analysis for architecture, dataflow, route impact, performance risk, and expected-vs-implemented gaps; stable conclusions return to owning docs. |
@@ -27,11 +28,11 @@ Skills are folders of instructions, scripts, and resources that Claude loads dyn
 | [ui-ux-pro-max-skill](./skills/ui-ux-pro-max-skill) | AI skill providing design intelligence for building professional UI/UX across platforms.（submodule: `nextlevelbuilder/ui-ux-pro-max-skill`） |
 | [xlsx](./skills/xlsx) | Read, edit, or create spreadsheet files (`.xlsx` / `.xlsm` / `.csv` / `.tsv`) — add columns, compute, fix, or convert. |
 
-> `harness/*` is the reusable harness bundle. Start with
+> `harness/*` is a coordinated suite of independently maintained skills. Start with
 > [`skills/harness/README.md`](./skills/harness/README.md) for the target-repo
-> `AGENTS.md` patch contract, then see the
-> [`harness-bundle.json`](./skills/harness/document-organization-harness/assets/harness-bundle.json)
-> manifest for bundle membership.
+> `AGENTS.md` patch contract, then review the suite [changelog](./skills/harness/CHANGELOG.md)
+> and [per-project maintenance guide](./skills/harness/UPGRADING.md). The repository does not
+> provide bundle installation or automatic target-project upgrades.
 > `style-extractor` and `ui-ux-pro-max-skill` are git submodules; run `git submodule update --init` to populate them.
 
 ## Structure

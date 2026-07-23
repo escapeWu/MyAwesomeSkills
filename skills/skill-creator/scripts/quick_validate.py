@@ -39,7 +39,15 @@ def validate_skill(skill_path):
         return False, f"Invalid YAML in frontmatter: {e}"
 
     # Define allowed properties
-    ALLOWED_PROPERTIES = {'name', 'description', 'license', 'allowed-tools', 'metadata'}
+    ALLOWED_PROPERTIES = {
+        'name',
+        'description',
+        'license',
+        'compatibility',
+        'allowed-tools',
+        'metadata',
+        'disable-model-invocation',
+    }
 
     # Check for unexpected properties (excluding nested keys under metadata)
     unexpected_keys = set(frontmatter.keys()) - ALLOWED_PROPERTIES
@@ -48,6 +56,17 @@ def validate_skill(skill_path):
             f"Unexpected key(s) in SKILL.md frontmatter: {', '.join(sorted(unexpected_keys))}. "
             f"Allowed properties are: {', '.join(sorted(ALLOWED_PROPERTIES))}"
         )
+
+    disable_model_invocation = frontmatter.get('disable-model-invocation')
+    if disable_model_invocation is not None and not isinstance(disable_model_invocation, bool):
+        return False, "'disable-model-invocation' must be a boolean"
+
+    compatibility = frontmatter.get('compatibility')
+    if compatibility is not None:
+        if not isinstance(compatibility, str):
+            return False, f"Compatibility must be a string, got {type(compatibility).__name__}"
+        if len(compatibility) > 500:
+            return False, f"Compatibility is too long ({len(compatibility)} characters). Maximum is 500 characters."
 
     # Check required fields
     if 'name' not in frontmatter:

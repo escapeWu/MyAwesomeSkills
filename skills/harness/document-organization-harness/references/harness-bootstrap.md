@@ -85,6 +85,7 @@ If the repo uses project-local skills, add a concise registry in `AGENTS.md`.
 ```md
 ## Repo-local Skills
 
+- `.agents/skills/harness/add-idea`: unified docs-only idea intake; Grill when needed, then choose a new or existing Feature owner and materialize requirements, Specs, and conditional ADRs.
 - `.agents/skills/harness/document-organization-harness`: organize or repair project documentation, navigation, ownership, and governance.
 - `.agents/skills/harness/progressive-disclosure-docs`: enforce progressive disclosure, truth ownership, route overlays, and lifecycle structure.
 - `.agents/skills/harness/project-analysis`: investigate architecture, dataflow, route impact, and expected-vs-implemented gaps when shallow docs are insufficient.
@@ -100,8 +101,9 @@ Do not force these exact skill names into every repo. The invariant is:
 - each skill owns one workflow;
 - detailed variants live inside the skill's `references/` or `assets/`.
 
-Source repositories keep the canonical bundle under `skills/harness/`, while
-target repositories receive the installed bundle under `.agents/skills/harness/`.
+This source repository keeps canonical independent skills under `skills/harness/`. Target projects
+maintain only the skills they use, either grouped under `.agents/skills/harness/` or in an existing
+flat/custom registry. Do not move paths merely to match this repository.
 
 Recommended local skill shape:
 
@@ -116,61 +118,33 @@ Recommended local skill shape:
         └── assets/
 ```
 
-## 2.2 Auto-install the harness skill bundle
+## 2.2 Maintain repo-local skills
 
-When the current GitHub repository is the canonical skill source, install the
-entire harness bundle from that repository instead of copying individual skills.
+There is no suite installer or manifest. A target project maintains each selected skill through its
+normal reviewed change workflow. Read the source [`CHANGELOG.md`](../../CHANGELOG.md) and
+[`UPGRADING.md`](../../UPGRADING.md) before changing an existing copy.
 
-Curated bundle manifest:
+For each target:
 
-```text
-skills/harness/document-organization-harness/assets/harness-bundle.json
-```
+1. Read the actual skill registry and locate grouped, flat, partial, and project-specific skills.
+2. Record the target working state and isolate unrelated work according to target policy.
+3. Compare one canonical skill directory with its target counterpart.
+4. Classify canonical updates, local extensions, obsolete behavior, and uncertain content before
+   editing.
+5. Apply only reviewed changes; do not replace directories containing unclassified local files.
+6. Patch existing `AGENTS.md` and runtime-rule sections only after the corresponding target skill
+   paths exist.
+7. Validate frontmatter, provider metadata, links, docs routes, governance consistency, and the
+   target project's own checks.
 
-Bundle members:
+Projects adopting the full idea-to-implementation lifecycle maintain shared contracts and templates
+first, then `add-idea`, then consuming workflow skills, and finally target-owned governance. Projects
+may keep a smaller set; do not register or reference an absent skill.
 
-```text
-skills/harness/document-organization-harness
-skills/harness/progressive-disclosure-docs
-skills/harness/project-analysis
-skills/harness/project-docs-workflow
-skills/harness/external-collaboration-workflow
-skills/harness/refactor-large-modules
-```
-
-Install from an existing local clone:
-
-```bash
-python skills/harness/document-organization-harness/scripts/install_harness_bundle.py \
-  --source /path/to/MyAwesomeSkills \
-  --target /path/to/target-repo \
-  --overwrite
-```
-
-Install from the current GitHub repo:
-
-```bash
-SOURCE_REPO="https://github.com/escapeWu/MyAwesomeSkills.git"
-TMP_DIR="$(mktemp -d)"
-git clone --depth 1 "$SOURCE_REPO" "$TMP_DIR/MyAwesomeSkills"
-python "$TMP_DIR/MyAwesomeSkills/skills/harness/document-organization-harness/scripts/install_harness_bundle.py" \
-  --source "$TMP_DIR/MyAwesomeSkills" \
-  --target /path/to/target-repo \
-  --overwrite
-```
-
-After installing:
-
-1. Read the installed `.agents/skills/harness/README.md` (source:
-   [`skills/harness/README.md`](../../README.md)) to incrementally patch the
-   target repo's `AGENTS.md` and register only installed skills.
-2. Copy or adapt `assets/demo-harness/AGENTS.md` and `assets/demo-harness/docs/`.
-3. Replace placeholders with target repo facts.
-4. Run the docs navigation validation checklist.
-
-If the target repo already has one of these skills, omit `--overwrite` to make
-the installer fail fast, review the difference manually, and only then re-run
-with `--overwrite`.
+The demo remains a scaffolding example, not an installation payload. Copy or adapt demo files only
+when the target lacks an equivalent docs route, replace every demo fact, and preserve existing
+project safety, authorization, ownership, commands, and validation rules. Existing Features migrate
+to the Requirements/Spec/ADR model only when related work touches them.
 
 ## 2.3 Cursor native execution gate (`.cursor/rules`)
 
@@ -194,10 +168,13 @@ docs/
 │       ├── README.md
 │       ├── INDEX.md          # only when the module is large
 │       ├── requirements.md   # expected behavior and acceptance
-│       ├── design.md         # detailed design
-│       └── data-model.md     # table and contract definitions
+│       ├── specs/            # bounded implementation contracts; lazy
+│       ├── decisions/        # Feature-local ADRs; lazy
+│       ├── design.md         # stable shared design reference
+│       └── data-model.md     # stable table/contract reference
 ├── reference/
 │   ├── INDEX.md
+│   ├── decisions/           # cross-Feature/system ADRs; lazy
 │   ├── architecture.md
 │   ├── interfaces.md
 │   └── runbook-testing.md
@@ -207,9 +184,10 @@ docs/
     └── INDEX.md
 ```
 
-The owning feature README or GOAL records current implementation state,
-completed work, pending work, blockers, and the next validation gate. Do not
-create a parallel execution-control hierarchy.
+The owning Feature README or GOAL records current implementation state,
+contract links, completed work, pending work, blockers, and the next validation
+gate. Requirements own expected behavior; Specs own bounded implementation
+contracts; ADRs own durable rationale. Do not create a parallel control plane.
 
 ## 3.1 Feature granularity and autonomous governance
 
@@ -292,5 +270,6 @@ After copying:
 2. Delete the demo module if the repo already has a real feature module.
 3. Keep `OVERVIEW.md`, `feature/INDEX.md`, `reference/INDEX.md`, and
    `archive/INDEX.md`.
-4. Add repo-local skills to `AGENTS.md` only if they exist or will be installed.
+4. Add repo-local skills to `AGENTS.md` only when their actual target paths exist and the project
+   accepts maintaining them.
 5. Run the validation checklist above.

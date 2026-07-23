@@ -37,6 +37,7 @@ metadata:
 | compatibility | No | Max 500 characters. Indicates environment requirements (intended product, system packages, network access, etc.). |
 | metadata | No | Arbitrary key-value mapping for additional metadata. |
 | allowed-tools | No | Space-delimited list of pre-approved tools the skill may use. (Experimental) |
+| disable-model-invocation | No | Claude-compatible boolean extension. When `true`, the skill is available only through explicit user invocation. |
 
 #### name field
 
@@ -65,6 +66,11 @@ The required description field:
 
 #### allowed-tools field (optional)
 - A space-delimited list of tools that are pre-approved to run.
+
+#### disable-model-invocation field (optional)
+- Boolean Claude-compatible extension for user-invoked orchestration skills.
+- Set to `true` only when the skill must not be selected implicitly by the model.
+- Provider-specific metadata may additionally enforce the same policy, such as `policy.allow_implicit_invocation: false` in `agents/openai.yaml`.
 
 ### Body content
 

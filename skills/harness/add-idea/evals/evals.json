@@ -1,0 +1,65 @@
+{
+  "skill_name": "add-idea",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "add-idea：我想给现有交易信号项目加一点智能分析，最好用户一眼就知道该不该进场。具体怎么做我还没想清楚。",
+      "expected_output": "Enter Grill, ask exactly one boundary decision with a recommended answer, and make no repository writes before shared-understanding confirmation.",
+      "files": [],
+      "expectations": [
+        "The response asks exactly one decision question rather than a batch questionnaire.",
+        "The question includes a recommended answer and short rationale.",
+        "The response does not create or patch Feature, requirements, Spec, ADR, code, or issue-tracker artifacts.",
+        "The response distinguishes discoverable repository facts from user-owned decisions."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "add-idea：仓库目前只有 market-data 和 alerting 两个 Feature。新增一个独立的审计报告导出能力，面向合规人员，产出版本化 CSV/JSON artifact，有独立 retention、权限、验收和后续 roadmap。边界已经确认，不改 alert delivery。",
+      "expected_output": "Select CREATE_FEATURE, create confirmed requirements, create the first Spec for artifact/schema/permission contracts, and avoid an ADR unless a real durable trade-off appears.",
+      "files": [],
+      "expectations": [
+        "The owner route is CREATE_FEATURE with evidence based on independent outcome, artifact, permissions, lifecycle, and roadmap.",
+        "Artifact routes include REQUIREMENTS_PATCH and NEW_SPEC.",
+        "Requirements are materialized as CONFIRMED after the shared-understanding gate, not left DRAFT.",
+        "No implementation, deployment, issue publication, or implicit authorization occurs."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "add-idea：现有 alerting Feature 的 requirements 已明确拥有通知渠道和阈值行为。现在补充 Telegram 渠道，并保持现有 email/webhook 语义不变；需要新增 Telegram adapter contract、重试规则和集成测试。",
+      "expected_output": "Select PATCH_FEATURE for alerting, patch requirements, and create a new bounded Spec for adapter/retry/test contracts without creating another Feature.",
+      "files": [],
+      "expectations": [
+        "The owner route is PATCH_FEATURE and names alerting as the owner.",
+        "Artifact routes include REQUIREMENTS_PATCH and NEW_SPEC.",
+        "The response does not create a new top-level Feature merely because Telegram is new.",
+        "Reversible adapter details remain in the Spec unless an ADR trigger is independently met."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "add-idea：runtime-stability Feature 要决定跨进程事件投递采用 Kafka 还是 Postgres outbox。它会影响多个模块、部署拓扑、数据所有权和迁移成本，两种方案都可行，当前没有 accepted ADR。",
+      "expected_output": "Route to the owning Feature or a system decision owner from repository evidence, create an ADR_CANDIDATE, and keep dependent Spec status DRAFT until the ADR is accepted.",
+      "files": [],
+      "expectations": [
+        "Artifact routes include ADR_CANDIDATE and NEW_SPEC when implementation contracts are being defined.",
+        "The ADR starts PROPOSED and records alternatives, consequences, evidence, and revisit triggers.",
+        "The dependent Spec cannot become FROZEN while the blocking ADR remains PROPOSED.",
+        "The response does not treat user discussion or a recommendation as accepted implementation authorization."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "add-idea：把 alerting Feature 里一个未导出的私有 helper 从 build_msg 改名为 build_message，行为、接口、测试、requirements 和 current state 都不变。",
+      "expected_output": "Select PATCH_FEATURE as owner evidence but choose NO_DURABLE_CHANGE, make no docs, Spec, or ADR changes, and stop before implementation.",
+      "files": [],
+      "expectations": [
+        "The selected owner is the existing alerting Feature.",
+        "The artifact route is NO_DURABLE_CHANGE.",
+        "No Spec or ADR is created for the reversible local rename.",
+        "The skill does not implement the rename because add-idea is docs-only."
+      ]
+    }
+  ]
+}

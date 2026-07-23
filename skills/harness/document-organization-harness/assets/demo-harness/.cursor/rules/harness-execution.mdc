@@ -9,8 +9,8 @@ alwaysApply: true
 
 ## 必须按序执行
 
-1. **确认 owner 与范围**：定位 owning module、预期行为来源、当前实现入口和禁止跨越的边界。
-2. **契约先行**：冻结 schema、字段、状态、安全边界和验证矩阵；存在歧义时先停止并澄清。
+1. **确认 owner 与范围**：未成形 idea 先进入 `add-idea`；随后定位 owning module、requirements、active Spec、accepted ADR、当前实现入口和禁止跨越的边界。
+2. **契约先行**：contract-affecting implementation 必须引用 frozen Spec；冻结 schema、字段、状态、安全边界和验证矩阵，blocking ADR 未 accepted 时停止。
 3. **更新 durable state**：在 owning GOAL/README 记录已完成、待完成、阻塞和下一验证门。
 4. **边界内实施**：只修改声明范围内的代码与文档；保留不相关的现有修改。
 5. **逐门验证**：先运行聚焦验证，再运行与影响范围匹配的广泛检查；未通过不得提升证据状态。
@@ -22,7 +22,7 @@ alwaysApply: true
 
 ## 自检
 
-- [ ] owner、预期行为来源和安全边界是否明确？
+- [ ] owner、requirements、active Spec、blocking ADR 和安全边界是否明确？
 - [ ] owning GOAL/README 是否记录当前状态与下一验证门？
 - [ ] 当前动作是否直接推进目标且不越界？
 - [ ] 验证证据是否足以支持当前结论？

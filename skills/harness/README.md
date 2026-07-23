@@ -1,8 +1,10 @@
-# Harness Bundle：`AGENTS.md` Patch 合同
+# Harness Skills：`AGENTS.md` Patch 合同
 
-本目录是可复用 harness skills 的规范来源。把 bundle 安装到目标仓库的
-`.agents/skills/harness/` 后，Agent 必须按本文**增量 patch** 根 `AGENTS.md`，使文档路由、
-真值所有权、实施门禁和大文件拆分规则在每轮任务中可见。
+本目录是协调维护、独立采用的 harness skills 规范来源。套件变化见
+[`CHANGELOG.md`](CHANGELOG.md)，既有项目和已投入使用副本的逐 skill 维护流程见
+[`UPGRADING.md`](UPGRADING.md)。仓库不提供 bundle 安装或自动覆盖能力；目标项目按实际需要
+维护全部或部分 skills，并由 Agent 按本文**增量 patch** 根 `AGENTS.md`，使文档路由、真值
+所有权、实施门禁和大文件拆分规则在每轮任务中可见。
 
 ## Patch 原则
 
@@ -11,7 +13,8 @@
 2. 只做 section 级合并，不整篇替换，不把 demo 项目名、占位符或本仓库业务规则复制到目标仓库。
 3. 若目标仓库已有等价章节，更新原章节；没有时才追加下方 managed block。后续运行只更新同一
    block，不能制造第二套规则。
-4. 只有实际存在于 `.agents/skills/harness/` 的 skill 才能注册到 `AGENTS.md`。
+4. 只注册目标仓库 registry 中实际存在并接受维护的 skill 路径；支持 grouped、flat 或项目自定义布局，
+   不得为匹配本示例而移动路径。
 5. 若 `docs/OVERVIEW.md` 或索引尚不存在，先从
    `document-organization-harness/assets/demo-harness/` 复制并按目标仓库事实改造，再写入链接。
 6. 本 harness 不创建活跃 `taskBoard` / `.agents/tasks` 控制面，也不默认要求 SubAgent、并行派发、
@@ -24,13 +27,15 @@
 | Documentation / Context | 渐进式披露、真值所有权、写回规则 |
 | Development Workflow | Mandatory Execution Gate、Anti-Drift |
 | Code Organization | 模块 owner、依赖方向、800/1000 行门禁 |
-| Skills | 仅注册实际安装的 harness skills |
+| Skills | 仅注册目标仓库实际维护的 harness skills 及其真实路径 |
 | Delegation / Worktrees | 明确“用户授权后才允许” |
 | Testing | 保留项目原命令，补充从聚焦到广泛的验证顺序 |
 
 ## 无等价章节时追加的 Managed Block
 
-把下方内容追加到根 `AGENTS.md`，并把不适用于目标仓库的条件项删掉。不得保留占位符或无效路径。
+把下方内容追加到根 `AGENTS.md`，并把不适用于目标仓库的条件项删掉。示例使用 grouped
+`.agents/skills/harness/<skill>` 路径；落地前必须按目标 registry 改成实际 grouped、flat 或自定义
+路径，并删除不存在的 skill 条目。不得保留占位符或无效路径。
 
 ```md
 <!-- HARNESS-GOVERNANCE:START -->
@@ -40,7 +45,8 @@
 
 - 项目上下文入口：[`docs/OVERVIEW.md`](docs/OVERVIEW.md)。
 - 按 `AGENTS.md -> docs/OVERVIEW.md -> feature/reference/collaboration/archive INDEX -> 1-3 个任务相关 leaf` 逐层读取；禁止全量读取 `docs/`。
-- `requirements.md` 持有 expected behavior 与 acceptance；当前代码持有 implemented behavior；不可变 artifact、ledger 和 gate report 持有 evidence。
+- 新 idea 统一从 `.agents/skills/harness/add-idea` 进入：边界不清时逐题 Grill，确认后由 Agent 选择新建 Feature 或 patch 现有 Feature，并按需生成 requirements、Spec 与 ADR。
+- `requirements.md` 持有 expected behavior 与 acceptance；active frozen Spec 持有 bounded implementation contract；accepted ADR 持有 durable architecture rationale；当前代码持有 implemented behavior；不可变 artifact、ledger 和 gate report 持有 evidence。
 - owning README/GOAL 持有 current state、completed、pending、blockers 和 next validation gate；会话计划只持有本轮临时顺序。
 - 外部 proposal 只提供 provenance/recommendation，先完成内部采纳与合同转译，不能直接作为实现合同或授权。
 
@@ -48,8 +54,8 @@
 
 非 trivial 实施前按顺序完成：
 
-1. 定位 owning module、requirements、README/GOAL、稳定 reference 和当前代码入口。
-2. 冻结安全与授权边界、schema、公共接口、依赖方向、可变状态 owner、文件预算、测试归属和 validation matrix。
+1. 未成形 idea 先进入 `add-idea`；随后定位 owning module、requirements、active Spec、accepted ADR、README/GOAL、稳定 reference 和当前代码入口。
+2. contract-affecting implementation 必须引用 frozen Spec；冻结安全与授权边界、schema、公共接口、依赖方向、可变状态 owner、文件预算、测试归属和 validation matrix。
 3. 把 durable completed/pending/blockers/next gate 写回唯一 owning README/GOAL；临时执行顺序只放会话计划。
 4. 确认当前动作直接推进 active goal，且没有从开发状态、代码存在或实验结果推导出额外执行授权。
 5. 在声明边界内实施，保留无关修改；先跑聚焦验证，再跑影响范围支持的广泛检查。
@@ -66,6 +72,7 @@
 
 ### Repo-local Harness Skills
 
+- `.agents/skills/harness/add-idea`：统一接收 idea；必要时逐题 Grill，然后路由到新 Feature 或已有 Feature，并创建/patch requirements、Spec 与 conditional ADR，不实施代码。
 - `.agents/skills/harness/document-organization-harness`：建立或修复 AGENTS、docs 路由、所有权和治理规则。
 - `.agents/skills/harness/progressive-disclosure-docs`：审计渐进式披露、真值所有权、Feature 生命周期和主线路由。
 - `.agents/skills/harness/project-analysis`：在 shallow docs 不足时分析架构、数据流、路线影响和 expected-vs-implemented gap。
@@ -90,6 +97,7 @@ Agent 在结束前必须确认：
 
 ## 相关入口
 
-- Bundle 清单：[`document-organization-harness/assets/harness-bundle.json`](document-organization-harness/assets/harness-bundle.json)
-- 安装与脚手架参考：[`document-organization-harness/references/harness-bootstrap.md`](document-organization-harness/references/harness-bootstrap.md)
+- 套件变更：[`CHANGELOG.md`](CHANGELOG.md)
+- 逐项目维护与迁移：[`UPGRADING.md`](UPGRADING.md)
+- 文档脚手架参考：[`document-organization-harness/references/harness-bootstrap.md`](document-organization-harness/references/harness-bootstrap.md)
 - 可复制 demo：[`document-organization-harness/assets/demo-harness/`](document-organization-harness/assets/demo-harness/)

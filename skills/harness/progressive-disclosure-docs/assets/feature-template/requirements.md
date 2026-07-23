@@ -1,35 +1,71 @@
+---
+type: requirements
+feature: FEATURE_SLUG
+status: draft
+version: YYYY-MM-DD.1
+created: YYYY-MM-DD
+last_updated: YYYY-MM-DD
+authorization: docs-only
+read_by_default: true
+---
+
 # FEATURE_TITLE 需求与验收
 
 > 上级：[模块索引](INDEX.md)
 
 ## 1. 规范地位
 
-本文持有 FEATURE_TITLE 的 expected behavior、acceptance、stop rules 和不可违反边界。
+本文是 FEATURE_TITLE expected behavior、acceptance、NFR、non-goals、stop rules 和不可违反边界的唯一 owner。实现设计、模块拆分和架构取舍分别进入 Spec 与 ADR。
 
-## 2. 目标
+## 2. Problem and Outcome
 
-- TODO
+- Problem:
+- Actor / beneficiary:
+- Intended outcome:
+- Success measure:
 
-## 3. 范围内
+## 3. Scope
 
-- TODO
+### In scope
 
-## 4. 范围外
+- REQ-001:
 
-- TODO
+### Out of scope
 
-## 5. 强制合同
+- NG-001:
 
-- TODO
-- 非 trivial 实施前必须冻结模块职责、依赖方向、公共接口、复用边界、文件预算与测试归属。
-- 新增或本轮修改的手写代码文件不得超过 1000 物理行；800 行进入拆分预警。
-- 超限时必须按稳定责任和可复用边界抽离，不得机械切成 part 文件。
+## 4. Expected Behavior
 
-## 6. 验收条件
+| ID | Behavior | Priority | Notes |
+|---|---|---|---|
+| REQ-001 |  | must |  |
 
-- TODO
-- `python3 scripts/validate_code_organization.py` 通过。
+## 5. Non-Functional Requirements and Constraints
 
-## 7. 停止条件
+| ID | Constraint / NFR | Measurable boundary |
+|---|---|---|
+| NFR-001 |  |  |
 
-- TODO
+- Safety boundary:
+- Authorization boundary:
+- Compatibility boundary:
+
+## 6. Acceptance
+
+| ID | Requirement | Observable acceptance | Evidence type |
+|---|---|---|---|
+| AC-001 | REQ-001 |  |  |
+
+## 7. Stop Rules
+
+- STOP-001:
+
+## 8. Open Contract Questions
+
+- None.
+
+## Confirmation
+
+- Requirements status: `DRAFT`.
+- Decision authority: unconfirmed.
+- Confirmation date: not confirmed.

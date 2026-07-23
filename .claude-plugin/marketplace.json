@@ -19,6 +19,7 @@
         "./skills/dev-ops/news-fetcher-api",
         "./skills/dev-ops/project-dev-standards",
         "./skills/grok_search",
+        "./skills/harness/add-idea",
         "./skills/harness/document-organization-harness",
         "./skills/harness/external-collaboration-workflow",
         "./skills/harness/progressive-disclosure-docs",

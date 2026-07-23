@@ -28,6 +28,7 @@ Deliver the smallest useful harness that still gives an agent clear entry points
 - `docs/archive/INDEX.md`
 - module-level `README.md` / `INDEX.md` plus `requirements.md` for expected
   product or business behavior and acceptance
+- lazy `specs/` for bounded implementation contracts and `decisions/` for ADRs
 - owning GOAL/README sections for completed work, pending work, blockers, and
   the next validation gate
 - leaf docs with explicit parent links
@@ -37,8 +38,8 @@ Deliver the smallest useful harness that still gives an agent clear entry points
 1. Inspect existing root instructions, docs, and ownership boundaries.
 2. Identify the repo's real layers before writing any new structure.
 3. Create or repair the docs map first; distinguish `requirements.md` for
-   expected behavior from `README.md` / `INDEX.md` for current implemented
-   state and routing.
+   expected behavior, Specs for bounded implementation contracts, ADRs for
+   durable rationale, and `README.md` / `INDEX.md` for current state/routing.
 4. Route durable progress through the owning GOAL/README instead of creating a
    separate execution-control document.
 5. Write leaf docs only after the parent indexes exist.
@@ -79,12 +80,12 @@ Read `references/harness-bootstrap.md` for:
 - owning GOAL/README status rules
 - leaf-document link rules
 - validation checklist
-- bundle installation from the source GitHub repo
+- per-project skill maintenance and contract migration
 
 ## Demo Pack
 
-If the target repo needs a fast bootstrap, copy the bundled demo harness from
-`assets/demo-harness/` into the repo root and then replace the placeholder names.
+If the target repo needs a fast bootstrap, adapt the included demo harness from
+`assets/demo-harness/` and replace every placeholder with target-project facts.
 The demo pack includes:
 
 - a root `AGENTS.md` with documentation governance and execution-safety rules
@@ -95,29 +96,27 @@ The demo pack includes:
 
 Use it as a starting shape, not as a final domain model.
 
-## Bundle Install
+## Suite Maintenance Boundary
 
-If the current GitHub repository is the source of truth for reusable skills,
-install the curated harness bundle instead of copying skills one by one.
+This repository is the canonical maintenance source for independent harness skills. It does not
+provide a bundle manifest, installer, automatic overwrite, or target-project upgrade command.
+Projects may maintain the full suite, a subset, or local extensions in grouped or flat paths.
 
-Use this when you want a target repo to receive the same harness stack,
-including skills that support a requirements-first docs layer:
+`add-idea` is the explicit docs-only intake for unclear or clear product/engineering ideas. It runs
+the Grill protocol when needed, chooses a new or existing Feature owner, and materializes
+requirements, Specs, and conditional ADRs before later implementation workflows.
 
-- `document-organization-harness`
-- `progressive-disclosure-docs`
-- `project-analysis`
-- `project-docs-workflow`
-- `external-collaboration-workflow`
-- `refactor-large-modules`
+Recommended maintenance flow:
 
-Recommended install flow:
+1. Read the suite [`CHANGELOG.md`](../CHANGELOG.md) and
+   [`UPGRADING.md`](../UPGRADING.md).
+2. Inspect the target project's actual skill registry, layout, local extensions, and working tree.
+3. Compare and update only the individual skills the target uses; do not normalize paths or replace
+   directories containing unclassified local content.
+4. When adopting the full lifecycle change, maintain shared contracts first, then producer and
+   consumer skills, then patch target-owned governance.
+5. Follow the suite [`AGENTS.md` patch contract](../README.md) to incrementally update existing target
+   rules; never replace target-owned rules or Feature docs.
 
-1. Clone or point at the source GitHub repository.
-2. Run the bundle installer in `scripts/install_harness_bundle.py`.
-3. The installer copies this bundle README and the source skills into
-   `.agents/skills/harness/` in the target repo.
-4. Follow the bundle-level [`AGENTS.md` patch contract](../README.md) to
-   incrementally update the target repo's root `AGENTS.md`.
-
-See `references/harness-bootstrap.md` and `assets/harness-bundle.json` for the
-bundle source layout and selection order.
+See `references/harness-bootstrap.md` for docs scaffolding and maintenance order. Target repository
+history, reviewed diffs, and validation evidence remain the truth for what that project maintains.

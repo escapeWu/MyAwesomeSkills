@@ -42,14 +42,17 @@ docs/feature/<module>/   stable technical facts    external source records      
   ↓
 INDEX.md / README.md / requirements.md
   ↓
-requirements.md / design.md / dataflow.md / changelog.md / RCA.md
+specs/ / decisions/ / design.md / dataflow.md / changelog.md / RCA.md
 ```
 
 `requirements.md` records expected product / business behavior and acceptance.
-`README.md` / `INDEX.md` record current implemented state, module routing, API
-inventory, and known gaps. Do not use a README as the only source of truth for
-both requirements and current implementation once a feature has meaningful
-business behavior.
+`README.md` / `INDEX.md` record the durable Feature map, current implemented
+state, contract links, module routing, API inventory, and known gaps. Specs own
+bounded implementation contracts; ADRs own durable architectural rationale.
+Do not use a README as the only source of truth for requirements, detailed
+design, decisions, and current implementation.
+
+Read and apply [`references/feature-spec-decision-contract.md`](references/feature-spec-decision-contract.md) when creating or changing a Feature, Spec, or ADR.
 
 **durable docs 与会话计划的分离**：
 
@@ -64,6 +67,8 @@ Truth ownership must also be explicit:
 |---|---|
 | Safety and authorization | `AGENTS.md` plus explicit user direction |
 | Expected behavior and acceptance | owning `requirements.md` / frozen contract |
+| Bounded implementation contract | active frozen Spec |
+| Durable architectural rationale | accepted ADR at the owning Feature/reference route |
 | Current implementation | current code |
 | Validation and research evidence | immutable artifacts, ledgers, and gate reports |
 | External problem/proposal provenance | `docs/collaboration/<case-id>/` source records and adoption map |
@@ -155,17 +160,21 @@ docs/feature/<module>/
 ├── INDEX.md       # module map, always read before details
 ├── README.md      # current implemented state, API inventory, known gaps
 ├── requirements.md # expected product/business behavior and acceptance
-├── design.md      # detailed design
-├── dataflow.md    # data flow / sequence / diagrams
-├── changelog.md   # active changelog
-└── rca-*.md       # root-cause analysis when relevant
+├── specs/          # bounded implementation contracts; create lazily
+├── decisions/      # Feature-local ADRs; create lazily
+├── design.md       # stable design reference not owned by one delivery Spec
+├── dataflow.md     # data flow / sequence / diagrams
+├── changelog.md    # Feature/Spec/ADR transition history
+└── rca-*.md        # root-cause analysis when relevant
 ```
 
 Module `INDEX.md` should route by task:
 - Need module map / reading order → `INDEX.md`
 - Need expected behavior / product requirements / acceptance → `requirements.md`
 - Need current implementation / API list / current state / known gaps → `README.md`
-- Need implementation design → `design.md`
+- Need one bounded implementation contract → active `specs/SPEC-*.md`
+- Need durable architectural rationale → relevant accepted `decisions/ADR-*.md`
+- Need stable design shared by multiple Specs → `design.md`
 - Need data flow / sequence → `dataflow.md`
 - Need completed work / pending work / blockers / next validation gate → owning `README.md` or GOAL
 - Debugging a known incident → matching `rca-*.md`
@@ -181,7 +190,10 @@ not concatenate role, lifecycle, milestone, implementation, model, evidence, and
 one free-form status string. At minimum record:
 
 - role;
-- lifecycle;
+- Feature lifecycle;
+- requirements status;
+- active Spec and Spec status;
+- blocking decision status;
 - current milestone and milestone status;
 - implementation status;
 - evidence status;
@@ -226,41 +238,33 @@ mirror the code-organization rule "ownership by domain first". An overgrown
 category that hides several real features behind generic leaf names is an
 anti-pattern: agents can no longer route to the right feature from the INDEX.
 
-## New Feature Lifecycle
+## Feature, Spec, and Decision Lifecycles
 
-Use an explicit lifecycle rather than inventing free-form states:
-
+Keep durable Feature and delivery lifecycles separate; use the shared contract
+for exact gates:
 ```text
-PROPOSED
-  -> CONTRACT_FROZEN
-  -> IMPLEMENTATION_ACTIVE
-  -> VALIDATION_ACTIVE
-  -> CLOSED_ACCEPTED | CLOSED_REJECTED | ABANDONED
+Feature: PROPOSED -> ACTIVE -> MAINTENANCE -> DEPRECATED -> RETIRED
+                   \-> ABANDONED
+Spec:    DRAFT -> FROZEN -> IMPLEMENTATION_ACTIVE -> VALIDATION_ACTIVE
+              -> VALIDATED | REJECTED | SUPERSEDED
+ADR:     PROPOSED -> ACCEPTED | REJECTED; ACCEPTED -> SUPERSEDED | DEPRECATED
 ```
 
-Evidence status and authorization remain independent axes. Starting implementation, training,
-holdout access, shadow, dry-run, or execution always requires whatever separate authorization the
-project contract demands; a lifecycle transition never grants it implicitly.
+Evidence and authorization remain independent; lifecycle never grants
+implementation, deployment, publication, holdout, shadow, dry-run, or execution.
+Use `add-idea` for intake; after confirmation it selects a Feature owner and
+independently routes requirements, Spec, and conditional ADR artifacts.
 
-For a new feature:
+For a new Feature, copy `assets/feature-template/`, register it in Feature INDEX
+and OVERVIEW, and create `specs/` or `decisions/` only when needed. README remains
+a compact Feature/current-state owner; changelog preserves transitions and
+rejected, superseded, or abandoned outcomes.
 
-1. start from `assets/feature-template/`, then create
-   `docs/feature/<feature>/README.md`, `requirements.md`, and `changelog.md`;
-2. add `INDEX.md` when the feature is large or has multiple task routes;
-3. register the entry in `docs/feature/INDEX.md` and `docs/OVERVIEW.md`;
-4. freeze expected behavior, safety boundary, schema, validation matrix, stop rules, evidence
-   outputs, module responsibilities, dependency direction, public interfaces, file-size budgets,
-   reuse boundaries, and test ownership before implementation;
-5. keep the README current-state snapshot and changelog transition history updated at every gate;
-6. close or archive the feature without rewriting negative conclusions.
-
-Before a feature enters `IMPLEMENTATION_ACTIVE`, its owning README or development plan must contain
-an implementation module map. New or changed handwritten code files may not exceed 1000 physical
-lines; 800 lines is an early decomposition warning. Split by cohesive responsibility and stable
-interfaces, not by numbered `part` files. CLI, strategy, model, and runner entrypoints remain thin.
-The repository-specific contract is `docs/reference/code-organization.md`. When an existing module
-must be extracted or crosses the 800/1000-line gate, route implementation through the repo-local
-`refactor-large-modules` skill instead of inventing a new decomposition workflow.
+A Spec owns the implementation module map, public contracts, dependencies,
+state, migration, validation matrix, file budgets, reuse, and test ownership.
+It becomes `FROZEN` only after requirements and blocking ADRs resolve; separate
+implementation authorization is still required. The existing 800/1000-line
+and `refactor-large-modules` gates continue to apply.
 
 ## Autonomous Docs Governance (hard rule)
 
@@ -296,7 +300,7 @@ restructures docs **proactively**, without being told:
 | 2 | 功能实现**完成后**，这个文件是否仍然需要**长期维护**（随代码演进持续更新）？ | 是 → SSOT | 否（一次性分析/总结/批注）→ 不持久化；有历史价值时明确归档 |
 | 3 | 文件属于**模块功能描述**还是**运行/测试/验证方式**？ | 模块功能 → `docs/feature/<module>/` | 运行/测试方式 → `docs/reference/runbook-testing.md` |
 | 4 | 文件记录的是接口/字段/状态/枚举的**稳定契约**吗？ | 是 → SSOT，同步更新 `docs/reference/interfaces.md` | 否 → 属于不稳定草稿或执行上下文 |
-| 5 | 文件描述的是**预期行为/验收条件**（requirements），还是**当前实现状态**（implementation），还是两者都不是？ | requirements → `requirements.md`；当前状态 → `README.md`/`INDEX.md` | 两者都不是 → 非 SSOT；临时内容不落盘，有历史价值时明确归档 |
+| 5 | 文件描述的是**预期行为/验收条件**、**冻结实施合同**、**架构决策理由**还是**当前实现状态**？ | requirements → `requirements.md`；实施合同 → Spec；持久决策 → ADR；当前状态 → `README.md`/`INDEX.md` | 都不是 → 非 SSOT；临时内容不落盘，有历史价值时明确归档 |
 
 ### 典型非 SSOT 文件去向
 
@@ -334,8 +338,9 @@ proposal receipt, adoption, translation and closure through the repo-local
   it into an internal design.
 - `INDEX.md` records version binding and item-level `ACCEPTED` / `MODIFIED` / `REJECTED` / `DEFERRED`
   decisions, then links each accepted item to an internal SSOT target and validation evidence.
-- No implementation starts from an external proposal. Accepted content is first translated into the
-  owning requirements/design/development plan; progress remains in owning README/changelog/evidence.
+- No implementation starts from an external proposal. First translate accepted content into confirmed
+  requirements, conditional accepted ADRs, a frozen Spec, and owning README links; progress remains
+  in owning README/changelog/evidence.
 
 ## Large Proposal Decomposition
 
@@ -368,8 +373,13 @@ Avoid revising a proposal by appending "v1 → v2 review feedback summary" + "T1
 **Correct pattern** (after each review round):
 
 1. `inline rewrite` the relevant section in `design.md` / `spec.md`
-2. Archive the codex review to `docs/archive/<module>-reviews/`
-3. Update `README.md` if audience routing changes
+2. Translate accepted durable choices into ADRs when the trigger applies
+3. Archive the codex review to `docs/archive/<module>-reviews/`
+4. Update `README.md` only when contract routing or current state changes
+
+A proposal is not an implementation contract. Before implementation, accepted
+content must be translated into requirements, accepted ADRs, and a frozen Spec;
+then archive or mark the proposal superseded according to repository policy.
 
 ### Codex review archival
 
@@ -400,7 +410,9 @@ README.md / INDEX.md explains what the module is, its current implemented state,
 current API inventory, known gaps, completed work, pending work, blockers, the
 next validation gate, and routing.
 requirements.md explains expected product/business behavior and acceptance.
-Stable evidence lives in owning docs or append-only artifacts. Transient
+Specs explain bounded implementation contracts. ADRs explain durable
+architectural choices and their trade-offs. Stable evidence lives in owning
+docs or append-only artifacts. Transient
 sequencing stays in the session planning surface and is not persisted as a
 parallel control plane.
 ```
@@ -417,7 +429,10 @@ module: module-name
 date: YYYY-MM-DD
 status: active | implemented | deprecated | archived | draft
 role: current-mainline | separate-planned | supporting | historical
-lifecycle: proposed | contract_frozen | implementation_active | validation_active | closed_accepted | closed_rejected | abandoned
+lifecycle: proposed | active | maintenance | deprecated | retired | abandoned
+requirements_status: draft | confirmed | superseded
+spec_status: none | draft | frozen | implementation_active | validation_active | validated | rejected | superseded
+decision_status: clear | proposed_blocking | accepted | rejected | superseded
 evidence_status: contract_only | source_record | engineering | discovery | validation | accepted | rejected
 authorization: project-specific-boundary
 last_verified: YYYY-MM-DD
@@ -435,7 +450,7 @@ read_by_default: false
 
 1. Inventory Markdown files excluding runtime/build directories.
 2. Identify current entrypoints: `AGENTS.md`, `AGENTS.md`, `README.md`, `docs/OVERVIEW.md`.
-3. Classify docs into: requirements / feature current state / reference / archive.
+3. Classify docs into: requirements / Feature current state / Specs / ADRs / reference / archive.
 4. Create or update: `OVERVIEW.md`, `feature/INDEX.md`, `reference/INDEX.md`,
    `collaboration/INDEX.md`, `archive/INDEX.md`.
 5. Move or link root-level stray docs into the right index.
@@ -472,7 +487,9 @@ read_by_default: false
 - [ ] Default progress output stays at L0 and upper indexes do not duplicate route summaries.
 - [ ] Active feature READMEs use independent state axes instead of composite lifecycle strings.
 - [ ] Active features have an append-only milestone changelog.
-- [ ] Before implementation, active features freeze module ownership, dependency direction, public interfaces, file budgets, reuse boundaries, and test ownership.
+- [ ] Contract-affecting implementation references one frozen Spec with confirmed requirements and accepted blocking ADRs.
+- [ ] Feature lifecycle, Spec lifecycle, requirements status, and decision status remain independent.
+- [ ] Before implementation, the active Spec freezes module ownership, dependency direction, public interfaces, file budgets, reuse boundaries, and test ownership.
 - [ ] New or changed handwritten code files are at most 1000 physical lines and files at 800 lines receive a decomposition review.
 - [ ] Oversized or mixed-responsibility extraction is routed through `refactor-large-modules` with frozen invariants and a validation matrix.
 - [ ] `禁止全量读取` or equivalent appears in agent-facing rules.

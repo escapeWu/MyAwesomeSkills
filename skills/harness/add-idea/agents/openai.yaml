@@ -1,0 +1,6 @@
+interface:
+  display_name: "Add Idea"
+  short_description: "Grill and route an idea into a Feature or Spec"
+  default_prompt: "Use $add-idea to clarify this idea, choose its Feature owner, and create or patch the right requirements, Spec, and conditional ADR docs without implementing code."
+policy:
+  allow_implicit_invocation: false
