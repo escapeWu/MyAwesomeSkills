@@ -7,4 +7,3 @@ Keep historical notes here.
 ## Rule
 
 Active docs stay outside archive.
-
