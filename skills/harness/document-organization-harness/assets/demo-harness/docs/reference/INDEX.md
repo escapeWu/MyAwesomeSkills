@@ -2,10 +2,10 @@
 
 > 上级：[../OVERVIEW.md](../OVERVIEW.md)
 
-## Reference Docs
+Open only the reference relevant to the task.
 
 | File | Purpose |
-|------|------|
-| [`architecture.md`](architecture.md) | layer boundaries |
-| [`interfaces.md`](interfaces.md) | contract rules |
-| [`runbook-testing.md`](runbook-testing.md) | validation and runbook |
+|---|---|
+| [`architecture.md`](architecture.md) | docs and implementation boundary |
+| [`interfaces.md`](interfaces.md) | stable cross-Feature interfaces |
+| [`runbook-testing.md`](runbook-testing.md) | project validation guidance |

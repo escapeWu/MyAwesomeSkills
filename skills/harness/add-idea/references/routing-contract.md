@@ -1,161 +1,78 @@
-# Add Idea Routing Contract
+# Add Idea Routing Guide
 
-Use this contract to decide whether an idea creates a Feature or extends an
-existing Feature. Make the decision from repository evidence after the idea is
-clear; do not route from keywords alone.
+Use this guide to choose a Feature owner with minimal ceremony. Repository evidence should settle ownership whenever
+possible; user questions are reserved for product choices and hard boundaries.
 
-## 1. Session-only intake schema
+## Session Note
 
-Keep this ledger in the conversation until shared understanding is confirmed:
+Keep only a small in-session note:
 
 ```text
-Problem:
-Actor / beneficiary:
-Desired outcome:
-In scope:
-Out of scope:
-Acceptance / observable completion:
-Constraints and safety boundaries:
-Candidate owners:
-Confirmed facts:
-User decisions:
-Rejected alternatives:
-Open questions:
-Affected contracts:
+Outcome:
+Broad scope:
+Likely owner:
+Hard boundary:
+Open core decision:
 ```
 
-This ledger is not repository SSOT and must not be saved as `idea.md`,
-`interview.md`, or any parallel progress/control file.
+Do not save this note as an interview, idea, task, or progress file.
 
-## 2. Clarity classification
+## Clarity
 
-Classify the intake as:
+Classify the idea as:
 
-- `CLEAR`: ownership and acceptance can be decided from the request and current
-  repository evidence.
-- `GRILL_REQUIRED`: at least one unresolved decision can change ownership,
-  scope, public behavior, schema/state, safety, validation, or rollback.
-- `BLOCKED_FACT`: a required fact should be discoverable but cannot currently be
-  verified. Report the missing source instead of asking the user to guess.
+- `CLEAR`: outcome, broad scope, and owner are clear enough to document;
+- `CORE_QUESTION`: one unresolved answer can materially change the outcome, owner, or hard boundary;
+- `BLOCKED_FACT`: a repository fact should answer the question but cannot currently be verified.
 
-Do not Grill optional implementation details that can remain open in a draft
-Spec. Grill only decisions needed to define the boundary or freeze a contract.
+A missing implementation detail is not a reason to Grill. File layout, API naming, internal design, test shape, rollout,
+rollback, metrics, and detailed acceptance can stay open unless the user explicitly wants to decide them now.
 
-## 3. Owner route
+For `CORE_QUESTION`, ask the single highest-impact question and offer a recommended default. Re-evaluate after the
+answer; do not follow a fixed questionnaire.
+
+## Owner Route
 
 ### `PATCH_FEATURE`
 
-Choose an existing Feature when all are true:
+Choose an existing Feature when its current responsibility already covers the intended outcome and the change does not
+need an independent long-term owner.
 
-1. one current Feature already owns the affected user/business behavior;
-2. the idea extends or corrects that responsibility without introducing an
-   independent long-term outcome;
-3. acceptance can be expressed as an addition or revision to that Feature's
-   requirements;
-4. lifecycle, authorization, evidence, and release boundaries remain owned by
-   the same Feature;
-5. no new top-level public artifact or cross-Feature coordination owner is
-   required.
-
-Evidence should include the owning README/requirements route and, when relevant,
-current code or interface references.
+Useful evidence includes its README, current code ownership, existing interfaces, and project navigation.
 
 ### `CREATE_FEATURE`
 
-Create a Feature when any strong ownership signal applies:
+Create a Feature when the idea has an independent durable user/business outcome, public integration, data ownership,
+safety boundary, or maintenance lifecycle that would be awkward inside an existing owner.
 
-- independent user or business outcome;
-- independently accepted, deprecated, or maintained lifecycle;
-- independent public contract, data product, persistent artifact, or external
-  integration boundary;
-- distinct safety, authorization, evidence, or rollout boundary;
-- cross-Feature change that needs one durable coordination owner;
-- its own roadmap or multiple delivery Specs;
-- existing owner would become a catch-all with unrelated responsibilities;
-- existing granularity rules already require promotion to a Feature.
-
-Do not use document count alone when the content still belongs to one owner.
-Document growth is supporting evidence, not a substitute for responsibility.
+Document count and naming differences are weak signals. Prefer responsibility over taxonomy.
 
 ### `BLOCKED_OWNER`
 
-Stop when:
+Stop when two owners are equally plausible and choosing one changes public behavior, authority, data ownership, or a
+long-term boundary. Present the trade-off as one concise question.
 
-- two Features both plausibly own the behavior and the difference affects public
-  contracts or lifecycle;
-- the proposed owner contradicts existing requirements or architecture rules;
-- the idea is actually a project-wide policy and no system-level owner exists;
-- selecting an owner would silently redefine an existing Feature boundary.
+## Docs Route
 
-Present the competing owners, consequences, and recommendation as one decision
-question.
-
-## 4. Artifact route
-
-Owner routing and artifact routing are independent.
-
-| Change | Required artifact |
+| Change | Route |
 |---|---|
-| Expected behavior, acceptance, non-goals, NFR, stop rule | `REQUIREMENTS_PATCH` |
-| API/schema/state/dataflow/module/migration/test/rollout contract | `NEW_SPEC` |
-| Durable architecture choice with real alternatives | `ADR_CANDIDATE` |
-| Current snapshot or route only | `STATE_ONLY` |
-| Reversible local detail with no durable truth change | `NO_DURABLE_CHANGE` |
+| Existing Feature gains a durable outcome, boundary, or important limitation | `FEATURE_README_PATCH` |
+| A new Feature owner or navigation entry is needed | `NAVIGATION_PATCH` |
+| The idea is transient, already represented, or only a reversible local detail | `NO_DOC_CHANGE` |
 
-A single idea may produce `REQUIREMENTS_PATCH + NEW_SPEC + ADR_CANDIDATE`.
+One idea may use `FEATURE_README_PATCH + NAVIGATION_PATCH` when a new Feature is created. Do not generate additional
+artifact types just because more detail could be written.
 
-### When a Spec is not required
+## Compact Decision Output
 
-Do not force a Spec for:
-
-- wording-only requirements clarification with no implementation consequence;
-- current-state correction that does not change expected behavior;
-- trivial local implementation detail already governed by a frozen or validated Spec;
-- reversible local detail with no expected behavior, contract, decision, or durable state impact (`NO_DURABLE_CHANGE`);
-- archive or route repair with no contract change.
-
-### When a Spec is required
-
-Create a Spec when implementation must freeze any of:
-
-- public interface or schema;
-- data ownership, mutable state, lifecycle, or state transition;
-- cross-module dependency or integration behavior;
-- migration, compatibility, rollout, rollback, or stop behavior;
-- security, privacy, authorization, or evidence boundary;
-- module ownership, file/interface boundary, or test seam;
-- validation matrix and pass criteria for a non-trivial change.
-
-## 5. ADR trigger
-
-Create an ADR only when the decision is durable and all three default signals
-are present:
-
-1. changing it later has meaningful cost;
-2. a future maintainer could reasonably choose differently without the context;
-3. credible alternatives exist and the choice reflects a real trade-off.
-
-Public data ownership, security boundary, persistence technology, deployment
-topology, cross-Feature integration, or irreversible migration decisions should
-be treated as strong ADR candidates.
-
-Do not create an ADR for reversible local implementation details, obvious
-conformance to an existing contract, formatting, naming with no domain effect,
-or choices already owned by an accepted ADR.
-
-## 6. Decision output
-
-Before writing files, report:
+Before the final patch, be able to state:
 
 ```text
-Clarity: CLEAR | GRILL_COMPLETED
-Owner route: CREATE_FEATURE | PATCH_FEATURE | BLOCKED_OWNER
-Selected owner: <path or proposed feature slug>
-Owner evidence: <concise evidence>
-Artifact routes: [REQUIREMENTS_PATCH, NEW_SPEC, ADR_CANDIDATE, STATE_ONLY, NO_DURABLE_CHANGE]
-Blocking decisions: <none or list>
-Documentation authorization: docs-only
-Implementation authorization: none
+Clarity: CLEAR | CORE_QUESTION_RESOLVED
+Owner: PATCH_FEATURE | CREATE_FEATURE | BLOCKED_OWNER
+Selected path: <existing or proposed Feature README>
+Core boundary: <one or two sentences>
+Docs route: FEATURE_README_PATCH | NAVIGATION_PATCH | NO_DOC_CHANGE
 ```
 
-The user confirms the shared boundary, not a menu of arbitrary route choices.
+This is an internal check, not a mandatory user-facing form.

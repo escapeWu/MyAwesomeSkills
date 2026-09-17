@@ -1,0 +1,7 @@
+## Review
+
+- Major: [skills/harness/external-collaboration-workflow/SKILL.md](/Users/shancw/project/MyAwesomeSkills/skills/harness/external-collaboration-workflow/SKILL.md:40) 与 [skills/harness/refactor-large-modules/SKILL.md](/Users/shancw/project/MyAwesomeSkills/skills/harness/refactor-large-modules/SKILL.md:34) 的可执行命令硬编码 `.agents/skills/harness/<skill>/...`。这与 [skills/harness/UPGRADING.md](/Users/shancw/project/MyAwesomeSkills/skills/harness/UPGRADING.md:27) 声明支持 grouped、flat、custom layout 冲突；flat/custom 安装中的命令会直接找不到脚本。应改为实际 registry 路径占位符或明确要求先解析当前 skill 根目录。
+- Correct: bundle installer `install_harness_bundle.py` 与 manifest `harness-bundle.json` 已删除；检索未发现 harness bundle marker、自动覆盖命令或旧 installer 调用残留。
+- Correct: [README.md](/Users/shancw/project/MyAwesomeSkills/README.md:30)、[skills/harness/README.md](/Users/shancw/project/MyAwesomeSkills/skills/harness/README.md:1)、[SKILL.md](/Users/shancw/project/MyAwesomeSkills/skills/harness/document-organization-harness/SKILL.md:96) 和 [harness-bootstrap.md](/Users/shancw/project/MyAwesomeSkills/skills/harness/document-organization-harness/references/harness-bootstrap.md:121) 均已改为独立 skill、人工维护语义，并链接 CHANGELOG/UPGRADING。
+- Blocker: 无。
+- Note: 暂存区为空。受工具预算限制，未运行自动化测试或 Markdown 死链接检查；已检查到的新增/修改链接路径未发现错误。

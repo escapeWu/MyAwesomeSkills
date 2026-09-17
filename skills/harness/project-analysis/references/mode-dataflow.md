@@ -1,133 +1,49 @@
-# 模式二：模块数据流分析
+# Data Flow And Sequence Analysis Guide
 
-深入分析特定模块或功能的数据流转过程、关键调用链、时序关系与潜在风险点。
+Use this guide for a concrete request, event, job, or data path whose transformations, state, I/O, branches, or failure
+behavior need to be understood.
 
-## 分析步骤
+## Start At A Real Entry
 
-### 1. 明确分析目标与执行模式
-- 确认当前分析主题是 `dataflow` / `sequence`，或以流程链路为主的 `performance-risk`
-- 明确要分析的功能或模块
-- 识别入口点（API 端点、事件处理器、命令入口）
-- 确认当前执行模式：`new-doc` / `update-doc`
+Identify the API endpoint, command, event handler, scheduler, UI action, or other trigger. Define the endpoint of the trace
+so the investigation does not expand indefinitely.
 
-### 2. 优先检查相关 docs
-- 优先读取 `docs/OVERVIEW.md`
-- 优先读取 `docs/feature/INDEX.md`，再进入相关分类 `README.md`、子模块 `README.md` / `INDEX.md`
-- 优先读取 `docs/reference/INDEX.md`，再进入相关 reference 文件
-- 如调用方已提供候选文档路径，优先复用这些文档
+Read the applicable root rules and, when useful, the owning Feature README or one reference. Verify behavior in targeted
+code, tests, configuration, logs, or artifacts.
 
-这些文档只能作为**半可信上下文**：
-- 可用于快速建立模块心智模型
-- 但必须继续以当前代码核实
-- 文档与代码冲突时，以代码为准
+## Trace The Flow
 
-如 `docs/` 中存在旧式分析文档、frontmatter 元数据或需要做补充检索，可选使用 metadata 扫描脚本辅助检查；不要把它当成主入口。
+Follow the path in execution order and record only meaningful transitions:
 
-### 3. 拆分并行子任务
+- input and validation;
+- important transformations;
+- state reads and writes;
+- database, cache, queue, file, or third-party I/O;
+- output, emitted events, and observable errors;
+- branches relevant to the question.
 
-建议优先拆成以下 3 个并行子任务：
-- **子任务 A：入口点与边界定位**
-  - 找到入口文件、入口函数、请求/事件来源、主要边界条件
-- **子任务 B：调用链与关键处理节点**
-  - 追踪从入口到核心业务逻辑的调用链，记录关键函数与跨层跳转
-- **子任务 C：数据模型、外部 I/O 与风险点**
-  - 提取输入结构、输出结构、持久化、缓存、消息、第三方 API 交互与潜在放大点
+Keep file paths and symbols for key steps. Distinguish confirmed flow from inferred or unobserved behavior.
 
-如流程非常短，可合并为 2 个子任务；如链路特别复杂，可加一个“异常/分支流程”子任务。
+## Scale The Investigation
 
-### 4. 追踪调用链与数据变换
-- 从入口点开始追踪函数调用
-- 记录数据在各层之间的转换
-- 标注关键的数据处理节点
-- 记录异常路径、分支路径或可能的性能放大点
+Use local search for short flows. For a broad path, optional independent read-only subtasks may cover the entry, core call
+chain, and external I/O/exception paths. Do not split into a fixed number of subtasks when one pass is clearer.
 
-### 5. 识别关键数据模型与外部 I/O
-- 分析输入数据结构
-- 追踪数据变换过程
-- 记录输出数据结构
-- 标注数据库、缓存、消息、第三方服务等外部交互
+## Present The Result
 
-### 6. 生成时序图和数据流图
+Answer the requested question first. Then use the smallest useful representation:
 
-**时序图输出格式（Mermaid Sequence Diagram）：**
+- ordered call chain;
+- input/transform/output table;
+- sequence diagram;
+- data-flow diagram;
+- concise risk list.
 
-```mermaid
-sequenceDiagram
-    participant C as 客户端
-    participant A as API层
-    participant S as 服务层
-    participant D as 数据层
+Mermaid and ASCII are alternatives, not a mandatory pair. Do not produce both a sequence and data-flow diagram unless
+both clarify different aspects of the problem.
 
-    C->>A: 发送请求
-    A->>A: 参数验证
-    A->>S: 调用业务逻辑
-    S->>D: 查询数据
-    D-->>S: 返回数据
-    S->>S: 业务处理
-    S-->>A: 返回结果
-    A-->>C: 响应结果
-```
+## Durable Docs
 
-**数据流图输出格式（Mermaid Flowchart）：**
-
-```mermaid
-flowchart LR
-    subgraph 输入["输入数据"]
-        I1[请求参数]
-        I2[用户凭证]
-    end
-
-    subgraph 处理["处理过程"]
-        P1[验证] --> P2[转换]
-        P2 --> P3[业务逻辑]
-        P3 --> P4[持久化]
-    end
-
-    subgraph 输出["输出数据"]
-        O1[响应结果]
-        O2[事件通知]
-    end
-
-    I1 --> P1
-    I2 --> P1
-    P4 --> O1
-    P3 --> O2
-```
-
-每张 Mermaid 图后都必须紧跟一张语义一致的 ASCII/TUI 预览图。
-
-> 详细模板参考 `references/mermaid-templates.md` 中的时序图和数据流图模板部分。
-
-## 并行取证要求
-
-只有在当前工具环境允许、且用户或调用方明确授权并行 agent 时，才下发 subagent。未使用 subagent 时，主 agent 仍按相同结构整理本地只读取证结果。
-
-每个并行取证单元至少返回：
-- 入口点与触发方式
-- 关键调用链（按顺序列出）
-- 关键数据结构 / 参数 / 返回值
-- 外部 I/O（数据库、缓存、消息、第三方服务）
-- 风险点、异常路径或需要主 agent 复核的疑点
-
-subagent 只负责事实提取与链路梳理，不直接写最终文档。
-
-如由项目实施规划工作流调用，还要额外返回 `Implementation Context` 摘要：
-- Entry Points
-- Relevant Files
-- Contracts / Data Shapes
-- Risks / Open Questions
-- Validation Candidates
-
-## 执行指南
-
-1. 明确分析目标、入口点与执行模式
-2. 优先检查 `docs/OVERVIEW.md`、`docs/feature/INDEX.md`、`docs/reference/INDEX.md` 与相关 leaf
-3. 如需要补充文档检索，再可选使用 metadata 扫描脚本
-4. 将数据流 / 时序分析拆成 2-4 个只读取证子任务；有授权时并行 subagent，否则本地主 agent 执行
-5. 汇总入口点、调用链、数据结构、外部 I/O、异常路径与关键风险点
-6. 生成时序图和数据流图
-7. 为每张 Mermaid 图补充对应的 ASCII/TUI 预览图
-8. 产出结构化结论与可回填的 section 草稿
-9. 优先判断是否能更新到 `docs/feature/<category>/...` / `docs/reference/...` / `docs/OVERVIEW.md`
-10. 能承接则执行 `update-doc`，不能承接则执行 `new-doc`
-11. 若明确需要独立成文或没有合适长期文档，再创建 `dataflow-*` / `sequence-*` 等新文档
+One-off traces and debugging hypotheses stay in the conversation. If implementation follows, wait for implementation and
+validation to complete. The main Agent then passes durable flow changes to the single asynchronous docs SubAgent, which
+updates the owning Feature README or stable reference once.

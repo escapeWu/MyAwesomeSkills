@@ -14,10 +14,23 @@ FEATURE_RE = re.compile(r"[a-z0-9][a-z0-9-]*\Z")
 ACTIVE_START = "<!-- ACTIVE-CASES:START -->"
 ACTIVE_END = "<!-- ACTIVE-CASES:END -->"
 TEMPLATE_FILES = ("INDEX.md", "problem-statement.md", "external-proposal.md")
+DEFAULT_COLLABORATION_INDEX = """# External Collaboration
+
+Create cases only when an external handoff needs durable provenance.
+
+## Active Cases
+
+<!-- ACTIVE-CASES:START -->
+<!-- ACTIVE-CASES:END -->
+
+## Closed Cases
+
+None.
+"""
 
 
 def repository_root() -> Path:
-    return Path(__file__).resolve().parents[5]
+    return Path.cwd()
 
 
 def parse_args() -> argparse.Namespace:
@@ -86,8 +99,6 @@ def main() -> int:
 
     if not feature_readme.exists():
         raise SystemExit(f"owning Feature README does not exist: {feature_readme}")
-    if not collaboration_index.exists():
-        raise SystemExit(f"collaboration INDEX does not exist: {collaboration_index}")
     if target.exists():
         raise SystemExit(f"target case already exists: {target}")
 
@@ -96,18 +107,21 @@ def main() -> int:
     }
     entry = (
         f"- [{args.case_id} — {args.title.strip()}]({args.case_id}/INDEX.md) — "
-        f"`{args.feature}` / `PROBLEM_DRAFTING`"
+        f"`{args.feature}` / `OPEN`"
     )
-    updated_index = update_active_cases(
-        collaboration_index.read_text(encoding="utf-8"), entry, args.case_id
+    index_text = (
+        collaboration_index.read_text(encoding="utf-8")
+        if collaboration_index.exists()
+        else DEFAULT_COLLABORATION_INDEX
     )
+    updated_index = update_active_cases(index_text, entry, args.case_id)
 
     if args.dry_run:
         print(f"Would create: {target}")
         print(entry)
         return 0
 
-    target.mkdir(parents=False)
+    target.mkdir(parents=True)
     for filename, content in rendered_files.items():
         (target / filename).write_text(content, encoding="utf-8")
     collaboration_index.write_text(updated_index, encoding="utf-8")

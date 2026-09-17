@@ -1,0 +1,1 @@
+源码与两个 `.skill` 包内容完全一致，skill frontmatter、JSON/YAML 和 `git diff --check` 均通过。第一次运行仓库自带 validator 单测时使用了错误的模块路径，失败原因是测试文件的本地 import 解析；我会从脚本目录按其预期方式重跑，不把这次调用错误当成产品缺陷。

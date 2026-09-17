@@ -6,7 +6,27 @@ Feature and must not be used as suite maintenance notes.
 
 ## Unreleased
 
-No unreleased suite changes are recorded.
+### Changed
+
+- Reduced the suite to a lightweight core-docs model: small navigation files, Feature READMEs, and targeted references.
+- Moved documentation maintenance to one asynchronous SubAgent after implementation and validation complete; the main
+  Agent supplies a bounded handoff, does not wait for ancillary maintenance, and does not write the same docs concurrently.
+- Simplified `add-idea` so Grill asks only the highest-impact unresolved product or hard-boundary question and skips
+  questionnaire-style clarification.
+- Made `project-analysis` answer directly by default and persist findings only when they are durable or explicitly requested.
+- Replaced machine route manifests and multi-axis status schemas with optional, readable route guidance.
+- Made suite maintenance references optional so flat and partial target layouts do not receive broken parent links.
+- Made diagrams and ASCII/TUI companions optional, and made `add-idea` references safe for partial installations.
+- Kept lightweight external-collaboration templates linkable from existing target validators without restoring metadata lifecycles.
+
+### Removed
+
+- Removed required implementation Spec lifecycles, pre-implementation documentation gates, fixed validation matrices,
+  and harness-prescribed test ownership/TDD behavior.
+- Removed the Spec, requirements, ADR, decision-index, Feature changelog, and route-manifest templates from the default
+  harness assets.
+- Removed mandatory staged docs updates; implementation tasks now perform at most one asynchronous docs pass after
+  completion.
 
 ## 2026-07-23 - Idea Intake And Contract Lifecycle
 

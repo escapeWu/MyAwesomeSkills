@@ -1,0 +1,4 @@
+interface:
+  display_name: "MCP Tool Expose Guidebook"
+  short_description: "Expose MCP workflow guidebooks safely"
+  default_prompt: "Use $mcp-tool-expose-guidebook to design and validate progressive-disclosure guide tools and resources for this MCP server."

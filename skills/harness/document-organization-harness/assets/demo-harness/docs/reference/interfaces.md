@@ -2,13 +2,7 @@
 
 > 上级：[INDEX.md](INDEX.md)
 
-## Rule
+Record only stable cross-Feature interfaces that future work needs to discover. Feature-local details stay in the owning
+Feature README.
 
-Define stable names and contracts before implementation starts.
-
-## Minimum Contract Set
-
-- document identity
-- module identity
-- task identity
-- validation identity
+The demo has no real interface yet.

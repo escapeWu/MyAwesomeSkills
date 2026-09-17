@@ -16,7 +16,7 @@ import requests
 
 CONFIG_PATH = Path(__file__).resolve().parents[1] / "config.json"
 DEFAULT_MODEL = "grok-4.20-auto"
-DEFAULT_BASE_URL = "https://example.com/v1/"
+DEFAULT_BASE_URL = "https://ai.imwsc.cn:8443/v1/"
 DEFAULT_FAST_MODEL = "grok-4.20-fast"
 DEFAULT_EXPERT_MODEL = "grok-4.20-expert"
 DEFAULT_MODE = "auto"
@@ -243,6 +243,17 @@ def extract_choice_text(choice: dict[str, Any]) -> tuple[str, str]:
     return str(reasoning), str(content)
 
 
+def is_error_chunk(chunk: dict[str, Any]) -> bool:
+    return isinstance(chunk.get("error"), dict)
+
+
+def format_upstream_error(chunk: dict[str, Any]) -> str:
+    error = chunk.get("error") or {}
+    message = error.get("message") or "unknown upstream error"
+    code = error.get("code") or error.get("type") or "upstream_error"
+    return f"Upstream API error ({code}): {message}"
+
+
 def parse_sse_response(response: requests.Response) -> tuple[str, str, list[dict[str, Any]]]:
     reasoning_parts: list[str] = []
     content_parts: list[str] = []
@@ -276,6 +287,9 @@ def parse_sse_response(response: requests.Response) -> tuple[str, str, list[dict
                     raise RuntimeError(f"Unexpected extra data after SSE JSON: {remainder[:200]!r}")
                 if not isinstance(chunk, dict):
                     continue
+                if is_error_chunk(chunk):
+                    chunks.append(chunk)
+                    raise RuntimeError(format_upstream_error(chunk))
 
                 chunks.append(chunk)
                 for choice in chunk.get("choices", []):
@@ -294,6 +308,8 @@ def parse_sse_response(response: requests.Response) -> tuple[str, str, list[dict
 
 def parse_json_response(response: requests.Response) -> tuple[str, str, list[dict[str, Any]]]:
     payload = response.json()
+    if is_error_chunk(payload):
+        raise RuntimeError(format_upstream_error(payload))
     reasoning_parts: list[str] = []
     content_parts: list[str] = []
     for choice in payload.get("choices", []):
@@ -323,7 +339,14 @@ def post_chat_completion(messages: list[dict[str, str]], model: str, base_url: s
     }
 
     with requests.post(url, headers=headers, json=payload, timeout=180, stream=True) as response:
-        response.raise_for_status()
+        if response.status_code >= 400:
+            try:
+                error_payload = response.json()
+            except ValueError:
+                error_payload = {"error": {"message": response.text[:500] or response.reason, "code": response.status_code}}
+            if isinstance(error_payload, dict) and is_error_chunk(error_payload):
+                raise RuntimeError(format_upstream_error(error_payload))
+            response.raise_for_status()
         content_type = (response.headers.get("content-type") or "").lower()
         if "text/event-stream" in content_type:
             return parse_sse_response(response)

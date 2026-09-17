@@ -1,0 +1,4 @@
+interface:
+  display_name: "MCP Build Best Practice"
+  short_description: "Design, audit, and ship robust MCP servers"
+  default_prompt: "Use $mcp-build-best-practice to design, audit, or improve this MCP server from protocol contract through production verification."

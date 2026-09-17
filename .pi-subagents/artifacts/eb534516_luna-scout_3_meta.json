@@ -1,0 +1,174 @@
+{
+  "runId": "eb534516",
+  "agent": "luna-scout",
+  "task": "对 /Users/shancw/workspace 下本次更新的 9 个 harness 安装点做只读语义核验：agentTrade、tradeMonitor、freqtrade、freqtrade-wt-regime-engineering、lightgbm、market-signals、reportAgent、tradingsignal、tradingsignal-services-modules。不要修改。\n\n回答：1) 是否还有 active governance 让普通任务强制 Spec/TDD/taskBoard/sync docs；2) async docs SubAgent 单 writer/不等待是否在各根规则可见；3) 是否保留关键项目安全边界；4) 是否有死 skill/path 引用；5) 哪些项目无 git 或已有脏工作树构成残余风险。\n只报告 actionable findings，精确 file:line；无 blocker 明确说明。",
+  "exitCode": 0,
+  "usage": {
+    "input": 43032,
+    "output": 4137,
+    "cacheRead": 138240,
+    "cacheWrite": 0,
+    "cost": 0,
+    "turns": 7
+  },
+  "model": "sub2api/gpt-5.6-luna:low",
+  "attemptedModels": [
+    "sub2api/gpt-5.6-luna:low"
+  ],
+  "modelAttempts": [
+    {
+      "model": "sub2api/gpt-5.6-luna:low",
+      "success": true,
+      "exitCode": 0,
+      "usage": {
+        "input": 43032,
+        "output": 4137,
+        "cacheRead": 138240,
+        "cacheWrite": 0,
+        "cost": 0,
+        "turns": 7
+      }
+    }
+  ],
+  "durationMs": 96316,
+  "toolCount": 25,
+  "acceptance": {
+    "status": "checked",
+    "explicit": true,
+    "effectiveAcceptance": {
+      "level": "checked",
+      "explicit": true,
+      "inferredReason": [
+        "declared read-only acceptance role"
+      ],
+      "criteria": [
+        {
+          "id": "criterion-1",
+          "must": "Return concrete findings with file paths and severity when applicable",
+          "evidence": [
+            "changed-files",
+            "tests-added",
+            "commands-run",
+            "residual-risks",
+            "no-staged-files"
+          ],
+          "severity": "required"
+        }
+      ],
+      "evidence": [
+        "changed-files",
+        "tests-added",
+        "commands-run",
+        "residual-risks",
+        "no-staged-files"
+      ],
+      "verify": [],
+      "stopRules": []
+    },
+    "inferredReason": [
+      "declared read-only acceptance role"
+    ],
+    "criteria": [
+      {
+        "id": "criterion-1",
+        "must": "Return concrete findings with file paths and severity when applicable",
+        "evidence": [
+          "changed-files",
+          "tests-added",
+          "commands-run",
+          "residual-risks",
+          "no-staged-files"
+        ],
+        "severity": "required"
+      }
+    ],
+    "runtimeChecks": [
+      {
+        "id": "criterion:criterion-1",
+        "status": "passed",
+        "message": "Required criterion 'criterion-1' satisfied."
+      },
+      {
+        "id": "evidence:changed-files",
+        "status": "not-applicable",
+        "message": "changed-files evidence explicitly reported as not applicable."
+      },
+      {
+        "id": "evidence:tests-added",
+        "status": "not-applicable",
+        "message": "tests-added evidence explicitly reported as not applicable."
+      },
+      {
+        "id": "evidence:commands-run",
+        "status": "passed",
+        "message": "commands-run evidence present."
+      },
+      {
+        "id": "evidence:residual-risks",
+        "status": "passed",
+        "message": "residual-risks evidence present."
+      },
+      {
+        "id": "evidence:no-staged-files",
+        "status": "passed",
+        "message": "no-staged-files evidence present."
+      },
+      {
+        "id": "no-staged-files",
+        "status": "passed",
+        "message": "No staged files detected."
+      }
+    ],
+    "verifyRuns": [],
+    "childReport": {
+      "criteriaSatisfied": [
+        {
+          "id": "criterion-1",
+          "status": "satisfied",
+          "evidence": "已对九个 harness 安装点的根规则、async docs 条款、安全边界、skill 路径和 Git 状态完成只读核验，并提供精确 file:line 证据。"
+        }
+      ],
+      "changedFiles": [],
+      "testsAddedOrUpdated": [],
+      "commandsRun": [
+        {
+          "command": "read AGENTS.md/CLAUDE.md; rg -n governance, async docs, safety, skill references",
+          "result": "passed",
+          "summary": "九个项目的治理、安全、async docs 和 skill 引用均完成检索。"
+        },
+        {
+          "command": "find /Users/shancw/workspace -path '*/skills/*'",
+          "result": "passed",
+          "summary": "用于核验根规则引用的 skill/path 是否存在，未发现死引用。"
+        },
+        {
+          "command": "git -C <repo> status --short --branch; git -C <repo> diff --name-only; git -C <repo> ls-files --others --exclude-standard",
+          "result": "passed",
+          "summary": "八个项目有 Git 且工作树脏；tradeMonitor 无 Git。"
+        }
+      ],
+      "validationOutput": [
+        "九个项目均未发现普通任务强制 Spec/TDD/taskBoard/sync docs 的 active governance。",
+        "九个项目均可见 async docs SubAgent 单 writer / 主 Agent 不等待条款。",
+        "未发现根规则声明的 skill/path 死引用。",
+        "无 blocker。"
+      ],
+      "residualRisks": [
+        "tradeMonitor 无 .git，更新缺少 Git diff/提交审计能力。",
+        "freqtrade 有 2323 个 untracked 文件，reportAgent 有 1567 个 untracked 文件，归因和误覆盖风险最高。",
+        "其余六个有 Git 的项目也存在脏工作树，需在后续变更前保留现状并明确基线。"
+      ],
+      "noStagedFiles": true,
+      "diffSummary": "只读核验，未修改任何文件；各项目已有工作树变更保持不动。",
+      "reviewFindings": [
+        "no blockers",
+        "residual-risk: /Users/shancw/workspace/tradeMonitor - no Git repository metadata",
+        "residual-risk: /Users/shancw/workspace/freqtrade - 2323 untracked files",
+        "residual-risk: /Users/shancw/workspace/reportAgent - 1567 untracked files"
+      ],
+      "manualNotes": "本报告覆盖根级规则与安装点状态，不等同于所有深层 skill/source 文件的完整语义审计。"
+    }
+  },
+  "transcriptPath": "/Users/shancw/project/MyAwesomeSkills/.pi-subagents/artifacts/eb534516_luna-scout_3_transcript.jsonl",
+  "timestamp": 1784807750027
+}

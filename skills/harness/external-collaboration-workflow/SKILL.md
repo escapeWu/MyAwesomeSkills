@@ -1,43 +1,44 @@
 ---
 name: external-collaboration-workflow
-description: 管理本仓库与外部团队之间的问题分析和方案交付闭环。用户要求整理问题或证据包交给外部团队、接收/录入/评审外部 analysis 或 proposal、逐项采纳外部建议、把方案转译成内部 confirmed requirements、conditional ADR、frozen Spec 与 current-state route、根据已采纳方案实施开发、追踪外部建议到验证证据、或关闭外部合作 case 时使用。禁止把外部方案直接当作内部合同、当前实现或授权。
+description: >-
+  Manage a lightweight external-team collaboration record: prepare a problem brief, preserve a received proposal,
+  record internal adoption decisions, implement only after explicit authorization, and link the final result to core
+  project docs and validation. Use when provenance across an external handoff matters. Do not turn external proposals
+  into internal truth or generate a heavy contract lifecycle.
 ---
 
-# 外部团队协作闭环
+# External Collaboration Workflow
 
-统一管理 `问题包 -> 外部方案 -> 内部采纳 -> 合同转译 -> 实施验证 -> 关闭`，保留来源可追溯性，
-同时避免外部文档成为第二套项目 SSOT 或进度系统。
+Use this skill only when a durable external handoff needs provenance. Ordinary design discussion does not need a case.
 
-## 首先确定操作阶段
+## Minimal Case
 
-| 用户意图 | 阶段 | 主要输出 |
-|---|---|---|
-| 整理问题交给外部团队 | problem intake | 新 case 和 `problem-statement.md` |
-| 收到外部分析/方案 | proposal receipt | 忠实的 `external-proposal.md` 与 provenance |
-| 评审或讨论外部方案 | internal review | case `INDEX.md` adoption matrix |
-| 按方案开发 | contract translation / implementation | 内部 SSOT 变更后才实施代码 |
-| 核对方案是否落地 | validation/traceability | SSOT、代码、测试和 evidence 映射 |
-| 合作完成/终止 | closure | closed case 和最终证据路由 |
+```text
+docs/collaboration/<case-id>/
+├── INDEX.md               # status, source versions, adoption decisions, final links
+├── problem-statement.md   # concise internal problem and evidence brief
+└── external-proposal.md   # faithful external response
+```
 
-同一请求可能跨多个阶段，但不得跳过版本绑定、内部采纳和合同转译门。
+The case records source and adoption. It is not a parallel implementation plan or progress tracker.
 
-## 必读上下文
+## Stages
 
-1. 读取仓库根 `AGENTS.md` 和 `docs/OVERVIEW.md`。
-2. 若仓库存在 `docs/reference/external-collaboration-workflow.md`，完整读取它；若不存在，
-   将项目特定协作 policy 标记为 docs gap，并以本 Skill 的来源、采纳和转译门禁作为最低合同。
-3. 进入 `docs/collaboration/INDEX.md`，只读目标 case 的 `INDEX.md` 和本阶段所需的一份来源文件。
-4. 读取 owning Feature README/INDEX；涉及 expected behavior 时再读 requirements，涉及实施时再读
-   development plan/design 和 `docs/reference/code-organization.md`。
+### 1. Prepare the problem brief
 
-外部来源文件是 `source_record`：只提供 provenance/recommendation，不提供实施授权。
+Read the owning Feature README, relevant code, and only the references needed to explain the problem. Include:
 
-## 1. 创建问题 Case
+- desired outcome and broad scope;
+- current behavior and observed evidence;
+- hard safety, authorization, privacy, compatibility, or data boundaries;
+- the few questions the external team must answer.
 
-使用确定性脚本，不手工发明目录和字段。先从当前 skill registry 或已加载 skill 元数据解析
-`external-collaboration-workflow` 的实际根目录；不得假设 grouped、flat 或 custom 布局：
+Use the included script when a formal case is warranted:
+
+Run from the target repository root (or pass `--repo-root` explicitly):
 
 ```bash
+cd /path/to/target-repository
 EXTERNAL_COLLAB_SKILL_ROOT=/absolute/path/from-the-current-skill-registry
 python3 "$EXTERNAL_COLLAB_SKILL_ROOT/scripts/create_case.py" \
   --case-id EC-YYYY-NNN-short-slug \
@@ -46,87 +47,59 @@ python3 "$EXTERNAL_COLLAB_SKILL_ROOT/scripts/create_case.py" \
   --external-team "External team"
 ```
 
-脚本从 `assets/case-template/` 创建三文件 case，并注册 Active Cases。创建后补齐问题包：
+Do not ask the user for repository facts that can be inspected. Ask only for an unknown external owner, source, desired
+outcome, or hard boundary that is essential to the handoff.
 
-- expected behavior、current implementation、observed evidence 和 gap 分类；
-- 复现命令、artifact/checksum、时间窗、输入版本和脱敏声明；
-- 范围内/外、安全、授权、数据、兼容和不可变边界；
-- 外部团队必须回答的问题、交付物、验证矩阵、风险、迁移和回滚要求。
+### 2. Preserve the external response
 
-发送后设置 `problem_version`、`issued_at` 和 commit/fingerprint。后续实质修改必须升版本并追加
-revision history；不得静默覆盖已经发送的输入。
+Record the external owner, received date, source location, and source version or fingerprint when available. Keep the
+proposal faithful to the source; internal comments belong in the case INDEX.
 
-现有 docs 或代码不足以形成证据包时，使用 `project-analysis` 做只读取证，再更新问题包。
+If the proposal cannot be tied to a recognizable source, say so. Require exact version binding only when later auditing
+or multiple revisions make it meaningful.
 
-## 2. 接收外部方案
+### 3. Decide what to adopt
 
-1. 保存外部原始文件/链接位置；转换 PDF、Word 或邮件时记录转换说明。
-2. 核对 `based_on_problem_version` 和 `based_on_problem_commit`；版本不明时停止评审并请求澄清。
-3. 记录 external team、proposal version、received date、source artifact 和 SHA-256 fingerprint。
-4. 忠实写入 `external-proposal.md`，保留对方 assumptions、设计、接口、模块、迁移、验证和风险。
-5. 内部只修复格式或明显转录错误；内部评价不得混入外部正文。
+Record each material recommendation as accepted, modified, rejected, deferred, or pending, with a short rationale. Small
+or tightly coupled recommendations may be grouped; do not atomize every sentence.
 
-没有收到外部内容时，保持 `proposal_status: awaiting_external_input`。不得由 Agent 猜测或代写
-“外部方案”。
+An external proposal is advice, not implementation authorization. Internal project rules, current code, and user direction
+remain authoritative.
 
-## 3. 内部评审和采纳
+### 4. Implement through the normal workflow
 
-把外部建议拆成稳定 ID（`P-01`、`P-02`……），只在 case `INDEX.md` 记录：
+Before code changes, make sure the accepted outcome and hard boundaries are clear in the case or owning Feature README.
+Do not require a separate requirements file, Spec, ADR, validation matrix, or status lifecycle.
 
-- `ACCEPTED`：原建议可直接转译；
-- `MODIFIED`：内部接受目标，但冻结不同实现/边界；
-- `REJECTED`：不进入内部合同，并记录理由；
-- `DEFERRED`：明确延期条件和未来 gate；
-- `PENDING`：尚未决定，禁止实施。
+Then use `project-docs-workflow`:
 
-每条 `ACCEPTED`/`MODIFIED` 必须有内部 rationale、SSOT target、validation gate 和预期 evidence。
-安全、授权、holdout、数据泄漏、公共契约或研究证据冲突时，以项目内部合同为准并暴露 blocker，
-不得让外部方案覆盖它。
+- implement in current repository patterns;
+- verify according to risk and existing project practice;
+- keep temporary implementation progress in the session;
+- after completion, the main Agent asynchronously delegates one combined docs pass.
 
-## 4. 合同转译和实施
+The main Agent gives one docs SubAgent the final implementation summary, validation results, candidate Feature/reference
+owners, and case path. That SubAgent is the only docs writer and may update the owning Feature README, a stable
+interface/runbook reference, and the case INDEX with final implementation and validation links. The main Agent does not
+wait for this ancillary work or edit the same docs concurrently. If SubAgents are unavailable, use the same one-pass
+fallback at the end. Do not update these documents after every intermediate step.
 
-实施前同时使用 `project-docs-workflow`，逐条完成：
+### 5. Close
 
-1. expected behavior、acceptance、stop rules -> owning confirmed `requirements.md`；
-2. 满足 durable decision trigger 的架构取舍 -> owning accepted ADR；
-3. 接口、schema、数据流、状态、模块图、依赖、复用、文件预算、测试和 validation matrix -> frozen Spec；
-4. stable cross-Feature reference -> owning `docs/reference/*`；
-5. current pending/blockers/active contracts/next gate -> owning README；
-6. 采纳与合同迁移 -> append-only `changelog.md`。
+Close the case when all material recommendations have a decision and accepted work is completed, deferred, or explicitly
+left pending. Link to the durable owner and meaningful validation evidence; do not copy per-file progress into the case.
 
-只有内部转译完成、blocking ADR accepted、Spec frozen、case 达到
-`READY_FOR_IMPLEMENTATION`，且用户/项目合同另行授权实施后，才能改代码。大型模块或
-800/1000 行门禁同时使用 `refactor-large-modules`。
+## Stop Conditions
 
-实施从 owning Feature 文档进入，不从 `external-proposal.md` 进入。外部建议中的伪代码、文件名、
-阈值和测试建议仍需按当前代码和内部合同复核。
+Stop expansion and report the blocker when:
 
-## 5. 跟踪和关闭
+- the external source is missing or materially ambiguous;
+- a recommendation is still pending and implementation depends on it;
+- the proposal crosses safety, authorization, privacy, destructive, or compatibility boundaries;
+- the user asked only for intake/review and did not authorize implementation;
+- current code contradicts the proposal and the intended outcome remains unclear.
 
-不要在 case 中复制逐文件进度或建立平行执行控制面：
+## Final Report
 
-- current snapshot -> owning README/GOAL；
-- expected behavior -> requirements；
-- milestone/gate history -> changelog；
-- 测试、指标和 checksum -> immutable artifact/ledger/gate report；
-- proposal-to-implementation traceability -> case adoption matrix 的链接。
-
-每个内部验证门后，在 adoption matrix 补齐实际 SSOT、完成状态和 evidence route。所有 proposal
-item 已决定、采纳项已转译、实施项已完成/延期/拒绝且证据可达后，才能关闭 case，并把它从
-Active Cases 移入 Closed Cases。
-
-## 停止条件
-
-遇到以下情况停止扩张性动作并报告：
-
-- 外部方案无法绑定明确的问题包版本；
-- 原始来源、external owner 或内容 fingerprint 不可确认；
-- 建议仍是 `PENDING`，或虽采纳但尚未转译到内部 SSOT；
-- 建议跨越项目安全、授权、数据、holdout、core 或证据边界；
-- 用户只要求整理/评审方案，却尚未授权代码实施；
-- 外部方案与当前代码不符，且无法分类 contract/implementation/evidence/stale-summary gap。
-
-## 交付合同
-
-最终说明当前 case 状态、problem/proposal 版本、采纳/拒绝/延期条目、内部 SSOT 目标、实际验证
-和 evidence、剩余 blocker 与 next gate。不得仅回复“已按外部方案实现”。
+State the case status, source, adopted/modified/rejected/deferred recommendations, implementation result, validation, and
+remaining blockers. Keep it concise and link to the owners instead of reproducing their contents.

@@ -2,21 +2,22 @@
 
 > 上级：[../INDEX.md](../INDEX.md)
 
-This module is a placeholder for any real feature area.
-Expected behavior and acceptance live in [requirements.md](requirements.md).
+## Purpose And Scope
 
-## Scope
+This placeholder demonstrates one durable Feature owner. Replace it with real project facts.
 
-- one module owner
-- one feature boundary
-- one visible current-state section
-- durable progress and evidence owned by this README
+## Current Behavior
+
+- The Feature is reachable from the project overview.
+- Its stable knowledge has one obvious owner.
+
+## Constraints
+
+- Keep temporary task plans and raw validation output out of this README.
+- Add separate leaf docs only when stable content needs them.
 
 ## Current State
 
-- Status: active demo
-- Completed: documentation owner and navigation route exist
-- Pending: replace placeholders with project-specific contracts
-- Blockers: none for the demo
-- Next validation gate: verify top-down reachability and parent links
-- Evidence: documentation navigation check
+- Current focus: replace the demo with project-specific content
+- Blockers: none
+- Next: verify the navigation path

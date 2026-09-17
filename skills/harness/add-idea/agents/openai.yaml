@@ -1,6 +1,4 @@
 interface:
   display_name: "Add Idea"
-  short_description: "Grill and route an idea into a Feature or Spec"
-  default_prompt: "Use $add-idea to clarify this idea, choose its Feature owner, and create or patch the right requirements, Spec, and conditional ADR docs without implementing code."
-policy:
-  allow_implicit_invocation: false
+  short_description: "Route an idea with one core clarification"
+  default_prompt: "Use $add-idea to find the owning Feature, ask only the most important unresolved product or hard-boundary question, and update the smallest core docs once without implementing code."

@@ -1,109 +1,42 @@
----
-type: feature
-scope: docs
-module: FEATURE_SLUG
-date: YYYY-MM-DD
-status: draft
-role: separate-planned
-lifecycle: proposed
-requirements_status: draft
-spec_status: none
-decision_status: clear
-milestone: not_started
-milestone_status: not_started
-implementation_status: not_started
-model_status: not_applicable
-evidence_status: contract_only
-authorization: none
-last_verified: YYYY-MM-DD
-next_gate: contract-freeze
-keywords: [FEATURE_SLUG]
-read_by_default: true
----
-
 # FEATURE_TITLE
 
-> 上级：[模块索引](INDEX.md)
+> 上级：[功能索引](../INDEX.md)
 
-## 当前主线路线
+## 目标与范围
 
-<!-- MAINLINE-ROUTE:START
-{
-  "schema_version": 2,
-  "route_version": "YYYY-MM-DD.1",
-  "summary": "需求确认与 Spec 判定当前焦点 → 功能实施未授权",
-  "nodes": [
-    {"id": "contract-freeze", "name": "需求确认与 Spec 判定", "progress": "active", "authorization": "docs-only", "owner": "requirements.md"},
-    {"id": "implementation", "name": "功能实施", "progress": "planned", "authorization": "unauthorized", "owner": "README.md"}
-  ],
-  "edges": [["contract-freeze", "implementation"]],
-  "focus_nodes": ["contract-freeze"],
-  "parallel_groups": [],
-  "joins": [],
-  "next_gate": "contract-freeze"
-}
-MAINLINE-ROUTE:END -->
+用一小段说明这个 Feature 为谁解决什么问题，以及明显不属于它的边界。
 
-路线：`需求确认与 Spec 判定当前焦点 → 功能实施未授权`
+## 当前行为
 
-- **当前焦点**：确认 requirements，并判断是否需要 Spec / ADR。
-- **当前阻塞**：expected behavior 与 acceptance 尚未确认；实施合同尚未判定。
-- **下一验证门**：requirements confirmation / Spec decision。
-- **授权边界**：仅 docs/contract；无实施授权。
+- 描述用户或系统现在可以依赖的稳定行为。
+- 区分已实现事实和仍未完成的目标。
+
+## 关键接口与数据
+
+只记录理解或使用此 Feature 必需的稳定接口、事件、数据形状或外部依赖。细节很多且跨 Feature 共用时，
+链接到 `docs/reference/` 中的 owner。
+
+## 约束与已知限制
+
+- 记录真实影响实现或使用方式的约束。
+- 不保存本轮临时计划、逐文件进度或原始验证输出。
 
 ## 当前状态
 
-| 状态轴 | 当前值 |
-|---|---|
-| Role | `SEPARATE_PLANNED` |
-| Lifecycle | `PROPOSED` |
-| Requirements | `DRAFT` |
-| Active Spec | `NONE` |
-| Blocking Decisions | `CLEAR` |
-| Milestone | `NOT_STARTED` |
-| Implementation | `NOT_STARTED` |
-| Evidence | `CONTRACT_ONLY` |
-| Authorization | `NONE` |
-| Last verified | `YYYY-MM-DD` |
-| Next gate | Requirements confirmation / Spec decision |
+- 当前重点：TODO
+- 已知阻塞：无 / TODO
+- 下一步：TODO
+- 最近核实：YYYY-MM-DD
 
-## 已完成
+## 相关文档
 
-- Feature owner 与初始路由已建立。
+- 按需链接稳定的设计、接口或 runbook。
+- 删除没有实际目标的占位项。
 
-## 待完成
-
-- 确认 scope、expected behavior、acceptance、NFR 与 stop rules。
-- 判断是否需要首个 Spec，以及是否存在阻塞 Spec freeze 的 ADR candidate。
-
-## 当前阻塞
-
-- requirements 尚未确认；尚无实施授权。
-
-## 下一验证门
-
-Requirements confirmation / Spec decision
-
-## 证据
-
-- 仅存在初始合同脚手架，无 engineering、validation 或 execution evidence。
-
-## 开发日志
-
-见 [changelog.md](changelog.md)。
-
-## 活跃合同
-
-- Requirements：[requirements.md](requirements.md)（`DRAFT`）。
-- Active Spec：无；实现相关合同明确后按需在 `specs/` 创建。
-- Blocking ADR：无；满足 durable decision trigger 时按需在 `decisions/` 创建。
-- Implementation authorization：`NONE`。
-
-## 文档所有权
-
-- [requirements.md](requirements.md) 持有 expected behavior、acceptance、NFR 和 stop rules。
-- `specs/` 持有 bounded implementation contracts；详细模块图、接口、状态、迁移和 validation matrix 不写入本页。
-- `decisions/` 持有 Feature-local ADR；系统级 ADR 由 `docs/reference/decisions/` 持有。
-- 本页只持有 Feature map、current route overlay、contract links 与 current snapshot。
-- 稳定节点、依赖、并行和汇合关系进入 development plan（需要时创建）。
-- [changelog.md](changelog.md) 持有 Feature/Spec/ADR 的 milestone/gate/route 级迁移历史。
+<!--
+使用说明：
+- 小 Feature 通常只需要这一份 README。
+- 只有出现多份稳定 leaf 文档时才增加本地 INDEX。
+- 实施任务完成并验证后，由主 Agent 异步委派一个 docs SubAgent，一次性更新本页。
+- 不要为开工预建 requirements、Spec、ADR、changelog、任务板或状态矩阵。
+-->
